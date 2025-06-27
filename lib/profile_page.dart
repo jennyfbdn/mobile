@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
-  // Você pode adaptar para dados reais, aqui um exemplo simples
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Perfil', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black),
+        title: Text('Perfil'),
         centerTitle: true,
-        elevation: 0,
       ),
-      backgroundColor: Colors.white,
       body: Padding(
         padding: EdgeInsets.all(24),
         child: Column(
@@ -26,44 +21,31 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 24),
-            Text(
-              'Nome:',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            Text('Maria Silva', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
-            Text(
-              'Email:',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            Text('maria.silva@email.com', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 16),
-            Text(
-              'Telefone:',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            Text('(11) 99999-9999', style: TextStyle(fontSize: 16)),
+            _profileItem('Nome', 'Maria Silva'),
+            _profileItem('Email', 'maria.silva@email.com'),
+            _profileItem('Telefone', '(11) 99999-9999'),
             SizedBox(height: 40),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Aqui pode implementar logout ou editar perfil
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Editar Perfil',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
+                onPressed: () {},
+                child: Text('Editar Perfil'),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _profileItem(String title, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black87)),
+          Text(value, style: TextStyle(fontSize: 16, color: Colors.black87)),
+        ],
       ),
     );
   }

@@ -5,13 +5,15 @@ class MalePage extends StatelessWidget {
   final List<Map<String, dynamic>> produtosMasculinos = [
     {
       'nome': 'Camisa Social',
-      'preco': 99.90,
       'imagem': 'assets/images/camisa_social.jpg',
     },
     {
       'nome': 'Calça Jeans',
-      'preco': 120.00,
       'imagem': 'assets/images/calca_jeans.jpg',
+    },
+    {
+      'nome': 'Jaqueta Couro',
+      'imagem': 'assets/images/jaqueta_couro.jpg',
     },
   ];
 
@@ -19,62 +21,76 @@ class MalePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Moda Masculina'),
-        backgroundColor: Colors.blueGrey[700],
+        title: Text('Masculino'),
         centerTitle: true,
       ),
-      body: GridView.builder(
-        padding: EdgeInsets.all(12),
-        itemCount: produtosMasculinos.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 0.7,
-        ),
-        itemBuilder: (context, index) {
-          final produto = produtosMasculinos[index];
-          return Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 3,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: EdgeInsets.all(16),
+        child: GridView.builder(
+          itemCount: produtosMasculinos.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 18,
+            mainAxisSpacing: 18,
+            childAspectRatio: 0.65,
+          ),
+          itemBuilder: (context, index) {
+            final produto = produtosMasculinos[index];
+            return Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              clipBehavior: Clip.hardEdge,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
                     child: Image.asset(produto['imagem'], fit: BoxFit.cover),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(produto['nome'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      SizedBox(height: 4),
-                      Text('R\$ ${produto['preco'].toStringAsFixed(2)}',
-                          style: TextStyle(color: Colors.blueGrey[700], fontWeight: FontWeight.w600)),
-                      SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => OrderPage(produtos: [produto])),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueGrey[700],
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          padding: EdgeInsets.symmetric(vertical: 12),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(produto['nome'],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            )),
+                        SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 36,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => OrderPage(produtos: [produto]),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.black,
+                              foregroundColor: Colors.white,
+                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: EdgeInsets.zero,
+                            ),
+                            child: Text('Encomendar'),
+                          ),
                         ),
-                        child: Text('Adicionar ao Carrinho'),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

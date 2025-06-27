@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
-import 'order_page.dart';
 import 'female_page.dart';
 import 'male_page.dart';
-import 'profile_page.dart';  // Importa a nova página de perfil
+import 'order_page.dart';
+import 'profile_page.dart';
 
 class HomePage extends StatelessWidget {
   final List<Map<String, dynamic>> roupasDestaque = [
     {
       'nome': 'Vestido Floral',
-      'preco': 149.90,
       'imagem': 'assets/images/vestido_floral.jpg',
     },
     {
       'nome': 'Camisa Social',
-      'preco': 99.90,
       'imagem': 'assets/images/camisa_social.jpg',
     },
     {
       'nome': 'Calça Jeans',
-      'preco': 120.00,
       'imagem': 'assets/images/calca_jeans.jpg',
     },
     {
       'nome': 'Blusa de Seda',
-      'preco': 180.00,
       'imagem': 'assets/images/blusa_seda.jpg',
     },
   ];
@@ -31,205 +27,206 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 3,
         centerTitle: true,
         title: Text(
           'Ateliê Pano Fino',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.black87,
+            fontSize: 28,
             fontWeight: FontWeight.w900,
-            fontSize: 26,
-            letterSpacing: 1.5,
-            fontFamily: 'Serif',
+            fontFamily: 'Georgia', // Fonte serifada elegante
+            letterSpacing: 1.2,
           ),
         ),
+        iconTheme: IconThemeData(color: Colors.black87),
         actions: [
           IconButton(
-            icon: Icon(Icons.person_outline, color: Colors.black, size: 28),
+            icon: Icon(Icons.person_outline, color: Colors.black87, size: 28),
             tooltip: 'Perfil',
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ProfilePage()),
-              );
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
             },
           )
         ],
       ),
+      backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 22, vertical: 26),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Categorias',
               style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w900,
+                fontSize: 28,
                 color: Colors.black87,
-                letterSpacing: 1.2,
+                letterSpacing: 1.1,
               ),
             ),
-
-            SizedBox(height: 16),
-
+            SizedBox(height: 14),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Botão Feminino
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => FemalePage()));
-                  },
-                  style: TextButton.styleFrom(
-                    side: BorderSide(color: Colors.black, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                    backgroundColor: Colors.white,
-                  ),
-                  icon: Icon(Icons.female, color: Colors.black, size: 22),
-                  label: Text(
-                    'Feminino',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      fontFamily: 'Serif',
-                    ),
-                  ),
-                ),
-
-                SizedBox(width: 20),
-
-                // Botão Masculino
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
-                  },
-                  style: TextButton.styleFrom(
-                    side: BorderSide(color: Colors.black, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                    backgroundColor: Colors.white,
-                  ),
-                  icon: Icon(Icons.male, color: Colors.black, size: 22),
-                  label: Text(
-                    'Masculino',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      fontFamily: 'Serif',
-                    ),
-                  ),
-                ),
+                _categoryButton(context, 'Feminino', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => FemalePage()));
+                }),
+                SizedBox(width: 18),
+                _categoryButton(context, 'Masculino', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
+                }),
               ],
             ),
-
-            SizedBox(height: 32),
-
+            SizedBox(height: 38),
             Text(
-              'Roupas em Destaque',
+              'Roupas em destaque',
               style: TextStyle(
+                fontWeight: FontWeight.w900,
                 fontSize: 24,
-                fontWeight: FontWeight.w700,
                 color: Colors.black87,
-                letterSpacing: 1.2,
+                letterSpacing: 1.05,
               ),
             ),
-
-            SizedBox(height: 16),
-
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: roupasDestaque.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20,
-                childAspectRatio: 0.65,
-              ),
-              itemBuilder: (context, index) {
-                final roupa = roupasDestaque[index];
-                return Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  elevation: 4,
-                  shadowColor: Colors.black26,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
-                          child: Image.asset(
-                            roupa['imagem'],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        child: Text(
-                          roupa['nome'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 18,
-                            color: Colors.black87,
-                            fontFamily: 'Serif',
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 14),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => OrderPage(produtos: [roupa]),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 12),
-                          ),
-                          child: Text(
-                            'Encomendar',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                    ],
-                  ),
-                );
-              },
-            ),
-
-            SizedBox(height: 24),
-
-            Center(
-              child: Text(
-                '© 2025 Ateliê Pano Fino',
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            SizedBox(height: 22),
+            Expanded(
+              child: GridView.builder(
+                itemCount: roupasDestaque.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 22,
+                  mainAxisSpacing: 22,
+                  childAspectRatio: 0.65,
+                ),
+                itemBuilder: (context, index) {
+                  final roupa = roupasDestaque[index];
+                  return _ropaCard(context, roupa);
+                },
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _categoryButton(BuildContext context, String title, VoidCallback onTap) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.black87,
+          minimumSize: Size(110, 40),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          elevation: 6,
+          shadowColor: Colors.black54,
+          padding: EdgeInsets.symmetric(horizontal: 26),
+          textStyle: TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.6,
+          ),
+        ),
+        child: Text(
+          title,
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _ropaCard(BuildContext context, Map<String, dynamic> roupa) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => OrderPage(produtos: [roupa])));
+      },
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 1, end: 1),
+        duration: Duration(milliseconds: 300),
+        builder: (context, scale, child) {
+          return Transform.scale(
+            scale: scale,
+            child: child,
+          );
+        },
+        child: Card(
+          elevation: 8,
+          shadowColor: Colors.black26,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          clipBehavior: Clip.hardEdge,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Image.asset(
+                  roupa['imagem'],
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                child: Column(
+                  children: [
+                    Text(
+                      roupa['nome'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 18,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => OrderPage(produtos: [roupa])),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                          elevation: 6,
+                          shadowColor: Colors.black54,
+                          // Gradiente preto -> cinza escuro
+                          backgroundColor: Colors.transparent,
+                        ),
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.black87, Colors.grey[850]!],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(22),
+                          ),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Encomendar',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                                letterSpacing: 0.8,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
