@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 
-class CadastroPage extends StatelessWidget {
+class CadastroPage extends StatefulWidget {
+  @override
+  _CadastroPageState createState() => _CadastroPageState();
+}
+
+class _CadastroPageState extends State<CadastroPage> {
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
+  final TextEditingController confirmarSenhaController = TextEditingController();
+  String? senhaError;
 
   @override
   Widget build(BuildContext context) {
@@ -45,16 +52,31 @@ class CadastroPage extends StatelessWidget {
                 decoration: _inputDecoration('Senha'),
                 obscureText: true,
                 style: TextStyle(color: Colors.black87),
+                onChanged: (value) => _validatePasswords(),
+              ),
+              SizedBox(height: 16),
+
+              // Campo Confirmar Senha
+              TextField(
+                controller: confirmarSenhaController,
+                decoration: _inputDecoration('Confirmar Senha').copyWith(
+                  errorText: senhaError,
+                ),
+                obscureText: true,
+                style: TextStyle(color: Colors.black87),
+                onChanged: (value) => _validatePasswords(),
               ),
 
               SizedBox(height: 32),
               ElevatedButton(
-                onPressed: () {
+                onPressed: _isFormValid() ? () {
                   Navigator.pushNamed(context, '/home');
-                },
+                } : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
+                  disabledBackgroundColor: Colors.black,
+                  disabledForegroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 16),
                   minimumSize: Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(
@@ -79,6 +101,25 @@ class CadastroPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _validatePasswords() {
+    setState(() {
+      if (confirmarSenhaController.text.isNotEmpty && 
+          senhaController.text != confirmarSenhaController.text) {
+        senhaError = 'As senhas não coincidem';
+      } else {
+        senhaError = null;
+      }
+    });
+  }
+
+  bool _isFormValid() {
+    return nomeController.text.isNotEmpty &&
+           emailController.text.isNotEmpty &&
+           senhaController.text.isNotEmpty &&
+           confirmarSenhaController.text.isNotEmpty &&
+           senhaError == null;
   }
 
   InputDecoration _inputDecoration(String label) {

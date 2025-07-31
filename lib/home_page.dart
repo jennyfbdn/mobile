@@ -27,78 +27,86 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 3,
+        elevation: 1,
         centerTitle: true,
         title: Text(
           'Ateliê Pano Fino',
           style: TextStyle(
             color: Colors.black87,
-            fontSize: 28,
-            fontWeight: FontWeight.w900,
-            fontFamily: 'Georgia', // Fonte serifada elegante
-            letterSpacing: 1.2,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: IconThemeData(color: Colors.black87),
         actions: [
           IconButton(
-            icon: Icon(Icons.person_outline, color: Colors.black87, size: 28),
-            tooltip: 'Perfil',
+            icon: Icon(Icons.list_alt, color: Colors.black87),
+            onPressed: () {
+              Navigator.pushNamed(context, '/encomendas');
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.person_outline, color: Colors.black87),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
             },
-          )
+          ),
         ],
       ),
-      backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 22, vertical: 26),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+
             Text(
               'Categorias',
               style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
                 color: Colors.black87,
-                letterSpacing: 1.1,
               ),
             ),
-            SizedBox(height: 14),
+            SizedBox(height: 20),
+              
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _categoryButton(context, 'Feminino', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => FemalePage()));
-                }),
-                SizedBox(width: 18),
-                _categoryButton(context, 'Masculino', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
-                }),
+                Expanded(
+                  child: _categoryButton(context, 'Feminino', () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => FemalePage()));
+                  }),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: _categoryButton(context, 'Masculino', () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
+                  }),
+                ),
               ],
             ),
-            SizedBox(height: 38),
+            
+            SizedBox(height: 32),
+            
             Text(
               'Roupas em destaque',
               style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
                 color: Colors.black87,
-                letterSpacing: 1.05,
               ),
             ),
-            SizedBox(height: 22),
+            SizedBox(height: 20),
+            
             Expanded(
               child: GridView.builder(
                 itemCount: roupasDestaque.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 22,
-                  mainAxisSpacing: 22,
-                  childAspectRatio: 0.65,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.8,
                 ),
                 itemBuilder: (context, index) {
                   final roupa = roupasDestaque[index];
@@ -113,121 +121,75 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _categoryButton(BuildContext context, String title, VoidCallback onTap) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black87,
-          minimumSize: Size(110, 40),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-          elevation: 6,
-          shadowColor: Colors.black54,
-          padding: EdgeInsets.symmetric(horizontal: 26),
-          textStyle: TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.6,
-          ),
-        ),
-        child: Text(
-          title,
-          style: TextStyle(color: Colors.white),
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        padding: EdgeInsets.symmetric(vertical: 16),
+        minimumSize: Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
+      child: Text(title, style: TextStyle(fontSize: 16)),
     );
   }
 
   Widget _ropaCard(BuildContext context, Map<String, dynamic> roupa) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => OrderPage(produtos: [roupa])));
-      },
-      child: TweenAnimationBuilder<double>(
-        tween: Tween(begin: 1, end: 1),
-        duration: Duration(milliseconds: 300),
-        builder: (context, scale, child) {
-          return Transform.scale(
-            scale: scale,
-            child: child,
-          );
-        },
-        child: Card(
-          elevation: 8,
-          shadowColor: Colors.black26,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          clipBehavior: Clip.hardEdge,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Image.asset(
-                  roupa['imagem'],
-                  fit: BoxFit.cover,
-                ),
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              child: Image.asset(
+                roupa['imagem'],
+                fit: BoxFit.cover,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-                child: Column(
-                  children: [
-                    Text(
-                      roupa['nome'],
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 18,
-                        color: Colors.black87,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 14),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => OrderPage(produtos: [roupa])),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-                          elevation: 6,
-                          shadowColor: Colors.black54,
-                          // Gradiente preto -> cinza escuro
-                          backgroundColor: Colors.transparent,
-                        ),
-                        child: Ink(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Colors.black87, Colors.grey[850]!],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(22),
-                          ),
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: Text(
-                              'Encomendar',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                                letterSpacing: 0.8,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                Text(
+                  roupa['nome'],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => OrderPage(produtos: [roupa])),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text('Encomendar', style: TextStyle(fontSize: 12)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
