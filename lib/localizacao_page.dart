@@ -28,6 +28,49 @@ class LocalizacaoPage extends StatelessWidget {
               ),
               SizedBox(height: 32),
 
+              // Foto da localização
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    color: Colors.grey[300],
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: 60,
+                            color: Colors.grey[600],
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Foto da Localização',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 24),
+
               // Endereço
               Container(
                 padding: EdgeInsets.all(16),

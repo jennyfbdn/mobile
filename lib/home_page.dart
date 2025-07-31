@@ -32,6 +32,7 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 1,
         centerTitle: true,
+        automaticallyImplyLeading: false,
         title: Text(
           'Ateliê Pano Fino',
           style: TextStyle(
@@ -41,12 +42,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.list_alt, color: Colors.black87),
-            onPressed: () {
-              Navigator.pushNamed(context, '/encomendas');
-            },
-          ),
           IconButton(
             icon: Icon(Icons.person_outline, color: Colors.black87),
             onPressed: () {
@@ -74,13 +69,13 @@ class HomePage extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: _categoryButton(context, 'Feminino', () {
+                  child: _categoryCard(context, 'Feminino', 'assets/images/vestido_floral.jpg', () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => FemalePage()));
                   }),
                 ),
                 SizedBox(width: 16),
                 Expanded(
-                  child: _categoryButton(context, 'Masculino', () {
+                  child: _categoryCard(context, 'Masculino', 'assets/images/camisa_social.jpg', () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
                   }),
                 ),
@@ -120,19 +115,59 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _categoryButton(BuildContext context, String title, VoidCallback onTap) {
-    return ElevatedButton(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        padding: EdgeInsets.symmetric(vertical: 16),
-        minimumSize: Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+  Widget _categoryCard(BuildContext context, String title, String imagePath, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 120,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              Image.asset(
+                imagePath,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 16,
+                left: 16,
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-      child: Text(title, style: TextStyle(fontSize: 16)),
     );
   }
 

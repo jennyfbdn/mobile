@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'encomenda_service.dart';
+import 'detalhes_encomenda_page.dart';
 
 class EncomendasPage extends StatefulWidget {
   @override
@@ -70,8 +71,17 @@ class _EncomendasPageState extends State<EncomendasPage> {
   }
 
   Widget _encomendaCard(Map<String, dynamic> encomenda) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DetalhesEncomendaPage(encomenda: encomenda),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -152,8 +162,28 @@ class _EncomendasPageState extends State<EncomendasPage> {
                 ],
               ),
             ),
+            SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  'Ver detalhes',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                SizedBox(width: 4),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 12,
+                  color: Colors.grey[600],
+                ),
+              ],
+            ),
           ],
         ),
+      ),
       ),
     );
   }

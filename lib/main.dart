@@ -5,6 +5,7 @@ import 'home_page.dart';
 import 'localizacao_page.dart';
 import 'agradecimento_page.dart';
 import 'encomendas_page.dart';
+import 'bottom_navigation.dart';
 
 void main() {
   runApp(AteliePanoFinoApp());
@@ -22,10 +23,10 @@ class AteliePanoFinoApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginPage(),
         '/cadastro': (context) => CadastroPage(),
-        '/home': (context) => HomePage(),
-        '/localizacao': (context) => LocalizacaoPage(),
+        '/home': (context) => MainNavigation(initialIndex: 0),
+        '/localizacao': (context) => MainNavigation(initialIndex: 2),
         '/agradecimento': (context) => AgradecimentoPage(),
-        '/encomendas': (context) => EncomendasPage(),
+        '/encomendas': (context) => MainNavigation(initialIndex: 1),
       },
       debugShowCheckedModeBanner: false,  // Remove a faixa de debug
     );

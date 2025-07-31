@@ -20,77 +20,123 @@ class FemalePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('Feminino'),
+        title: Text('Coleção Feminina', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
         centerTitle: true,
+        iconTheme: IconThemeData(color: Colors.black87),
+        elevation: 2,
       ),
-      backgroundColor: Colors.white,
       body: Padding(
-        padding: EdgeInsets.all(16),
-        child: GridView.builder(
-          itemCount: produtosFemininos.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 18,
-            mainAxisSpacing: 18,
-            childAspectRatio: 0.65,
+        padding: EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Descubra nossa coleção feminina',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: GridView.builder(
+                itemCount: produtosFemininos.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.7,
+                ),
+                itemBuilder: (context, index) {
+                  final produto = produtosFemininos[index];
+                  return _buildProductCard(context, produto);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProductCard(BuildContext context, Map<String, dynamic> produto) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: Offset(0, 5),
           ),
-          itemBuilder: (context, index) {
-            final produto = produtosFemininos[index];
-            return Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              clipBehavior: Clip.hardEdge,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: Image.asset(produto['imagem'], fit: BoxFit.cover),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 3,
+            child: ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              child: Image.asset(
+                produto['imagem'],
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  produto['nome'],
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.black87,
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(produto['nome'],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black87,
-                            )),
-                        SizedBox(height: 8),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 36,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => OrderPage(produtos: [produto]),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.black,
-                              foregroundColor: Colors.white,
-                              textStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: EdgeInsets.zero,
-                            ),
-                            child: Text('Encomendar'),
-                          ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 32,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => OrderPage(produtos: [produto]),
                         ),
-                      ],
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 0,
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: Text(
+                      'Encomendar',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
-                ],
-              ),
-            );
-          },
-        ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

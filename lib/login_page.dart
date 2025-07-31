@@ -37,30 +37,48 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _loginGoogle() {
-    // Aqui você integraria o login via Google
-    // Por enquanto só exibe um alerta
+    // Simulando login com Google
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text('Login Google'),
-        content: Text('Função de login com Google não implementada.'),
+        content: Text('Entrando com Google...'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Ok'))
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/home');
+            },
+            child: Text('Entrar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar'),
+          ),
         ],
       ),
     );
   }
 
   void _loginFacebook() {
-    // Aqui você integraria o login via Facebook
-    // Por enquanto só exibe um alerta
+    // Simulando login com Facebook
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text('Login Facebook'),
-        content: Text('Função de login com Facebook não implementada.'),
+        content: Text('Entrando com Facebook...'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Ok'))
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/home');
+            },
+            child: Text('Entrar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar'),
+          ),
         ],
       ),
     );
@@ -173,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                       text: 'Google',
                       backgroundColor: Colors.white,
                       textColor: Colors.black87,
-                      icon: Icons.login,
+                      icon: Icons.g_mobiledata,
                       onPressed: _loginGoogle,
                     ),
                   ),
