@@ -3,6 +3,8 @@ import 'female_page.dart';
 import 'male_page.dart';
 import 'order_page.dart';
 import 'profile_page.dart';
+import 'personalizacao_page.dart';
+import 'medidas_page.dart';
 
 class HomePage extends StatelessWidget {
   final List<Map<String, dynamic>> roupasDestaque = [
@@ -27,10 +29,10 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 1,
+        elevation: 4,
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
@@ -80,6 +82,23 @@ class HomePage extends StatelessWidget {
                   }),
                 ),
               ],
+            ),
+            
+            SizedBox(height: 24),
+            
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text('Personalizar no Ateliê'),
+              ),
             ),
             
             SizedBox(height: 32),

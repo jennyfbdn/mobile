@@ -17,11 +17,12 @@ class _EncomendasPageState extends State<EncomendasPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('Minhas Encomendas', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
+        title: Text('Minhas Encomendas', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.black87),
-        elevation: 2,
+        foregroundColor: Colors.black87,
+        elevation: 4,
       ),
       body: encomendas.isEmpty
           ? _emptyState()

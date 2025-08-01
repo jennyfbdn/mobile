@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'localizacao_page.dart';
 import 'encomenda_service.dart';
+import 'medidas_page.dart';
 
 class OrderPage extends StatefulWidget {
   final List<Map<String, dynamic>> produtos;
@@ -220,7 +221,22 @@ class _OrderPageState extends State<OrderPage> {
             ),
             SizedBox(height: 24),
 
-            _sectionTitle('Medidas (cm)'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _sectionTitle('Medidas (cm)'),
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => MedidasPage()));
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.black),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  ),
+                  child: Text('Manequim Ajustável', style: TextStyle(color: Colors.black, fontSize: 12)),
+                ),
+              ],
+            ),
             SizedBox(height: 16),
 
             Row(

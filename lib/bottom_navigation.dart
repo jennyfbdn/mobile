@@ -3,6 +3,7 @@ import 'home_page.dart';
 import 'encomendas_page.dart';
 import 'profile_page.dart';
 import 'localizacao_page.dart';
+import 'chat_page.dart';
 
 class MainNavigation extends StatefulWidget {
   final int initialIndex;
@@ -25,6 +26,7 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = [
     HomePage(),
     EncomendasPage(),
+    ChatPage(),
     LocalizacaoPage(),
     ProfilePage(),
   ];
@@ -53,7 +55,7 @@ class _MainNavigationState extends State<MainNavigation> {
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
-          selectedItemColor: Colors.black87,
+          selectedItemColor: Colors.black,
           unselectedItemColor: Colors.grey[600],
           selectedFontSize: 12,
           unselectedFontSize: 12,
@@ -67,6 +69,11 @@ class _MainNavigationState extends State<MainNavigation> {
               icon: Icon(Icons.list_alt_outlined),
               activeIcon: Icon(Icons.list_alt),
               label: 'Encomendas',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat_bubble_outline),
+              activeIcon: Icon(Icons.chat_bubble),
+              label: 'Chat',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.location_on_outlined),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'medidas_page.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -43,7 +44,8 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.white,
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.black87),
-        elevation: 2,
+        foregroundColor: Colors.black87,
+        elevation: 4,
         actions: [
           IconButton(
             icon: Icon(_isEditing ? Icons.close : Icons.edit),
@@ -119,6 +121,25 @@ class _ProfilePageState extends State<ProfilePage> {
                 _enderecoController,
                 Icons.location_on_outlined,
                 maxLines: 2,
+              ),
+              SizedBox(height: 16),
+              
+              // Botão Minhas Medidas
+              Container(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => MedidasPage()));
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.black),
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text('Minhas Medidas', style: TextStyle(color: Colors.black)),
+                ),
               ),
               SizedBox(height: 32),
 

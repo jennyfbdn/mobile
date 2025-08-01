@@ -22,10 +22,6 @@ flutter:
 
 
   assets:
-    - assets/images/logo.png
-    - assets/images/vestido_floral.jpg
-
-    # Remova ou comente:
-# carousel_slider: ^4.2.1
+    - assets/images/
 
     
