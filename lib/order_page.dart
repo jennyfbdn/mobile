@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'localizacao_page.dart';
 import 'encomenda_service.dart';
 import 'medidas_page.dart';
+import 'medidas_service.dart';
 
 class OrderPage extends StatefulWidget {
   final List<Map<String, dynamic>> produtos;
@@ -18,16 +19,43 @@ class _OrderPageState extends State<OrderPage> {
   String? nome;
   String? telefone;
   String? personalizacao;
+  final TextEditingController _alturaController = TextEditingController();
+  final TextEditingController _larguraController = TextEditingController();
+  final TextEditingController _bustoController = TextEditingController();
   String? altura;
   String? largura;
   String? busto;
   Map<String, dynamic>? produtoSelecionado;
   int quantidade = 1;
+  String? tipoPersonalizacao;
+  double precoBase = 150.0;
+  
+  final Map<String, double> precosPersonalizacao = {
+    'Nenhuma': 0.0,
+    'Bordado simples': 30.0,
+    'Bordado complexo': 80.0,
+    'Aplicação': 50.0,
+    'Ajuste de tamanho': 25.0,
+    'Reforma completa': 120.0,
+  };
+  
+  double get precoTotal => (precoBase + (precosPersonalizacao[tipoPersonalizacao] ?? 0.0)) * quantidade;
 
   @override
   void initState() {
     super.initState();
     produtoSelecionado = widget.produtos.isNotEmpty ? widget.produtos[0] : null;
+    tipoPersonalizacao = 'Nenhuma';
+    _carregarMedidasSalvas();
+  }
+  
+  void _carregarMedidasSalvas() {
+    if (MedidasService().temMedidas()) {
+      final medidas = MedidasService().obterMedidas();
+      _alturaController.text = medidas['altura'] ?? '';
+      _larguraController.text = medidas['cintura'] ?? '';
+      _bustoController.text = medidas['busto'] ?? '';
+    }
   }
 
   void _enviarEncomenda() {
@@ -242,7 +270,8 @@ class _OrderPageState extends State<OrderPage> {
             Row(
               children: [
                 Expanded(
-                  child: _buildTextField(
+                  child: _buildTextFieldWithController(
+                    controller: _alturaController,
                     decoration: _inputDecoration('Altura'),
                     keyboardType: TextInputType.number,
                     validator: (v) {
@@ -255,7 +284,8 @@ class _OrderPageState extends State<OrderPage> {
                 ),
                 SizedBox(width: 16),
                 Expanded(
-                  child: _buildTextField(
+                  child: _buildTextFieldWithController(
+                    controller: _larguraController,
                     decoration: _inputDecoration('Largura'),
                     keyboardType: TextInputType.number,
                     validator: (v) {
@@ -269,7 +299,8 @@ class _OrderPageState extends State<OrderPage> {
               ],
             ),
             SizedBox(height: 16),
-            _buildTextField(
+            _buildTextFieldWithController(
+              controller: _bustoController,
               decoration: _inputDecoration('Busto'),
               keyboardType: TextInputType.number,
               validator: (v) {
@@ -281,10 +312,36 @@ class _OrderPageState extends State<OrderPage> {
             ),
 
             SizedBox(height: 24),
-            _sectionTitle('Detalhes Adicionais'),
+            _sectionTitle('Personalização'),
+            SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: Offset(0, 2))],
+              ),
+              child: DropdownButtonFormField<String>(
+                decoration: _inputDecoration('Tipo de personalização'),
+                value: tipoPersonalizacao,
+                items: precosPersonalizacao.keys.map((tipo) {
+                  return DropdownMenuItem(
+                    value: tipo,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(tipo),
+                        Text('+R\$ ${precosPersonalizacao[tipo]!.toStringAsFixed(0)}', 
+                             style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) => setState(() => tipoPersonalizacao = value),
+              ),
+            ),
             SizedBox(height: 16),
             _buildTextField(
-              decoration: _inputDecoration('Personalização (opcional)'),
+              decoration: _inputDecoration('Observações (opcional)'),
               maxLines: 3,
               onSaved: (value) => personalizacao = value,
             ),
@@ -367,7 +424,55 @@ class _OrderPageState extends State<OrderPage> {
               ),
             ),
 
-            SizedBox(height: 32),
+            SizedBox(height: 24),
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2))],
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Preço base:', style: TextStyle(fontSize: 16)),
+                      Text('R\$ ${precoBase.toStringAsFixed(2)}', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                  if (tipoPersonalizacao != 'Nenhuma') ...[
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('$tipoPersonalizacao:', style: TextStyle(fontSize: 16)),
+                        Text('+R\$ ${precosPersonalizacao[tipoPersonalizacao]!.toStringAsFixed(2)}', style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                  ],
+                  if (quantidade > 1) ...[
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Quantidade ($quantidade):', style: TextStyle(fontSize: 16)),
+                        Text('x$quantidade', style: TextStyle(fontSize: 16)),
+                      ],
+                    ),
+                  ],
+                  Divider(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('R\$ ${precoTotal.toStringAsFixed(2)}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 24),
             Container(
               width: double.infinity,
               height: 56,
@@ -390,7 +495,7 @@ class _OrderPageState extends State<OrderPage> {
                   elevation: 0,
                 ),
                 child: Text(
-                  'Enviar Encomenda',
+                  'Enviar Encomenda - R\$ ${precoTotal.toStringAsFixed(2)}',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -398,6 +503,38 @@ class _OrderPageState extends State<OrderPage> {
             SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+  
+  Widget _buildTextFieldWithController({
+    required TextEditingController controller,
+    required InputDecoration decoration,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+    String? Function(String?)? validator,
+    void Function(String?)? onSaved,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextFormField(
+        controller: controller,
+        decoration: decoration,
+        style: TextStyle(color: Colors.black87),
+        keyboardType: keyboardType,
+        maxLines: maxLines,
+        validator: validator,
+        onSaved: onSaved,
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'medidas_service.dart';
 
 class MedidasPage extends StatefulWidget {
   @override
@@ -15,6 +16,21 @@ class _MedidasPageState extends State<MedidasPage> {
     'ombro': TextEditingController(),
     'braco': TextEditingController(),
   };
+  
+  @override
+  void initState() {
+    super.initState();
+    _carregarMedidas();
+  }
+  
+  void _carregarMedidas() {
+    final medidas = MedidasService().obterMedidas();
+    medidas.forEach((key, value) {
+      if (_controllers.containsKey(key)) {
+        _controllers[key]!.text = value;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,6 +172,17 @@ class _MedidasPageState extends State<MedidasPage> {
   }
 
   void _salvarMedidas() {
+    Map<String, String> medidas = {
+      'busto': _controllers['busto']!.text,
+      'cintura': _controllers['cintura']!.text,
+      'quadril': _controllers['quadril']!.text,
+      'altura': _controllers['altura']!.text,
+      'ombro': _controllers['ombro']!.text,
+      'braco': _controllers['braco']!.text,
+    };
+    
+    MedidasService().salvarMedidas(medidas);
+    
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
