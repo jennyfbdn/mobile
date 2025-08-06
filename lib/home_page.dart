@@ -11,18 +11,22 @@ class HomePage extends StatelessWidget {
     {
       'nome': 'Vestido Floral',
       'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 120,00',
     },
     {
       'nome': 'Camisa Social',
-      'imagem': 'assets/images/camisa_social.jpg',
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 90,00',
     },
     {
       'nome': 'Calça Jeans',
-      'imagem': 'assets/images/calca_jeans.jpg',
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 110,00',
     },
     {
       'nome': 'Blusa de Seda',
-      'imagem': 'assets/images/blusa_seda.jpg',
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 75,00',
     },
   ];
 
@@ -52,81 +56,226 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            Text(
-              'Categorias',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-                color: Colors.black87,
-              ),
-            ),
-            SizedBox(height: 20),
-              
-            Row(
-              children: [
-                Expanded(
-                  child: _categoryCard(context, 'Feminino', 'assets/images/vestido_floral.jpg', () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => FemalePage()));
-                  }),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: _categoryCard(context, 'Masculino', 'assets/images/camisa_social.jpg', () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
-                  }),
-                ),
-              ],
-            ),
-            
-            SizedBox(height: 24),
-            
-            SizedBox(
+            // Hero Section
+            Container(
+              height: 200,
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage()));
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(vertical: 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Colors.black87, Colors.black54],
                 ),
-                child: Text('Personalizar no Ateliê'),
+              ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(
+                      'assets/images/vestido_floral.jpg',
+                      fit: BoxFit.cover,
+                      color: Colors.black.withOpacity(0.4),
+                      colorBlendMode: BlendMode.darken,
+                    ),
+                  ),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Ateliê Pano Fino',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Elegância e qualidade em cada peça',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
             
-            SizedBox(height: 32),
-            
-            Text(
-              'Roupas em destaque',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Services Section
+                  Text(
+                    'Nossos Serviços',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.black87,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _serviceCard(
+                          context,
+                          'Personalizar',
+                          Icons.design_services,
+                          'Crie peças únicas',
+                          () => Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage())),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _serviceCard(
+                          context,
+                          'Produtos',
+                          Icons.shopping_bag,
+                          'Materiais de qualidade',
+                          () => Navigator.pushNamed(context, '/produtos'),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: _serviceCard(
+                          context,
+                          'Feedbacks',
+                          Icons.star,
+                          'Avaliações dos clientes',
+                          () => Navigator.pushNamed(context, '/feedbacks'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  SizedBox(height: 32),
+                  
+                  // Categories Section
+                  Text(
+                    'Coleções',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.black87,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _categoryCard(context, 'Feminino', 'assets/images/vestido_floral.jpg', () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => FemalePage()));
+                        }),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: _categoryCard(context, 'Masculino', 'assets/images/vestido_floral.jpg', () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
+                        }),
+                      ),
+                    ],
+                  ),
+                  
+                  SizedBox(height: 32),
+                  
+                  // Featured Products
+                  Text(
+                    'Peças em Destaque',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Colors.black87,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: roupasDestaque.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemBuilder: (context, index) {
+                      final roupa = roupasDestaque[index];
+                      return _ropaCard(context, roupa);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _serviceCard(BuildContext context, String title, IconData icon, String description, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 15,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                size: 24,
                 color: Colors.black87,
               ),
             ),
-            SizedBox(height: 20),
-            
-            Expanded(
-              child: GridView.builder(
-                itemCount: roupasDestaque.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.8,
-                ),
-                itemBuilder: (context, index) {
-                  final roupa = roupasDestaque[index];
-                  return _ropaCard(context, roupa);
-                },
+            SizedBox(height: 12),
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.black87,
               ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              description,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.black54,
+              ),
+              textAlign: TextAlign.center,
+              maxLines: 2,
             ),
           ],
         ),
@@ -216,6 +365,16 @@ class HomePage extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                     color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  roupa['preco'],
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
                   ),
                   textAlign: TextAlign.center,
                 ),

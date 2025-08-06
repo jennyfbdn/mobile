@@ -6,14 +6,17 @@ class FemalePage extends StatelessWidget {
     {
       'nome': 'Vestido Floral',
       'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 120,00',
     },
     {
-      'nome': 'Blusa de Seda',
-      'imagem': 'assets/images/blusa_seda.jpg',
+      'nome': 'Blusa verde',
+      'imagem': 'assets/images/blusa_verde.jpg',
+      'preco': 'R\$ 85,00',
     },
     {
       'nome': 'Saia Midi',
-      'imagem': 'assets/images/saia_midi.jpg',
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 95,00',
     },
   ];
 
@@ -104,6 +107,15 @@ class FemalePage extends StatelessWidget {
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  produto['preco'],
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 SizedBox(height: 8),
                 SizedBox(

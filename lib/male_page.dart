@@ -5,15 +5,18 @@ class MalePage extends StatelessWidget {
   final List<Map<String, dynamic>> produtosMasculinos = [
     {
       'nome': 'Camisa Social',
-      'imagem': 'assets/images/camisa_social.jpg',
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 90,00',
     },
     {
       'nome': 'Calça Jeans',
-      'imagem': 'assets/images/calca_jeans.jpg',
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 110,00',
     },
     {
       'nome': 'Jaqueta Couro',
-      'imagem': 'assets/images/jaqueta_couro.jpg',
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'preco': 'R\$ 180,00',
     },
   ];
 
@@ -104,6 +107,15 @@ class MalePage extends StatelessWidget {
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 4),
+                Text(
+                  produto['preco'],
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 SizedBox(height: 8),
                 SizedBox(

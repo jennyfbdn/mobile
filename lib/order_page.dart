@@ -28,7 +28,14 @@ class _OrderPageState extends State<OrderPage> {
   Map<String, dynamic>? produtoSelecionado;
   int quantidade = 1;
   String? tipoPersonalizacao;
-  double precoBase = 150.0;
+  double get precoBase {
+    if (produtoSelecionado != null && produtoSelecionado!['preco'] != null) {
+      String precoStr = produtoSelecionado!['preco'].toString();
+      precoStr = precoStr.replaceAll('R\$ ', '').replaceAll(',', '.');
+      return double.tryParse(precoStr) ?? 150.0;
+    }
+    return 150.0;
+  }
   
   final Map<String, double> precosPersonalizacao = {
     'Nenhuma': 0.0,
@@ -137,6 +144,8 @@ class _OrderPageState extends State<OrderPage> {
       contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -365,7 +374,9 @@ class _OrderPageState extends State<OrderPage> {
                 items: widget.produtos.map((produto) {
                   return DropdownMenuItem(value: produto, child: Text(produto['nome']));
                 }).toList(),
-                onChanged: (value) => setState(() => produtoSelecionado = value),
+                onChanged: (value) => setState(() {
+                  produtoSelecionado = value;
+                }),
                 validator: (value) => value == null ? 'Selecione um produto' : null,
                 style: TextStyle(color: Colors.black87),
               ),
