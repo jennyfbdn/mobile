@@ -4,6 +4,8 @@ import 'encomendas_page.dart';
 import 'profile_page.dart';
 import 'localizacao_page.dart';
 import 'chat_page.dart';
+import 'agendamentos_page.dart';
+
 
 class MainNavigation extends StatefulWidget {
   final int initialIndex;
@@ -16,7 +18,6 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   late int _currentIndex;
-  
   @override
   void initState() {
     super.initState();
@@ -26,9 +27,9 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = [
     HomePage(),
     EncomendasPage(),
+    AgendamentosPage(),
     ChatPage(),
     LocalizacaoPage(),
-    ProfilePage(),
   ];
 
   @override
@@ -70,6 +71,12 @@ class _MainNavigationState extends State<MainNavigation> {
               activeIcon: Icon(Icons.list_alt),
               label: 'Encomendas',
             ),
+
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today_outlined),
+              activeIcon: Icon(Icons.calendar_today),
+              label: 'Agendamentos',
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.chat_bubble_outline),
               activeIcon: Icon(Icons.chat_bubble),
@@ -80,11 +87,7 @@ class _MainNavigationState extends State<MainNavigation> {
               activeIcon: Icon(Icons.location_on),
               label: 'Localização',
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              activeIcon: Icon(Icons.person),
-              label: 'Perfil',
-            ),
+
           ],
         ),
       ),

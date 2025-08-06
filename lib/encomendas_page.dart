@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'encomenda_service.dart';
 import 'detalhes_encomenda_page.dart';
+import 'profile_page.dart';
 
 class EncomendasPage extends StatefulWidget {
   @override
@@ -17,12 +18,20 @@ class _EncomendasPageState extends State<EncomendasPage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('Minhas Encomendas', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text('Minhas Encomendas', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.white,
         centerTitle: true,
         iconTheme: IconThemeData(color: Colors.black87),
         foregroundColor: Colors.black87,
         elevation: 4,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person_outline, color: Colors.black87),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+            },
+          ),
+        ],
       ),
       body: encomendas.isEmpty
           ? _emptyState()

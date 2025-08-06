@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile_page.dart';
 
 class LocalizacaoPage extends StatelessWidget {
   @override
@@ -11,6 +12,14 @@ class LocalizacaoPage extends StatelessWidget {
         foregroundColor: Colors.black87,
         elevation: 4,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person_outline, color: Colors.black87),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),

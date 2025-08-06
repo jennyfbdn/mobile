@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'agendamento_service.dart';
+import 'profile_page.dart';
 
 class AgendamentosPage extends StatelessWidget {
   @override
@@ -19,6 +20,14 @@ class AgendamentosPage extends StatelessWidget {
         backgroundColor: Colors.black,
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person_outline, color: Colors.white),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+            },
+          ),
+        ],
       ),
       body: agendamentos.isEmpty
           ? Center(

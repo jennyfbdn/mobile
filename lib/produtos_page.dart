@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'encomenda_service.dart';
+import 'profile_page.dart';
+import 'produto_detalhes_page.dart';
 
 class ProdutosPage extends StatelessWidget {
   final List<Map<String, dynamic>> produtos = [
@@ -41,7 +43,7 @@ class ProdutosPage extends StatelessWidget {
     },
   ];
 
-  void _adicionarProdutoEncomenda(BuildContext context, Map<String, dynamic> produto) {
+  void _adicionarEncomenda(BuildContext context, Map<String, dynamic> produto) {
     final encomenda = {
       'produto': produto['nome'],
       'nome': 'Cliente',
@@ -68,42 +70,131 @@ class ProdutosPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
           'Produtos de Costura',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.black87),
+        centerTitle: true,
+        elevation: 2,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person_outline, color: Colors.black87),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+            },
+          ),
+        ],
       ),
-      body: ListView.builder(
+      body: GridView.builder(
         padding: EdgeInsets.all(16),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.8,
+        ),
         itemCount: produtos.length,
         itemBuilder: (context, index) {
           final produto = produtos[index];
-          return Card(
-            margin: EdgeInsets.only(bottom: 12),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: produto['cor'],
-                child: Icon(Icons.shopping_bag, color: Colors.white),
-              ),
-              title: Text(
-                produto['nome'],
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(produto['descricao']),
-              trailing: Text(
-                produto['preco'],
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green[700],
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
                 ),
-              ),
-              onTap: () {
-                _adicionarProdutoEncomenda(context, produto);
-              },
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 120,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: produto['cor'],
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                  ),
+                  child: Icon(
+                    Icons.shopping_bag,
+                    size: 48,
+                    color: Colors.white,
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          produto['nome'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.black87,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          produto['descricao'],
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey[600],
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              produto['preco'],
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green[700],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ProdutoDetalhesPage(produto: produto),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.black87,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  Icons.visibility,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           );
         },

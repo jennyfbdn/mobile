@@ -10,6 +10,7 @@ import 'produtos_page.dart';
 import 'feedbacks_page.dart';
 import 'agendamentos_page.dart';
 
+
 void main() {
   runApp(AteliePanoFinoApp());
 }
@@ -27,12 +28,13 @@ class AteliePanoFinoApp extends StatelessWidget {
         '/': (context) => LoginPage(),
         '/cadastro': (context) => CadastroPage(),
         '/home': (context) => MainNavigation(initialIndex: 0),
-        '/localizacao': (context) => MainNavigation(initialIndex: 2),
+        '/localizacao': (context) => MainNavigation(initialIndex: 3),
         '/agradecimento': (context) => AgradecimentoPage(),
         '/encomendas': (context) => MainNavigation(initialIndex: 1),
         '/produtos': (context) => ProdutosPage(),
+
         '/feedbacks': (context) => FeedbacksPage(),
-        '/agendamentos': (context) => AgendamentosPage(),
+        '/agendamentos': (context) => MainNavigation(initialIndex: 2),
       },
       debugShowCheckedModeBanner: false,  // Remove a faixa de debug
     );

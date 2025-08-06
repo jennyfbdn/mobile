@@ -5,18 +5,33 @@ class MalePage extends StatelessWidget {
   final List<Map<String, dynamic>> produtosMasculinos = [
     {
       'nome': 'Camisa Social',
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'imagem': 'assets/images/camisa_social.jpg',
       'preco': 'R\$ 90,00',
     },
     {
       'nome': 'Calça Jeans',
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'imagem': 'assets/images/calca_jeans.jpg',
       'preco': 'R\$ 110,00',
     },
     {
       'nome': 'Jaqueta Couro',
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'imagem': 'assets/images/jaqueta_couro.jpg',
       'preco': 'R\$ 180,00',
+    },
+    {
+      'nome': 'Terno Clássico',
+      'imagem': 'assets/images/terno_classico.jpg',
+      'preco': 'R\$ 350,00',
+    },
+    {
+      'nome': 'Blazer Casual',
+      'imagem': 'assets/images/blazer_casual.jpg',
+      'preco': 'R\$ 220,00',
+    },
+    {
+      'nome': 'Colete Social',
+      'imagem': 'assets/images/colete_social.jpg',
+      'preco': 'R\$ 120,00',
     },
   ];
 

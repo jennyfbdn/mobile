@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'profile_page.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -62,6 +63,14 @@ class _ChatPageState extends State<ChatPage> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 4,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.person_outline, color: Colors.black87),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

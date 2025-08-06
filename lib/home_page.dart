@@ -15,7 +15,7 @@ class HomePage extends StatelessWidget {
     },
     {
       'nome': 'Camisa Social',
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'imagem': 'assets/images/blusa_bege.jpg',
       'preco': 'R\$ 90,00',
     },
     {
