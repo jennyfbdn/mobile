@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'agendamento_service.dart';
 
 class PersonalizacaoPage extends StatefulWidget {
   @override
@@ -74,7 +75,7 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> {
                       SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () => Navigator.pushNamed(context, '/encomendas'),
+                          onPressed: () => Navigator.pushNamed(context, '/agendamentos'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey[800],
                             foregroundColor: Colors.white,
@@ -82,7 +83,7 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             elevation: 2,
                           ),
-                          child: Text('Ver Encomendas', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          child: Text('Ver Agendamentos', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                         ),
                       ),
                     ],
@@ -162,6 +163,17 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> {
 
   void _agendar() {
     if (_formKey.currentState!.validate() && _dataAgendamento != null) {
+      final agendamento = {
+        'nome': _nomeController.text,
+        'telefone': _telefoneController.text,
+        'tipoPeca': _tipoPeca,
+        'tipoPersonalizacao': _tipoPersonalizacao,
+        'data': '${_dataAgendamento!.day}/${_dataAgendamento!.month}/${_dataAgendamento!.year}',
+        'status': 'Pendente',
+      };
+      
+      AgendamentoService().adicionarAgendamento(agendamento);
+      
       showDialog(
         context: context,
         builder: (context) => AlertDialog(

@@ -8,6 +8,7 @@ import 'encomendas_page.dart';
 import 'bottom_navigation.dart';
 import 'produtos_page.dart';
 import 'feedbacks_page.dart';
+import 'agendamentos_page.dart';
 
 void main() {
   runApp(AteliePanoFinoApp());
@@ -31,6 +32,7 @@ class AteliePanoFinoApp extends StatelessWidget {
         '/encomendas': (context) => MainNavigation(initialIndex: 1),
         '/produtos': (context) => ProdutosPage(),
         '/feedbacks': (context) => FeedbacksPage(),
+        '/agendamentos': (context) => AgendamentosPage(),
       },
       debugShowCheckedModeBanner: false,  // Remove a faixa de debug
     );
