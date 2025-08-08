@@ -9,23 +9,28 @@ import 'medidas_page.dart';
 class HomePage extends StatelessWidget {
   final List<Map<String, dynamic>> roupasDestaque = [
     {
-      'nome': 'Vestido Floral',
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'nome': 'Conjunto Bege',
+      'imagem': 'assets/images/conjunto_bege.jpg',
       'preco': 'R\$ 120,00',
     },
     {
-      'nome': 'Camisa Social',
+      'nome': 'Saia Jeans',
       'imagem': 'assets/images/blusa_bege.jpg',
       'preco': 'R\$ 90,00',
     },
     {
-      'nome': 'Calça Jeans',
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'nome': 'Vestido Estampado',
+      'imagem': 'assets/images/vestido_roxoestampado.jpg',
       'preco': 'R\$ 110,00',
     },
     {
-      'nome': 'Blusa de Seda',
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'nome': 'Blusa de Couro',
+      'imagem': 'assets/images/blusa_couro.jpg',
+      'preco': 'R\$ 75,00',
+    },
+    {
+      'nome': 'Conjunto Social',
+      'imagem': 'assets/images/conjunto_social.jpg',
       'preco': 'R\$ 75,00',
     },
   ];
@@ -78,6 +83,16 @@ class HomePage extends StatelessWidget {
                       fit: BoxFit.cover,
                       color: Colors.black.withOpacity(0.4),
                       colorBlendMode: BlendMode.darken,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[600],
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 60,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Center(
@@ -307,6 +322,16 @@ class HomePage extends StatelessWidget {
                 width: double.infinity,
                 height: double.infinity,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[400],
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  );
+                },
               ),
               Container(
                 decoration: BoxDecoration(
@@ -352,6 +377,16 @@ class HomePage extends StatelessWidget {
               child: Image.asset(
                 roupa['imagem'],
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[300],
+                    child: Icon(
+                      Icons.image_not_supported,
+                      size: 50,
+                      color: Colors.grey[600],
+                    ),
+                  );
+                },
               ),
             ),
           ),

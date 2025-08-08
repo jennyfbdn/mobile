@@ -70,9 +70,8 @@ class DetalhesEncomendaPage extends StatelessWidget {
             _buildSection(
               'Informações do Cliente',
               [
-                _buildInfoRow(Icons.person, 'Nome', encomenda['nome'] ?? 'N/A'),
-                if (encomenda['telefone'] != null)
-                  _buildInfoRow(Icons.phone, 'Telefone', encomenda['telefone']),
+                _buildInfoRow(Icons.person, 'Nome', encomenda['nome'] ?? 'Sem nome'),
+                _buildInfoRow(Icons.phone, 'Telefone', encomenda['telefone'] ?? 'Sem telefone'),
               ],
             ),
             SizedBox(height: 24),
@@ -106,25 +105,36 @@ class DetalhesEncomendaPage extends StatelessWidget {
               SizedBox(height: 24),
 
             // Personalização
-            if (encomenda['personalizacao'] != null && encomenda['personalizacao'] != 'Nenhuma')
-              _buildSection(
-                'Personalização',
-                [
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      encomenda['personalizacao'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.black87,
-                      ),
+            _buildSection(
+              'Personalização',
+              [
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    encomenda['personalizacao'] ?? 'Sem personalização',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
                     ),
                   ),
+                ),
+              ],
+            ),
+            SizedBox(height: 24),
+
+            // Data e Hora de Retirada
+            if (encomenda['dataRetirada'] != null && encomenda['dataRetirada'].toString().isNotEmpty)
+              _buildSection(
+                'Retirada',
+                [
+                  _buildInfoRow(Icons.calendar_today, 'Data', encomenda['dataRetirada']),
+                  if (encomenda['horaRetirada'] != null && encomenda['horaRetirada'].toString().isNotEmpty)
+                    _buildInfoRow(Icons.access_time, 'Hora', encomenda['horaRetirada']),
                 ],
               ),
 

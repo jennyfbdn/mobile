@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'user_service.dart';
 
-class FeedbacksPage extends StatelessWidget {
-  final List<Map<String, dynamic>> feedbacks = [
+class FeedbacksPage extends StatefulWidget {
+  @override
+  _FeedbacksPageState createState() => _FeedbacksPageState();
+}
+
+class _FeedbacksPageState extends State<FeedbacksPage> {
+  List<Map<String, dynamic>> feedbacks = [
     {
       'cliente': 'Maria Silva',
       'produto': 'Vestido Sob Medida',
@@ -49,6 +55,19 @@ class FeedbacksPage extends StatelessWidget {
     },
   ];
 
+  void _adicionarFeedback() {
+    showDialog(
+      context: context,
+      builder: (context) => _FeedbackDialog(
+        onSubmit: (feedback) {
+          setState(() {
+            feedbacks.insert(0, feedback);
+          });
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +85,12 @@ class FeedbacksPage extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.black87),
         elevation: 2,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: _adicionarFeedback,
+          ),
+        ],
       ),
       body: Container(
         color: Colors.grey[50],
@@ -184,6 +209,105 @@ class FeedbacksPage extends StatelessWidget {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _adicionarFeedback,
+        backgroundColor: Colors.black87,
+        child: Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
+}
+
+class _FeedbackDialog extends StatefulWidget {
+  final Function(Map<String, dynamic>) onSubmit;
+
+  _FeedbackDialog({required this.onSubmit});
+
+  @override
+  _FeedbackDialogState createState() => _FeedbackDialogState();
+}
+
+class _FeedbackDialogState extends State<_FeedbackDialog> {
+  final _nomeController = TextEditingController();
+  final _produtoController = TextEditingController();
+  final _comentarioController = TextEditingController();
+  int _avaliacao = 5;
+
+  @override
+  void initState() {
+    super.initState();
+    // Preencher automaticamente com dados do usuário se disponível
+    if (UserService().temUsuario) {
+      _nomeController.text = UserService().nomeUsuario ?? '';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Adicionar Feedback'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nomeController,
+              decoration: InputDecoration(labelText: 'Seu Nome'),
+            ),
+            TextField(
+              controller: _produtoController,
+              decoration: InputDecoration(labelText: 'Produto/Serviço'),
+            ),
+            SizedBox(height: 16),
+            Text('Avaliação:'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    index < _avaliacao ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                  ),
+                  onPressed: () => setState(() => _avaliacao = index + 1),
+                );
+              }),
+            ),
+            TextField(
+              controller: _comentarioController,
+              decoration: InputDecoration(labelText: 'Comentário'),
+              maxLines: 3,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (_nomeController.text.isNotEmpty && _comentarioController.text.isNotEmpty) {
+              // Salvar dados do usuário se não existir
+              if (!UserService().temUsuario) {
+                UserService().setUsuario(_nomeController.text, '');
+              }
+              
+              widget.onSubmit({
+                'cliente': _nomeController.text,
+                'produto': _produtoController.text.isEmpty ? 'Serviço Geral' : _produtoController.text,
+                'avaliacao': _avaliacao,
+                'comentario': _comentarioController.text,
+                'data': 'agora',
+                'categoria': 'Meu Feedback',
+                'avatar': _nomeController.text[0].toUpperCase(),
+              });
+              Navigator.pop(context);
+            }
+          },
+          child: Text('Enviar'),
+        ),
+      ],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'localizacao_page.dart';
 import 'encomenda_service.dart';
 import 'medidas_page.dart';
 import 'medidas_service.dart';
+import 'user_service.dart';
 
 class OrderPage extends StatefulWidget {
   final List<Map<String, dynamic>> produtos;
@@ -28,6 +29,9 @@ class _OrderPageState extends State<OrderPage> {
   Map<String, dynamic>? produtoSelecionado;
   int quantidade = 1;
   String? tipoPersonalizacao;
+  DateTime? dataRetirada;
+  TimeOfDay? horaRetirada;
+  
   double get precoBase {
     if (produtoSelecionado != null && produtoSelecionado!['preco'] != null) {
       String precoStr = produtoSelecionado!['preco'].toString();
@@ -69,16 +73,31 @@ class _OrderPageState extends State<OrderPage> {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
       
+      // Salvar dados do usuário
+      UserService().setUsuario(nome ?? '', telefone ?? '');
+      
       // Adicionar encomenda ao serviço
+      String personalizacaoFinal = '';
+      if (personalizacao != null && personalizacao!.isNotEmpty) {
+        personalizacaoFinal = personalizacao!;
+      } else if (tipoPersonalizacao != null && tipoPersonalizacao != 'Nenhuma') {
+        personalizacaoFinal = tipoPersonalizacao!;
+      } else {
+        personalizacaoFinal = 'Nenhuma';
+      }
+      
       final encomenda = {
         'produto': produtoSelecionado?['nome'] ?? 'Produto não selecionado',
-        'nome': nome ?? '',
+        'nome': nome ?? 'Cliente',
         'telefone': telefone ?? '',
         'quantidade': quantidade,
-        'altura': altura ?? '',
-        'largura': largura ?? '',
-        'busto': busto ?? '',
-        'personalizacao': personalizacao ?? 'Nenhuma',
+        'altura': _alturaController.text,
+        'largura': _larguraController.text,
+        'busto': _bustoController.text,
+        'personalizacao': personalizacaoFinal,
+        'dataRetirada': dataRetirada != null ? '${dataRetirada!.day}/${dataRetirada!.month}/${dataRetirada!.year}' : '',
+        'horaRetirada': horaRetirada != null ? '${horaRetirada!.hour.toString().padLeft(2, '0')}:${horaRetirada!.minute.toString().padLeft(2, '0')}' : '',
+        'preco': 'R\$ ${precoTotal.toStringAsFixed(2)}',
       };
       
       EncomendaService().adicionarEncomenda(encomenda);
@@ -482,6 +501,86 @@ class _OrderPageState extends State<OrderPage> {
                   ),
                 ],
               ),
+            ),
+            SizedBox(height: 24),
+
+            _sectionTitle('Data e Hora para Retirada'),
+            SizedBox(height: 16),
+
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      final data = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now().add(Duration(days: 1)),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(Duration(days: 30)),
+                      );
+                      if (data != null) setState(() => dataRetirada = data);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.calendar_today, color: Colors.grey[600]),
+                          SizedBox(width: 12),
+                          Text(
+                            dataRetirada != null
+                                ? '${dataRetirada!.day}/${dataRetirada!.month}/${dataRetirada!.year}'
+                                : 'Selecionar data',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: dataRetirada != null ? Colors.black87 : Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      final hora = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay(hour: 9, minute: 0),
+                      );
+                      if (hora != null) setState(() => horaRetirada = hora);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.access_time, color: Colors.grey[600]),
+                          SizedBox(width: 12),
+                          Text(
+                            horaRetirada != null
+                                ? '${horaRetirada!.hour.toString().padLeft(2, '0')}:${horaRetirada!.minute.toString().padLeft(2, '0')}'
+                                : 'Selecionar hora',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: horaRetirada != null ? Colors.black87 : Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 24),
             Container(

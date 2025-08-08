@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'encomenda_service.dart';
 import 'profile_page.dart';
 import 'produto_detalhes_page.dart';
+import 'user_service.dart';
 
 class ProdutosPage extends StatelessWidget {
   final List<Map<String, dynamic>> produtos = [
@@ -10,59 +11,107 @@ class ProdutosPage extends StatelessWidget {
       'preco': 'R\$ 3,50',
       'descricao': 'Linha 100% algodão, ideal para costuras delicadas',
       'cor': Colors.blue[100],
+      'imagem': 'assets/images/blusa_bege.jpg',
+      'icone': Icons.colorize,
     },
     {
       'nome': 'Linha de Poliéster',
       'preco': 'R\$ 2,80',
       'descricao': 'Linha resistente para costuras pesadas',
       'cor': Colors.green[100],
+      'imagem': 'assets/images/blusa_verde.jpg',
+      'icone': Icons.colorize,
     },
     {
       'nome': 'Agulhas Sortidas',
       'preco': 'R\$ 12,00',
       'descricao': 'Kit com 20 agulhas de diversos tamanhos',
       'cor': Colors.orange[100],
+      'imagem': null,
+      'icone': Icons.push_pin,
     },
     {
       'nome': 'Tesoura de Costura',
       'preco': 'R\$ 25,00',
       'descricao': 'Tesoura profissional afiada',
       'cor': Colors.purple[100],
+      'imagem': null,
+      'icone': Icons.content_cut,
     },
     {
       'nome': 'Fita Métrica',
       'preco': 'R\$ 8,50',
       'descricao': 'Fita métrica flexível 150cm',
       'cor': Colors.pink[100],
+      'imagem': null,
+      'icone': Icons.straighten,
     },
     {
       'nome': 'Botões Variados',
       'preco': 'R\$ 15,00',
       'descricao': 'Conjunto com 50 botões diversos',
       'cor': Colors.cyan[100],
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'icone': Icons.radio_button_unchecked,
     },
   ];
 
   void _adicionarEncomenda(BuildContext context, Map<String, dynamic> produto) {
-    final encomenda = {
-      'produto': produto['nome'],
-      'nome': 'Cliente',
-      'telefone': '',
-      'quantidade': 1,
-      'altura': '',
-      'largura': '',
-      'busto': '',
-      'personalizacao': 'Produto de costura',
-      'preco': produto['preco'],
-    };
+    final nomeController = TextEditingController();
+    final telefoneController = TextEditingController();
     
-    EncomendaService().adicionarEncomenda(encomenda);
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${produto['nome']} adicionado às encomendas!'),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Dados para Encomenda'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nomeController,
+              decoration: InputDecoration(labelText: 'Seu nome'),
+            ),
+            TextField(
+              controller: telefoneController,
+              decoration: InputDecoration(labelText: 'Seu telefone'),
+              keyboardType: TextInputType.phone,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              String nome = nomeController.text.trim();
+              String telefone = telefoneController.text.trim();
+              
+              if (nome.isNotEmpty) {
+                Map<String, dynamic> encomenda = {
+                  'produto': produto['nome'],
+                  'nome': nome,
+                  'telefone': telefone,
+                  'quantidade': 1,
+                  'preco': produto['preco'],
+                  'personalizacao': 'Produto de costura',
+                };
+                
+                EncomendaService().adicionarEncomenda(encomenda);
+                Navigator.pop(context);
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Encomenda criada com sucesso!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              }
+            },
+            child: Text('Confirmar'),
+          ),
+        ],
       ),
     );
   }
@@ -122,11 +171,32 @@ class ProdutosPage extends StatelessWidget {
                     color: produto['cor'],
                     borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                   ),
-                  child: Icon(
-                    Icons.shopping_bag,
-                    size: 48,
-                    color: Colors.white,
-                  ),
+                  child: produto['imagem'] != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                          child: Image.asset(
+                            produto['imagem'],
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: 120,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Center(
+                                child: Icon(
+                                  produto['icone'],
+                                  size: 48,
+                                  color: Colors.white,
+                                ),
+                              );
+                            },
+                          ),
+                        )
+                      : Center(
+                          child: Icon(
+                            produto['icone'],
+                            size: 48,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
                 Expanded(
                   child: Padding(
@@ -166,27 +236,47 @@ class ProdutosPage extends StatelessWidget {
                                 color: Colors.green[700],
                               ),
                             ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ProdutoDetalhesPage(produto: produto),
+                            Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () => _adicionarEncomenda(context, produto),
+                                  child: Container(
+                                    padding: EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green[600],
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Icon(
+                                      Icons.add_shopping_cart,
+                                      color: Colors.white,
+                                      size: 14,
+                                    ),
                                   ),
-                                );
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.black87,
-                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Icon(
-                                  Icons.visibility,
-                                  color: Colors.white,
-                                  size: 16,
+                                SizedBox(width: 8),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ProdutoDetalhesPage(produto: produto),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black87,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Icon(
+                                      Icons.visibility,
+                                      color: Colors.white,
+                                      size: 14,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),

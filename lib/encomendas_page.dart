@@ -12,8 +12,14 @@ class _EncomendasPageState extends State<EncomendasPage> {
   final EncomendaService _service = EncomendaService();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final encomendas = _service.encomendas;
+    print('DEBUG - Encomendas na tela: $encomendas');
     
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -160,14 +166,16 @@ class _EncomendasPageState extends State<EncomendasPage> {
                 children: [
                   _infoRow(Icons.shopping_bag, 'Produto', encomenda['produto']),
                   SizedBox(height: 8),
-                  _infoRow(Icons.person, 'Cliente', encomenda['nome']),
-                  if (encomenda['telefone'] != null) ...[
-                    SizedBox(height: 8),
-                    _infoRow(Icons.phone, 'Telefone', encomenda['telefone']),
-                  ],
+                  _infoRow(Icons.person, 'Cliente', encomenda['nome'] ?? 'Sem nome'),
+                  SizedBox(height: 8),
+                  _infoRow(Icons.phone, 'Telefone', encomenda['telefone'] ?? 'Sem telefone'),
                   if (encomenda['quantidade'] != null) ...[
                     SizedBox(height: 8),
                     _infoRow(Icons.numbers, 'Quantidade', encomenda['quantidade'].toString()),
+                  ],
+                  if (encomenda['personalizacao'] != null && encomenda['personalizacao'].toString().isNotEmpty) ...[
+                    SizedBox(height: 8),
+                    _infoRow(Icons.design_services, 'Personalização', encomenda['personalizacao']),
                   ],
                 ],
               ),

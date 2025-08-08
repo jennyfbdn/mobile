@@ -14,6 +14,10 @@ class _ProdutoDetalhesPageState extends State<ProdutoDetalhesPage> {
   final _formKey = GlobalKey<FormState>();
   String? nome;
   String? telefone;
+  String? personalizacao;
+  String? altura;
+  String? largura;
+  String? busto;
   int quantidade = 1;
   DateTime? dataRetirada;
   TimeOfDay? horaRetirada;
@@ -63,6 +67,10 @@ class _ProdutoDetalhesPageState extends State<ProdutoDetalhesPage> {
         'nome': nome ?? '',
         'telefone': telefone ?? '',
         'quantidade': quantidade,
+        'altura': altura ?? '',
+        'largura': largura ?? '',
+        'busto': busto ?? '',
+        'personalizacao': personalizacao ?? 'Sem personalização',
         'dataRetirada': '${dataRetirada!.day}/${dataRetirada!.month}/${dataRetirada!.year}',
         'horaRetirada': '${horaRetirada!.hour.toString().padLeft(2, '0')}:${horaRetirada!.minute.toString().padLeft(2, '0')}',
         'preco': widget.produto['preco'],
@@ -181,6 +189,79 @@ class _ProdutoDetalhesPageState extends State<ProdutoDetalhesPage> {
                 onSaved: (value) => telefone = value,
               ),
               SizedBox(height: 16),
+
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Personalização (opcional)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                maxLines: 2,
+                onSaved: (value) => personalizacao = value,
+              ),
+              SizedBox(height: 16),
+
+              Text(
+                'Medidas (cm)',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Altura',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      keyboardType: TextInputType.number,
+                      onSaved: (value) => altura = value,
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Largura',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      keyboardType: TextInputType.number,
+                      onSaved: (value) => largura = value,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+
+              TextFormField(
+                decoration: InputDecoration(
+                  labelText: 'Busto',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                keyboardType: TextInputType.number,
+                onSaved: (value) => busto = value,
+              ),
+              SizedBox(height: 24),
 
               Row(
                 children: [

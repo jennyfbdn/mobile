@@ -15,7 +15,12 @@ class EncomendaService {
       'data': _formatarData(DateTime.now()),
       'status': 'Aguardando',
       'cor': Colors.grey,
-      ...encomenda,
+      'produto': encomenda['produto'] ?? 'Produto',
+      'nome': encomenda['nome'] ?? 'Cliente',
+      'telefone': encomenda['telefone'] ?? '',
+      'quantidade': encomenda['quantidade'] ?? 1,
+      'personalizacao': encomenda['personalizacao'] ?? 'Sem personalização',
+      'preco': encomenda['preco'] ?? 'R\$ 0,00',
     };
     _encomendas.insert(0, novaEncomenda);
   }
