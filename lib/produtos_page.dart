@@ -59,59 +59,122 @@ class ProdutosPage extends StatelessWidget {
   void _adicionarEncomenda(BuildContext context, Map<String, dynamic> produto) {
     final nomeController = TextEditingController();
     final telefoneController = TextEditingController();
+    DateTime? dataSelecionada;
+    TimeOfDay? horaSelecionada;
     
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Dados para Encomenda'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nomeController,
-              decoration: InputDecoration(labelText: 'Seu nome'),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text('Dados para Encomenda'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nomeController,
+                decoration: InputDecoration(labelText: 'Seu nome'),
+              ),
+              TextField(
+                controller: telefoneController,
+                decoration: InputDecoration(labelText: 'Seu telefone'),
+                keyboardType: TextInputType.phone,
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        final data = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(Duration(days: 365)),
+                        );
+                        if (data != null) {
+                          setState(() {
+                            dataSelecionada = data;
+                          });
+                        }
+                      },
+                      child: Text(
+                        dataSelecionada != null
+                            ? '${dataSelecionada!.day}/${dataSelecionada!.month}/${dataSelecionada!.year}'
+                            : 'Selecionar Data',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        final hora = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                        );
+                        if (hora != null) {
+                          setState(() {
+                            horaSelecionada = hora;
+                          });
+                        }
+                      },
+                      child: Text(
+                        horaSelecionada != null
+                            ? '${horaSelecionada!.hour.toString().padLeft(2, '0')}:${horaSelecionada!.minute.toString().padLeft(2, '0')}'
+                            : 'Selecionar Hora',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar'),
             ),
-            TextField(
-              controller: telefoneController,
-              decoration: InputDecoration(labelText: 'Seu telefone'),
-              keyboardType: TextInputType.phone,
+            ElevatedButton(
+              onPressed: () {
+                String nome = nomeController.text.trim();
+                String telefone = telefoneController.text.trim();
+                
+                if (nome.isNotEmpty && dataSelecionada != null && horaSelecionada != null) {
+                  Map<String, dynamic> encomenda = {
+                    'produto': produto['nome'],
+                    'nome': nome,
+                    'telefone': telefone,
+                    'quantidade': 1,
+                    'preco': produto['preco'],
+                    'personalizacao': 'Produto de costura',
+                    'dataRetirada': '${dataSelecionada!.day}/${dataSelecionada!.month}/${dataSelecionada!.year}',
+                    'horaRetirada': '${horaSelecionada!.hour.toString().padLeft(2, '0')}:${horaSelecionada!.minute.toString().padLeft(2, '0')}',
+                  };
+                  
+                  EncomendaService().adicionarEncomenda(encomenda);
+                  Navigator.pop(context);
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Encomenda criada com sucesso!'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Preencha todos os campos e selecione data/hora'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: Text('Confirmar'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              String nome = nomeController.text.trim();
-              String telefone = telefoneController.text.trim();
-              
-              if (nome.isNotEmpty) {
-                Map<String, dynamic> encomenda = {
-                  'produto': produto['nome'],
-                  'nome': nome,
-                  'telefone': telefone,
-                  'quantidade': 1,
-                  'preco': produto['preco'],
-                  'personalizacao': 'Produto de costura',
-                };
-                
-                EncomendaService().adicionarEncomenda(encomenda);
-                Navigator.pop(context);
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Encomenda criada com sucesso!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-              }
-            },
-            child: Text('Confirmar'),
-          ),
-        ],
       ),
     );
   }

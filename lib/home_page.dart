@@ -10,17 +10,17 @@ class HomePage extends StatelessWidget {
   final List<Map<String, dynamic>> roupasDestaque = [
     {
       'nome': 'Conjunto Bege',
-      'imagem': 'assets/images/conjunto_bege.jpg',
+      'imagem': 'assets/images/conjunto_jeans.jpg',
       'preco': 'R\$ 120,00',
     },
     {
       'nome': 'Saia Jeans',
-      'imagem': 'assets/images/blusa_bege.jpg',
+      'imagem': 'assets/images/blusadecroche.jpg',
       'preco': 'R\$ 90,00',
     },
     {
       'nome': 'Vestido Estampado',
-      'imagem': 'assets/images/vestido_roxoestampado.jpg',
+      'imagem': 'assets/images/blusa_branca.jpg',
       'preco': 'R\$ 110,00',
     },
     {
