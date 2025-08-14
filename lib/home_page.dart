@@ -9,28 +9,33 @@ import 'medidas_page.dart';
 class HomePage extends StatelessWidget {
   final List<Map<String, dynamic>> roupasDestaque = [
     {
-      'nome': 'Conjunto Bege',
+      'nome': 'Conjunto Jeans',
       'imagem': 'assets/images/conjunto_jeans.jpg',
       'preco': 'R\$ 120,00',
     },
     {
-      'nome': 'Saia Jeans',
+      'nome': 'Blusa de Croche',
       'imagem': 'assets/images/blusadecroche.jpg',
       'preco': 'R\$ 90,00',
     },
     {
-      'nome': 'Vestido Estampado',
-      'imagem': 'assets/images/blusa_branca.jpg',
+      'nome': 'Calça Bordada',
+      'imagem': 'assets/images/calça_bordada.jpg',
       'preco': 'R\$ 110,00',
     },
     {
-      'nome': 'Blusa de Couro',
-      'imagem': 'assets/images/blusa_couro.jpg',
+      'nome': 'Conjunto Laranja',
+      'imagem': 'assets/images/conjunto_bege.jpg',
       'preco': 'R\$ 75,00',
     },
     {
-      'nome': 'Conjunto Social',
-      'imagem': 'assets/images/conjunto_social.jpg',
+      'nome': 'Blusa Listrada',
+      'imagem': 'assets/images/blusalistrada_masculino.png',
+      'preco': 'R\$ 75,00',
+    },
+    {
+      'nome': 'Blusa Branca',
+      'imagem': 'assets/images/blusa_branca.jpg',
       'preco': 'R\$ 75,00',
     },
   ];
@@ -81,15 +86,17 @@ class HomePage extends StatelessWidget {
                     child: Image.asset(
                       'assets/images/vestido_floral.jpg',
                       fit: BoxFit.cover,
-                      color: Colors.black.withOpacity(0.4),
-                      colorBlendMode: BlendMode.darken,
                       errorBuilder: (context, error, stackTrace) {
+                        print('ERRO HERO: $error');
                         return Container(
-                          color: Colors.grey[600],
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 60,
-                            color: Colors.white,
+                          color: Colors.red[400],
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.error, size: 60, color: Colors.white),
+                              Text('ERRO: Vestido Floral', style: TextStyle(color: Colors.white, fontSize: 14)),
+                              Text('Verifique console', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                            ],
                           ),
                         );
                       },
@@ -198,7 +205,7 @@ class HomePage extends StatelessWidget {
                       ),
                       SizedBox(width: 16),
                       Expanded(
-                        child: _categoryCard(context, 'Masculino', 'assets/images/vestido_floral.jpg', () {
+                        child: _categoryCard(context, 'Masculino', 'assets/images/conjunto_social.jpg', () {
                           Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
                         }),
                       ),
@@ -323,12 +330,15 @@ class HomePage extends StatelessWidget {
                 height: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
+                  print('Erro ao carregar $imagePath: $error');
                   return Container(
                     color: Colors.grey[400],
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: 40,
-                      color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.image_not_supported, size: 40, color: Colors.white),
+                        Text('Erro', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      ],
                     ),
                   );
                 },
@@ -378,12 +388,15 @@ class HomePage extends StatelessWidget {
                 roupa['imagem'],
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
+                  print('Erro ao carregar ${roupa['imagem']}: $error');
                   return Container(
                     color: Colors.grey[300],
-                    child: Icon(
-                      Icons.image_not_supported,
-                      size: 50,
-                      color: Colors.grey[600],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.image_not_supported, size: 50, color: Colors.grey[600]),
+                        Text('Sem imagem', style: TextStyle(fontSize: 10)),
+                      ],
                     ),
                   );
                 },

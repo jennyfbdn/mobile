@@ -89,6 +89,12 @@ class FemalePage extends StatelessWidget {
               child: Image.asset(
                 produto['imagem'],
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[300],
+                    child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[600]),
+                  );
+                },
               ),
             ),
           ),

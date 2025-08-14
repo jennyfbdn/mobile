@@ -4,34 +4,24 @@ import 'order_page.dart';
 class MalePage extends StatelessWidget {
   final List<Map<String, dynamic>> produtosMasculinos = [
     {
-      'nome': 'Camisa Social',
-      'imagem': 'assets/images/camisa_social.jpg',
+      'nome': 'Blusa Marrom',
+      'imagem': 'assets/images/blusamarrom_masculino.jpg',
       'preco': 'R\$ 90,00',
     },
     {
-      'nome': 'Calça Jeans',
-      'imagem': 'assets/images/calca_jeans.jpg',
+      'nome': 'Conjunto Listrado',
+      'imagem': 'assets/images/conjuntolistrado_masculino.jpg',
       'preco': 'R\$ 110,00',
     },
     {
-      'nome': 'Jaqueta Couro',
-      'imagem': 'assets/images/jaqueta_couro.jpg',
+      'nome': 'Conjunto Social',
+      'imagem': 'assets/images/conjunto_social.jpg',
       'preco': 'R\$ 180,00',
     },
     {
-      'nome': 'Terno Clássico',
-      'imagem': 'assets/images/terno_classico.jpg',
-      'preco': 'R\$ 350,00',
-    },
-    {
-      'nome': 'Blazer Casual',
-      'imagem': 'assets/images/blazer_casual.jpg',
-      'preco': 'R\$ 220,00',
-    },
-    {
-      'nome': 'Colete Social',
-      'imagem': 'assets/images/colete_social.jpg',
-      'preco': 'R\$ 120,00',
+      'nome': 'Conjunto Bege',
+      'imagem': 'assets/images/conjunto_bege.jpg',
+      'preco': 'R\$ 150,00',
     },
   ];
 
@@ -104,6 +94,12 @@ class MalePage extends StatelessWidget {
               child: Image.asset(
                 produto['imagem'],
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey[300],
+                    child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[600]),
+                  );
+                },
               ),
             ),
           ),

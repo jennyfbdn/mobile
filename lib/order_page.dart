@@ -71,6 +71,18 @@ class _OrderPageState extends State<OrderPage> {
 
   void _enviarEncomenda() {
     if (_formKey.currentState?.validate() ?? false) {
+      if (dataRetirada == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Selecione a data de retirada')),
+        );
+        return;
+      }
+      if (horaRetirada == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Selecione a hora de retirada')),
+        );
+        return;
+      }
       _formKey.currentState?.save();
       
       // Salvar dados do usuário
@@ -99,6 +111,8 @@ class _OrderPageState extends State<OrderPage> {
         'horaRetirada': horaRetirada != null ? '${horaRetirada!.hour.toString().padLeft(2, '0')}:${horaRetirada!.minute.toString().padLeft(2, '0')}' : '',
         'preco': 'R\$ ${precoTotal.toStringAsFixed(2)}',
       };
+      
+      print('DEBUG - Encomenda criada: $encomenda');
       
       EncomendaService().adicionarEncomenda(encomenda);
       Navigator.pushNamed(context, '/agradecimento');
@@ -209,17 +223,19 @@ class _OrderPageState extends State<OrderPage> {
             _sectionTitle('Informações Pessoais'),
             SizedBox(height: 16),
 
-            _buildTextField(
+            TextFormField(
               decoration: _inputDecoration('Nome'),
               validator: (value) => (value == null || value.isEmpty) ? 'Informe o nome' : null,
               onSaved: (value) => nome = value,
+              onChanged: (value) => nome = value,
             ),
             SizedBox(height: 16),
-            _buildTextField(
+            TextFormField(
               decoration: _inputDecoration('Telefone'),
               keyboardType: TextInputType.phone,
               validator: (value) => (value == null || value.isEmpty) ? 'Informe o telefone' : null,
               onSaved: (value) => telefone = value,
+              onChanged: (value) => telefone = value,
             ),
             SizedBox(height: 24),
             _sectionTitle('Entrega'),

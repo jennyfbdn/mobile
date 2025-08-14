@@ -19,7 +19,12 @@ class EncomendaService {
       'nome': encomenda['nome'] ?? 'Cliente',
       'telefone': encomenda['telefone'] ?? '',
       'quantidade': encomenda['quantidade'] ?? 1,
+      'altura': encomenda['altura'] ?? '',
+      'largura': encomenda['largura'] ?? '',
+      'busto': encomenda['busto'] ?? '',
       'personalizacao': encomenda['personalizacao'] ?? 'Sem personalização',
+      'dataRetirada': encomenda['dataRetirada'] ?? '',
+      'horaRetirada': encomenda['horaRetirada'] ?? '',
       'preco': encomenda['preco'] ?? 'R\$ 0,00',
     };
     _encomendas.insert(0, novaEncomenda);
