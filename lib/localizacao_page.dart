@@ -1,17 +1,82 @@
 import 'package:flutter/material.dart';
 import 'profile_page.dart';
 
-class LocalizacaoPage extends StatelessWidget {
+class LocalizacaoPage extends StatefulWidget {
+  @override
+  _LocalizacaoPageState createState() => _LocalizacaoPageState();
+}
+
+class _LocalizacaoPageState extends State<LocalizacaoPage> with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+  int _selectedUnit = 0;
+  
+  final List<Map<String, dynamic>> unidades = [
+    {
+      'nome': 'Ateliê Pano Fino - Centro',
+      'endereco': 'Rua das Flores, 123\nCentro - São Paulo, SP\nCEP: 01234-567',
+      'telefone': '(11) 1234-5678',
+      'whatsapp': '(11) 9 8765-4321',
+      'horario': 'Segunda a Sexta: 9h às 18h\nSábado: 9h às 14h\nDomingo: Fechado',
+      'especialidade': 'Roupas sob medida e ajustes',
+      'cor': Colors.grey[600],
+    },
+    {
+      'nome': 'Ateliê Pano Fino - Vila Madalena',
+      'endereco': 'Av. Paulista, 456\nVila Madalena - São Paulo, SP\nCEP: 05678-901',
+      'telefone': '(11) 2345-6789',
+      'whatsapp': '(11) 9 7654-3210',
+      'horario': 'Segunda a Sexta: 10h às 19h\nSábado: 10h às 15h\nDomingo: Fechado',
+      'especialidade': 'Moda feminina e acessórios',
+      'cor': Colors.grey[700],
+    },
+    {
+      'nome': 'Ateliê Pano Fino - Moema',
+      'endereco': 'Rua dos Pinheiros, 789\nMoema - São Paulo, SP\nCEP: 04567-890',
+      'telefone': '(11) 3456-7890',
+      'whatsapp': '(11) 9 6543-2109',
+      'horario': 'Segunda a Sexta: 8h às 17h\nSábado: 9h às 13h\nDomingo: Fechado',
+      'especialidade': 'Moda masculina e corporativa',
+      'cor': Colors.grey[800],
+    },
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      duration: Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: Text('Localização'),
+        title: Text(
+          'Localização',
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 4,
+        iconTheme: IconThemeData(color: Colors.black87),
         centerTitle: true,
+        elevation: 4,
         actions: [
           IconButton(
             icon: Icon(Icons.person_outline, color: Colors.black87),
@@ -21,65 +86,266 @@ class LocalizacaoPage extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
         child: Column(
           children: [
+            // Seletor de unidades
             Container(
-              padding: EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4))],
-              ),
-              child: Column(
-                children: [
-                  Text(
-                    'Ateliê Pano Fino',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Venha nos visitar',
-                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                  ),
-                  SizedBox(height: 24),
-
-                  Container(
-                    height: 200,
-                    width: 200,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 4))],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        'assets/images/localizacao.jpg',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: Center(
-                              child: Icon(Icons.location_on, size: 60, color: Colors.grey[600]),
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                itemCount: unidades.length,
+                itemBuilder: (context, index) {
+                  final unidade = unidades[index];
+                  final isSelected = _selectedUnit == index;
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedUnit = index;
+                      });
+                    },
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      width: 280,
+                      margin: EdgeInsets.only(right: 16),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isSelected ? unidade['cor'] : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(isSelected ? 0.2 : 0.1),
+                            blurRadius: isSelected ? 15 : 8,
+                            offset: Offset(0, isSelected ? 8 : 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            unidade['nome'].split(' - ')[1],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: isSelected ? Colors.white : Colors.black87,
                             ),
-                          );
-                        },
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            unidade['especialidade'],
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isSelected ? Colors.white70 : Colors.grey[600],
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
                     ),
+                  );
+                },
+              ),
+            ),
+            
+            // Mapa interativo
+            Expanded(
+              flex: 2,
+              child: Container(
+                margin: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 15,
+                      offset: Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Colors.green[100]!, Colors.blue[100]!],
+                          ),
+                        ),
+                        child: CustomPaint(
+                          painter: MapPainter(),
+                        ),
+                      ),
+                      // Marcadores das unidades
+                      ...unidades.asMap().entries.map((entry) {
+                        int index = entry.key;
+                        double left = 60.0 + (index * 100.0);
+                        double top = 100.0 + (index * 60.0);
+                        bool isSelected = _selectedUnit == index;
+                        
+                        return Positioned(
+                          left: left,
+                          top: top,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedUnit = index;
+                              });
+                            },
+                            child: AnimatedContainer(
+                              duration: Duration(milliseconds: 300),
+                              padding: EdgeInsets.all(isSelected ? 12 : 8),
+                              decoration: BoxDecoration(
+                                color: unidades[index]['cor'],
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: isSelected ? 10 : 5,
+                                    offset: Offset(0, isSelected ? 4 : 2),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.location_on,
+                                color: Colors.white,
+                                size: isSelected ? 24 : 20,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      // Informações da localização atual
+                      Positioned(
+                        bottom: 16,
+                        left: 16,
+                        right: 16,
+                        child: Container(
+                          padding: EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            unidades[_selectedUnit]['nome'].split(' - ')[1],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 32),
-
-                  _buildInfoCard(Icons.location_on, 'Endereço', 'Rua das Flores, 123\nCentro - São Paulo, SP\nCEP: 01234-567'),
-                  SizedBox(height: 16),
-                  _buildInfoCard(Icons.access_time, 'Horário', 'Segunda a Sexta: 9h às 18h\nSábado: 9h às 14h\nDomingo: Fechado'),
-                  SizedBox(height: 16),
-                  _buildInfoCard(Icons.phone, 'Contato', 'Telefone: (11) 1234-5678\nWhatsApp: (11) 9 8765-4321\nE-mail: contato@panofino.com'),
-                ],
+                ),
+              ),
+            ),
+            
+            // Informações da unidade selecionada
+            Expanded(
+              flex: 2,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(16),
+                child: AnimatedSwitcher(
+                  duration: Duration(milliseconds: 300),
+                  child: Container(
+                    key: ValueKey(_selectedUnit),
+                    padding: EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 15,
+                          offset: Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: unidades[_selectedUnit]['cor'],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(Icons.store, color: Colors.white, size: 20),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                unidades[_selectedUnit]['nome'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16),
+                        _buildInfoCard(Icons.location_on, 'Endereço', unidades[_selectedUnit]['endereco']),
+                        SizedBox(height: 12),
+                        _buildInfoCard(Icons.access_time, 'Horário', unidades[_selectedUnit]['horario']),
+                        SizedBox(height: 12),
+                        _buildInfoCard(Icons.phone, 'Contato', 'Tel: ${unidades[_selectedUnit]['telefone']}\nWhatsApp: ${unidades[_selectedUnit]['whatsapp']}'),
+                        SizedBox(height: 12),
+                        _buildInfoCard(Icons.star, 'Especialidade', unidades[_selectedUnit]['especialidade']),
+                        SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {},
+                                icon: Icon(Icons.directions),
+                                label: Text('Como Chegar'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey[700],
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {},
+                                icon: Icon(Icons.phone),
+                                label: Text('Ligar'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.grey[600],
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -90,31 +356,31 @@ class LocalizacaoPage extends StatelessWidget {
 
   Widget _buildInfoCard(IconData icon, String title, String content) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[300]!),
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey[200]!),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(8),
+              color: unidades[_selectedUnit]['cor'],
+              borderRadius: BorderRadius.circular(6),
             ),
-            child: Icon(icon, color: Colors.white, size: 20),
+            child: Icon(icon, color: Colors.white, size: 16),
           ),
-          SizedBox(width: 16),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                SizedBox(height: 4),
-                Text(content, style: TextStyle(fontSize: 14, color: Colors.grey[700])),
+                Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                SizedBox(height: 2),
+                Text(content, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
               ],
             ),
           ),
@@ -123,3 +389,47 @@ class LocalizacaoPage extends StatelessWidget {
     );
   }
 }
+
+class MapPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final streetPaint = Paint()
+      ..color = Colors.grey[400]!
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke;
+    
+    final buildingPaint = Paint()
+      ..color = Colors.grey[300]!
+      ..style = PaintingStyle.fill;
+    
+    // Desenhar ruas principais
+    for (int i = 1; i < 4; i++) {
+      canvas.drawLine(
+        Offset(0, size.height * i / 4),
+        Offset(size.width, size.height * i / 4),
+        streetPaint,
+      );
+      canvas.drawLine(
+        Offset(size.width * i / 4, 0),
+        Offset(size.width * i / 4, size.height),
+        streetPaint,
+      );
+    }
+    
+    // Desenhar alguns prédios simulados
+    final buildings = [
+      Rect.fromLTWH(20, 20, 40, 30),
+      Rect.fromLTWH(size.width - 80, 30, 50, 40),
+      Rect.fromLTWH(30, size.height - 70, 35, 45),
+      Rect.fromLTWH(size.width - 60, size.height - 80, 40, 60),
+    ];
+    
+    for (final building in buildings) {
+      canvas.drawRect(building, buildingPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+

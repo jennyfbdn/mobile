@@ -3,30 +3,57 @@ import 'encomenda_service.dart';
 import 'profile_page.dart';
 import 'produto_detalhes_page.dart';
 import 'user_service.dart';
+import 'agendamentos_page.dart';
 
-class ProdutosPage extends StatelessWidget {
-  final List<Map<String, dynamic>> produtos = [
+class ProdutosPage extends StatefulWidget {
+  @override
+  _ProdutosPageState createState() => _ProdutosPageState();
+}
+
+class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      duration: Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+  final List<Map<String, dynamic>> materiais = [
     {
-      'nome': 'Linha de Algodão',
+      'nome': 'Linhas de Algodão',
       'preco': 'R\$ 3,50',
       'descricao': 'Linha 100% algodão, ideal para costuras delicadas',
       'cor': Colors.blue[100],
-      'imagem': 'assets/images/blusa_bege.jpg',
+      'imagem': 'assets/images/linha_algodao.jpg',
       'icone': Icons.colorize,
     },
     {
-      'nome': 'Linha de Poliéster',
+      'nome': 'Botões',
       'preco': 'R\$ 2,80',
       'descricao': 'Linha resistente para costuras pesadas',
-      'cor': Colors.green[100],
-      'imagem': 'assets/images/blusa_verde.jpg',
+      'cor': Colors.grey[200],
+      'imagem': 'assets/images/botao.jpg',
       'icone': Icons.colorize,
     },
     {
       'nome': 'Agulhas Sortidas',
       'preco': 'R\$ 12,00',
       'descricao': 'Kit com 20 agulhas de diversos tamanhos',
-      'cor': Colors.orange[100],
+      'cor': Colors.grey[300],
       'imagem': null,
       'icone': Icons.push_pin,
     },
@@ -34,7 +61,7 @@ class ProdutosPage extends StatelessWidget {
       'nome': 'Tesoura de Costura',
       'preco': 'R\$ 25,00',
       'descricao': 'Tesoura profissional afiada',
-      'cor': Colors.purple[100],
+      'cor': Colors.grey[400],
       'imagem': null,
       'icone': Icons.content_cut,
     },
@@ -42,7 +69,7 @@ class ProdutosPage extends StatelessWidget {
       'nome': 'Fita Métrica',
       'preco': 'R\$ 8,50',
       'descricao': 'Fita métrica flexível 150cm',
-      'cor': Colors.pink[100],
+      'cor': Colors.grey[500],
       'imagem': null,
       'icone': Icons.straighten,
     },
@@ -50,13 +77,13 @@ class ProdutosPage extends StatelessWidget {
       'nome': 'Botões Variados',
       'preco': 'R\$ 15,00',
       'descricao': 'Conjunto com 50 botões diversos',
-      'cor': Colors.cyan[100],
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'cor': Colors.grey[600],
+      'imagem': 'assets/images/botoes_decorativos.jpg',
       'icone': Icons.radio_button_unchecked,
     },
   ];
 
-  void _adicionarEncomenda(BuildContext context, Map<String, dynamic> produto) {
+  void _adicionarEncomenda(BuildContext context, Map<String, dynamic> material) {
     final nomeController = TextEditingController();
     final telefoneController = TextEditingController();
     DateTime? dataSelecionada;
@@ -143,12 +170,12 @@ class ProdutosPage extends StatelessWidget {
                 
                 if (nome.isNotEmpty && dataSelecionada != null && horaSelecionada != null) {
                   Map<String, dynamic> encomenda = {
-                    'produto': produto['nome'],
+                    'material': material['nome'],
                     'nome': nome,
                     'telefone': telefone,
                     'quantidade': 1,
-                    'preco': produto['preco'],
-                    'personalizacao': 'Produto de costura',
+                    'preco': material['preco'],
+                    'personalizacao': 'Material de costura',
                     'dataRetirada': '${dataSelecionada!.day}/${dataSelecionada!.month}/${dataSelecionada!.year}',
                     'horaRetirada': '${horaSelecionada!.hour.toString().padLeft(2, '0')}:${horaSelecionada!.minute.toString().padLeft(2, '0')}',
                   };
@@ -185,13 +212,17 @@ class ProdutosPage extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          'Produtos de Costura',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          'Materiais de Costura',
+          style: TextStyle(
+            color: Colors.black87,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black87),
         centerTitle: true,
-        elevation: 2,
+        elevation: 4,
         actions: [
           IconButton(
             icon: Icon(Icons.person_outline, color: Colors.black87),
@@ -201,153 +232,243 @@ class ProdutosPage extends StatelessWidget {
           ),
         ],
       ),
-      body: GridView.builder(
-        padding: EdgeInsets.all(16),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 0.8,
-        ),
-        itemCount: produtos.length,
-        itemBuilder: (context, index) {
-          final produto = produtos[index];
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 12,
-                  offset: Offset(0, 4),
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.grey[600]!, Colors.grey[800]!],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 120,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: produto['cor'],
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                  ),
-                  child: produto['imagem'] != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                          child: Image.asset(
-                            produto['imagem'],
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: 120,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Center(
-                                child: Icon(
-                                  produto['icone'],
-                                  size: 48,
-                                  color: Colors.white,
-                                ),
-                              );
-                            },
-                          ),
-                        )
-                      : Center(
-                          child: Icon(
-                            produto['icone'],
-                            size: 48,
-                            color: Colors.white,
-                          ),
-                        ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(12),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          produto['nome'],
+                          'Já tem agendamentos?',
                           style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Colors.black87,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: 4),
                         Text(
-                          produto['descricao'],
+                          'Veja seus compromissos',
                           style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[600],
+                            color: Colors.white70,
+                            fontSize: 12,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              produto['preco'],
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green[700],
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () => _adicionarEncomenda(context, produto),
-                                  child: Container(
-                                    padding: EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green[600],
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Icon(
-                                      Icons.add_shopping_cart,
-                                      color: Colors.white,
-                                      size: 14,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ProdutoDetalhesPage(produto: produto),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black87,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Icon(
-                                      Icons.visibility,
-                                      color: Colors.white,
-                                      size: 14,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
                         ),
                       ],
                     ),
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AgendamentosPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.teal[600],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text('Agendamentos'),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: GridView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.8,
                 ),
-              ],
+                itemCount: materiais.length,
+                itemBuilder: (context, index) {
+                  final material = materiais[index];
+                  return TweenAnimationBuilder<double>(
+                    duration: Duration(milliseconds: 600 + (index * 100)),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    curve: Curves.easeOutBack,
+                    builder: (context, value, child) {
+                      return Transform.scale(
+                        scale: value,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 20,
+                                offset: Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 120,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: material['cor'],
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                ),
+                                child: material['imagem'] != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                        child: Stack(
+                                          children: [
+                                            Image.asset(
+                                              material['imagem'],
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                              height: 120,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return Center(
+                                                  child: Icon(
+                                                    material['icone'],
+                                                    size: 48,
+                                                    color: Colors.white,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            Positioned(
+                                              top: 8,
+                                              right: 8,
+                                              child: Container(
+                                                padding: EdgeInsets.all(4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.9),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Icon(
+                                                  Icons.shopping_cart,
+                                                  size: 16,
+                                                  color: Colors.green[600],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Icon(
+                                          material['icone'],
+                                          size: 48,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        material['nome'],
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        material['descricao'],
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey[600],
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Spacer(),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            material['preco'],
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.green[700],
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () => _adicionarEncomenda(context, material),
+                                                child: Container(
+                                                  padding: EdgeInsets.all(6),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.teal[600],
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.add_shopping_cart,
+                                                    color: Colors.white,
+                                                    size: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: TweenAnimationBuilder<double>(
+        duration: Duration(milliseconds: 1200),
+        tween: Tween(begin: 0.0, end: 1.0),
+        curve: Curves.elasticOut,
+        builder: (context, value, child) {
+          return Transform.scale(
+            scale: value,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => AgendamentosPage()),
+                );
+              },
+              backgroundColor: Colors.teal[600],
+              child: Icon(Icons.calendar_today, color: Colors.white),
             ),
           );
         },

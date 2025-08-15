@@ -9,6 +9,7 @@ import 'bottom_navigation.dart';
 import 'produtos_page.dart';
 import 'feedbacks_page.dart';
 import 'agendamentos_page.dart';
+import 'chat_page.dart';
 
 
 void main() {
@@ -35,6 +36,7 @@ class AteliePanoFinoApp extends StatelessWidget {
 
         '/feedbacks': (context) => FeedbacksPage(),
         '/agendamentos': (context) => MainNavigation(initialIndex: 2),
+        '/chat': (context) => MainNavigation(initialIndex: 3),
       },
       debugShowCheckedModeBanner: false,  // Remove a faixa de debug
     );

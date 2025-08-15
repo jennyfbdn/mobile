@@ -1,69 +1,187 @@
 import 'package:flutter/material.dart';
-import 'user_service.dart';
+import 'profile_page.dart';
 
 class FeedbacksPage extends StatefulWidget {
   @override
   _FeedbacksPageState createState() => _FeedbacksPageState();
 }
 
-class _FeedbacksPageState extends State<FeedbacksPage> {
-  List<Map<String, dynamic>> feedbacks = [
+class _FeedbacksPageState extends State<FeedbacksPage> with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  final List<Map<String, dynamic>> feedbacks = [
     {
-      'cliente': 'Maria Silva',
-      'produto': 'Vestido Sob Medida',
-      'avaliacao': 5,
-      'comentario': 'Trabalho impecável! O acabamento é perfeito e o caimento ficou exatamente como desejava. Recomendo o ateliê.',
-      'data': '2h',
-      'categoria': 'Costura',
-      'avatar': 'M',
+      'usuario': 'Maria Silva',
+      'avatar': 'assets/images/avatar1.jpg',
+      'imagem': 'assets/images/vestido_floral.jpg',
+      'descricao': 'Vestido floral maravilhoso! Ficou perfeito para o casamento da minha irmã 💕',
+      'curtidas': 127,
+      'curtido': false,
+      'comentarios': [
+        {'nome': 'Ana Costa', 'texto': 'Que lindo! Onde posso encomendar?'},
+        {'nome': 'Julia Santos', 'texto': 'Perfeito! 😍'},
+      ],
+      'tempo': '2h',
     },
     {
-      'cliente': 'João Santos',
-      'produto': 'Ajuste de Terno',
-      'avaliacao': 5,
-      'comentario': 'Serviço de alta qualidade. A costureira tem excelente técnica e atenção aos detalhes. Muito satisfeito.',
-      'data': '5h',
-      'categoria': 'Ajuste',
-      'avatar': 'J',
+      'usuario': 'João Pedro',
+      'avatar': 'assets/images/avatar2.jpg',
+      'imagem': 'assets/images/conjunto_jeans.jpg',
+      'descricao': 'Conjunto jeans sob medida. Qualidade excepcional! Recomendo muito 👌',
+      'curtidas': 89,
+      'curtido': true,
+      'comentarios': [
+        {'nome': 'Carlos Lima', 'texto': 'Ficou show! Quanto custou?'},
+        {'nome': 'Pedro Alves', 'texto': 'Top demais!'},
+        {'nome': 'Lucas Rocha', 'texto': 'Quero fazer um igual'},
+      ],
+      'tempo': '5h',
     },
     {
-      'cliente': 'Ana Costa',
-      'produto': 'Reforma de Vestido',
-      'avaliacao': 5,
-      'comentario': 'Transformou completamente a peça! Profissionalismo exemplar e resultado além das expectativas.',
-      'data': '1d',
-      'categoria': 'Reforma',
-      'avatar': 'A',
+      'usuario': 'Carla Mendes',
+      'avatar': 'assets/images/avatar3.jpg',
+      'imagem': 'assets/images/blusa_couro.jpg',
+      'descricao': 'Blusa de couro personalizada. Amei o resultado! Ateliê Pano Fino é o melhor ✨',
+      'curtidas': 203,
+      'curtido': false,
+      'comentarios': [
+        {'nome': 'Fernanda Luz', 'texto': 'Que estilo! Adorei'},
+        {'nome': 'Beatriz Nunes', 'texto': 'Ficou incrível!'},
+      ],
+      'tempo': '1d',
     },
     {
-      'cliente': 'Pedro Lima',
-      'produto': 'Calça Social',
-      'avaliacao': 4,
-      'comentario': 'Ótimo trabalho, tecido de qualidade e acabamento profissional. Prazo cumprido conforme combinado.',
-      'data': '2d',
-      'categoria': 'Costura',
-      'avatar': 'P',
-    },
-    {
-      'cliente': 'Carla Mendes',
-      'produto': 'Bordado Personalizado',
-      'avaliacao': 5,
-      'comentario': 'Arte incrível! O bordado ficou perfeito, com detalhes únicos. Trabalho artesanal de primeira qualidade.',
-      'data': '3d',
-      'categoria': 'Bordado',
-      'avatar': 'C',
+      'usuario': 'Roberto Costa',
+      'avatar': 'assets/images/avatar4.jpg',
+      'imagem': 'assets/images/conjunto_social.jpg',
+      'descricao': 'Terno sob medida para formatura. Ficou impecável! Obrigado pela dedicação 🎓',
+      'curtidas': 156,
+      'curtido': true,
+      'comentarios': [
+        {'nome': 'Marcos Silva', 'texto': 'Parabéns pela formatura!'},
+        {'nome': 'André Souza', 'texto': 'Terno perfeito!'},
+      ],
+      'tempo': '2d',
     },
   ];
 
-  void _adicionarFeedback() {
-    showDialog(
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      duration: Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  void _toggleCurtida(int index) {
+    setState(() {
+      feedbacks[index]['curtido'] = !feedbacks[index]['curtido'];
+      if (feedbacks[index]['curtido']) {
+        feedbacks[index]['curtidas']++;
+      } else {
+        feedbacks[index]['curtidas']--;
+      }
+    });
+  }
+
+  void _mostrarComentarios(BuildContext context, Map<String, dynamic> feedback) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => _FeedbackDialog(
-        onSubmit: (feedback) {
-          setState(() {
-            feedbacks.insert(0, feedback);
-          });
-        },
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.grey[200]!)),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Comentários',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.all(16),
+                itemCount: feedback['comentarios'].length,
+                itemBuilder: (context, index) {
+                  final comentario = feedback['comentarios'][index];
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.grey[300],
+                          child: Text(
+                            comentario['nome'][0],
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                comentario['nome'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                comentario['texto'],
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -74,240 +192,210 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'Avaliações dos Clientes',
+          'Feedbacks',
           style: TextStyle(
             color: Colors.black87,
-            fontWeight: FontWeight.bold,
             fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black87),
-        elevation: 2,
         centerTitle: true,
+        elevation: 1,
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
-            onPressed: _adicionarFeedback,
+            icon: Icon(Icons.person_outline, color: Colors.black87),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+            },
           ),
         ],
       ),
-      body: Container(
-        color: Colors.grey[50],
+      body: FadeTransition(
+        opacity: _fadeAnimation,
         child: ListView.builder(
-          padding: EdgeInsets.symmetric(vertical: 16),
           itemCount: feedbacks.length,
           itemBuilder: (context, index) {
-          final feedback = feedbacks[index];
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 12,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.black87,
-                        child: Text(
-                          feedback['avatar'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 16,
+            final feedback = feedbacks[index];
+            return TweenAnimationBuilder<double>(
+              duration: Duration(milliseconds: 600 + (index * 100)),
+              tween: Tween(begin: 0.0, end: 1.0),
+              curve: Curves.easeOutBack,
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey[200]!, width: 0.5),
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Header do post
+                        Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.grey[300],
+                                child: Text(
+                                  feedback['usuario'][0],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      feedback['usuario'],
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    Text(
+                                      feedback['tempo'],
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(Icons.more_vert, color: Colors.grey[600]),
+                            ],
                           ),
                         ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              feedback['cliente'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                        
+                        // Imagem do post
+                        Container(
+                          width: double.infinity,
+                          height: 300,
+                          child: Image.asset(
+                            feedback['imagem'],
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey[200],
+                                child: Center(
+                                  child: Icon(
+                                    Icons.image_not_supported,
+                                    size: 50,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        
+                        // Ações (curtir, comentar, compartilhar)
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () => _toggleCurtida(index),
+                                child: Icon(
+                                  feedback['curtido'] ? Icons.favorite : Icons.favorite_border,
+                                  color: feedback['curtido'] ? Colors.red : Colors.black87,
+                                  size: 28,
+                                ),
+                              ),
+                              SizedBox(width: 16),
+                              GestureDetector(
+                                onTap: () => _mostrarComentarios(context, feedback),
+                                child: Icon(
+                                  Icons.chat_bubble_outline,
+                                  color: Colors.black87,
+                                  size: 26,
+                                ),
+                              ),
+                              SizedBox(width: 16),
+                              Icon(
+                                Icons.send_outlined,
                                 color: Colors.black87,
+                                size: 26,
                               ),
+                              Spacer(),
+                              Icon(
+                                Icons.bookmark_border,
+                                color: Colors.black87,
+                                size: 26,
+                              ),
+                            ],
+                          ),
+                        ),
+                        
+                        // Número de curtidas
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text(
+                            '${feedback['curtidas']} curtidas',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
                             ),
-                            SizedBox(height: 2),
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                          ),
+                        ),
+                        
+                        // Descrição
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(color: Colors.black87, fontSize: 14),
+                              children: [
+                                TextSpan(
+                                  text: feedback['usuario'],
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(text: ' '),
+                                TextSpan(text: feedback['descricao']),
+                              ],
+                            ),
+                          ),
+                        ),
+                        
+                        // Ver comentários
+                        if (feedback['comentarios'].length > 0)
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: GestureDetector(
+                              onTap: () => _mostrarComentarios(context, feedback),
                               child: Text(
-                                feedback['categoria'],
+                                'Ver todos os ${feedback['comentarios'].length} comentários',
                                 style: TextStyle(
-                                  color: Colors.grey[700],
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        feedback['data'],
-                        style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    feedback['produto'],
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: Colors.black87,
+                          ),
+                        
+                        SizedBox(height: 16),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 12),
-                  Row(
-                    children: List.generate(5, (starIndex) {
-                      return Icon(
-                        starIndex < feedback['avaliacao']
-                            ? Icons.star
-                            : Icons.star_border,
-                        color: Colors.amber[600],
-                        size: 18,
-                      );
-                    }),
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    feedback['comentario'],
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                      fontSize: 14,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-          },
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _adicionarFeedback,
-        backgroundColor: Colors.black87,
-        child: Icon(Icons.add, color: Colors.white),
-      ),
-    );
-  }
-}
-
-class _FeedbackDialog extends StatefulWidget {
-  final Function(Map<String, dynamic>) onSubmit;
-
-  _FeedbackDialog({required this.onSubmit});
-
-  @override
-  _FeedbackDialogState createState() => _FeedbackDialogState();
-}
-
-class _FeedbackDialogState extends State<_FeedbackDialog> {
-  final _nomeController = TextEditingController();
-  final _produtoController = TextEditingController();
-  final _comentarioController = TextEditingController();
-  int _avaliacao = 5;
-
-  @override
-  void initState() {
-    super.initState();
-    // Preencher automaticamente com dados do usuário se disponível
-    if (UserService().temUsuario) {
-      _nomeController.text = UserService().nomeUsuario ?? '';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Adicionar Feedback'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _nomeController,
-              decoration: InputDecoration(labelText: 'Seu Nome'),
-            ),
-            TextField(
-              controller: _produtoController,
-              decoration: InputDecoration(labelText: 'Produto/Serviço'),
-            ),
-            SizedBox(height: 16),
-            Text('Avaliação:'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(5, (index) {
-                return IconButton(
-                  icon: Icon(
-                    index < _avaliacao ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
-                  ),
-                  onPressed: () => setState(() => _avaliacao = index + 1),
                 );
-              }),
-            ),
-            TextField(
-              controller: _comentarioController,
-              decoration: InputDecoration(labelText: 'Comentário'),
-              maxLines: 3,
-            ),
-          ],
+              },
+            );
+          },
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Cancelar'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (_nomeController.text.isNotEmpty && _comentarioController.text.isNotEmpty) {
-              // Salvar dados do usuário se não existir
-              if (!UserService().temUsuario) {
-                UserService().setUsuario(_nomeController.text, '');
-              }
-              
-              widget.onSubmit({
-                'cliente': _nomeController.text,
-                'produto': _produtoController.text.isEmpty ? 'Serviço Geral' : _produtoController.text,
-                'avaliacao': _avaliacao,
-                'comentario': _comentarioController.text,
-                'data': 'agora',
-                'categoria': 'Meu Feedback',
-                'avatar': _nomeController.text[0].toUpperCase(),
-              });
-              Navigator.pop(context);
-            }
-          },
-          child: Text('Enviar'),
-        ),
-      ],
     );
   }
 }
