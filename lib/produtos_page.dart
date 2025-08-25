@@ -38,7 +38,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'preco': 'R\$ 3,50',
       'descricao': 'Linha 100% algodão, ideal para costuras delicadas',
       'cor': Colors.blue[100],
-      'imagem': 'assets/images/linhas.jpg',
+      'imagem': 'assets/images/linha.jpg',
       'icone': Icons.colorize,
     },
     {
@@ -54,7 +54,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'preco': 'R\$ 12,00',
       'descricao': 'Kit com 20 agulhas de diversos tamanhos',
       'cor': Colors.grey[300],
-      'imagem': null,
+      'imagem': 'assets/images/linha.jpg',
       'icone': Icons.push_pin,
     },
     {
@@ -62,7 +62,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'preco': 'R\$ 25,00',
       'descricao': 'Tesoura profissional afiada',
       'cor': Colors.grey[400],
-      'imagem': null,
+      'imagem': 'assets/images/tesoura.jpg',
       'icone': Icons.content_cut,
     },
     {
@@ -70,7 +70,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'preco': 'R\$ 8,50',
       'descricao': 'Fita métrica flexível 150cm',
       'cor': Colors.grey[500],
-      'imagem': null,
+      'imagem': 'assets/images/fitametrica.jpg',
       'icone': Icons.straighten,
     },
     {
@@ -241,7 +241,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.grey[600]!, Colors.grey[800]!],
+                  colors: [Colors.black87, Colors.black54],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -423,7 +423,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                                                 child: Container(
                                                   padding: EdgeInsets.all(6),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.teal[600],
+                                                    color: Colors.black87,
                                                     borderRadius: BorderRadius.circular(8),
                                                   ),
                                                   child: Icon(
@@ -467,7 +467,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                   MaterialPageRoute(builder: (_) => AgendamentosPage()),
                 );
               },
-              backgroundColor: Colors.teal[600],
+              backgroundColor: Colors.black87,
               child: Icon(Icons.calendar_today, color: Colors.white),
             ),
           );

@@ -124,7 +124,7 @@ class _AgendamentosPageState extends State<AgendamentosPage> with TickerProvider
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.blue[400]!, Colors.purple[400]!],
+                      colors: [Colors.black87, Colors.black54],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -163,7 +163,7 @@ class _AgendamentosPageState extends State<AgendamentosPage> with TickerProvider
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Colors.purple[600],
+                          foregroundColor: Colors.black87,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),

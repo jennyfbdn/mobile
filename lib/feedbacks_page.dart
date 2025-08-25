@@ -163,7 +163,7 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
           'Feedbacks',
@@ -176,7 +176,7 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: Colors.black87),
         centerTitle: true,
-        elevation: 1,
+        elevation: 4,
         actions: [
           IconButton(
             icon: Icon(Icons.person_outline, color: Colors.black87),

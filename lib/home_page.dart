@@ -372,7 +372,7 @@ class HomePage extends StatelessWidget {
                               child: Stack(
                                 children: [
                                   Image.asset(
-                                    'assets/images/masculino.png',
+                                    'assets/images/masculinos.png',
                                     width: double.infinity,
                                     height: double.infinity,
                                     fit: BoxFit.cover,
@@ -403,7 +403,7 @@ class HomePage extends StatelessWidget {
                                     child: Text(
                                       'Masculino',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: const Color.fromRGBO(255, 255, 255, 1),
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -457,7 +457,7 @@ class HomePage extends StatelessWidget {
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
-                                      color: Colors.grey[300],
+                                      color: const Color.fromRGBO(224, 224, 224, 1),
                                       child: Center(
                                         child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey[600]),
                                       ),

@@ -78,7 +78,7 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
               padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.grey[500]!, Colors.grey[700]!],
+                  colors: [Colors.black87, Colors.black54],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -244,7 +244,7 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[700],
+                            backgroundColor: Colors.black87,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'cadastro_page.dart';
 import 'forgot_password_page.dart';
+import 'sobre_atelie_page.dart';
 import 'home_page.dart';
 import 'localizacao_page.dart';
 import 'agradecimento_page.dart';
@@ -30,6 +31,7 @@ class AteliePanoFinoApp extends StatelessWidget {
         '/': (context) => LoginPage(),
         '/cadastro': (context) => CadastroPage(),
         '/forgot-password': (context) => ForgotPasswordPage(),
+        '/sobre-atelie': (context) => SobreAteliePage(),
         '/home': (context) => MainNavigation(initialIndex: 0),
         '/localizacao': (context) => MainNavigation(initialIndex: 3),
         '/agradecimento': (context) => AgradecimentoPage(),
