@@ -31,7 +31,7 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
 
   final List<Map<String, dynamic>> produtosFemininos = [
     {
-      'nome': 'Vestido Floral',
+      'nome': 'Vestido Preto',
       'imagem': 'assets/images/vestido_floral.jpg',
       'preco': 'R\$ 120,00',
     },
@@ -41,9 +41,9 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
       'preco': 'R\$ 85,00',
     },
     {
-      'nome': 'Saia Midi',
-      'imagem': 'assets/images/vestido_floral.jpg',
-      'preco': 'R\$ 95,00',
+      'nome': 'Saia',
+      'imagem': 'assets/images/blusa_bege.jpg',
+      'preco': 'R\$ 135,00',
     },
   ];
 

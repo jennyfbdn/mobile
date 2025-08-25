@@ -31,24 +31,14 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
 
   final List<Map<String, dynamic>> produtosMasculinos = [
     {
-      'nome': 'Blusa Marrom',
-      'imagem': 'assets/images/blusamarrom_masculino.jpg',
+      'nome': 'Blusa Listrada',
+      'imagem': 'assets/images/blusalistrada_masculino.png',
       'preco': 'R\$ 90,00',
     },
     {
-      'nome': 'Conjunto Listrado',
-      'imagem': 'assets/images/conjuntolistrado_masculino.jpg',
+      'nome': 'Camisa Amarela',
+      'imagem': 'assets/images/masculino.png',
       'preco': 'R\$ 110,00',
-    },
-    {
-      'nome': 'Conjunto Social',
-      'imagem': 'assets/images/conjunto_social.jpg',
-      'preco': 'R\$ 180,00',
-    },
-    {
-      'nome': 'Conjunto Bege',
-      'imagem': 'assets/images/conjunto_bege.jpg',
-      'preco': 'R\$ 150,00',
     },
   ];
 

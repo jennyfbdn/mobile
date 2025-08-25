@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'cadastro_page.dart';
+import 'forgot_password_page.dart';
 import 'home_page.dart';
 import 'localizacao_page.dart';
 import 'agradecimento_page.dart';
@@ -28,6 +29,7 @@ class AteliePanoFinoApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginPage(),
         '/cadastro': (context) => CadastroPage(),
+        '/forgot-password': (context) => ForgotPasswordPage(),
         '/home': (context) => MainNavigation(initialIndex: 0),
         '/localizacao': (context) => MainNavigation(initialIndex: 3),
         '/agradecimento': (context) => AgradecimentoPage(),

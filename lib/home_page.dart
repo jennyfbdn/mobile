@@ -372,7 +372,7 @@ class HomePage extends StatelessWidget {
                               child: Stack(
                                 children: [
                                   Image.asset(
-                                    'assets/images/conjunto_social.jpg',
+                                    'assets/images/masculino.png',
                                     width: double.infinity,
                                     height: double.infinity,
                                     fit: BoxFit.cover,

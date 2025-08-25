@@ -38,7 +38,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'preco': 'R\$ 3,50',
       'descricao': 'Linha 100% algodão, ideal para costuras delicadas',
       'cor': Colors.blue[100],
-      'imagem': 'assets/images/linha_algodao.jpg',
+      'imagem': 'assets/images/linhas.jpg',
       'icone': Icons.colorize,
     },
     {

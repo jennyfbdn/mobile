@@ -208,7 +208,17 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
 
-              SizedBox(height: 24),
+              SizedBox(height: 16),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/forgot-password');
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.black54,
+                ),
+                child: Text('Esqueci minha senha'),
+              ),
+              SizedBox(height: 8),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/cadastro');

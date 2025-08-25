@@ -6,14 +6,10 @@ class FeedbacksPage extends StatefulWidget {
   _FeedbacksPageState createState() => _FeedbacksPageState();
 }
 
-class _FeedbacksPageState extends State<FeedbacksPage> with TickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnimation;
-
+class _FeedbacksPageState extends State<FeedbacksPage> {
   final List<Map<String, dynamic>> feedbacks = [
     {
       'usuario': 'Maria Silva',
-      'avatar': 'assets/images/avatar1.jpg',
       'imagem': 'assets/images/vestido_floral.jpg',
       'descricao': 'Vestido floral maravilhoso! Ficou perfeito para o casamento da minha irmã 💕',
       'curtidas': 127,
@@ -26,7 +22,6 @@ class _FeedbacksPageState extends State<FeedbacksPage> with TickerProviderStateM
     },
     {
       'usuario': 'João Pedro',
-      'avatar': 'assets/images/avatar2.jpg',
       'imagem': 'assets/images/conjunto_jeans.jpg',
       'descricao': 'Conjunto jeans sob medida. Qualidade excepcional! Recomendo muito 👌',
       'curtidas': 89,
@@ -40,7 +35,6 @@ class _FeedbacksPageState extends State<FeedbacksPage> with TickerProviderStateM
     },
     {
       'usuario': 'Carla Mendes',
-      'avatar': 'assets/images/avatar3.jpg',
       'imagem': 'assets/images/blusa_couro.jpg',
       'descricao': 'Blusa de couro personalizada. Amei o resultado! Ateliê Pano Fino é o melhor ✨',
       'curtidas': 203,
@@ -53,7 +47,6 @@ class _FeedbacksPageState extends State<FeedbacksPage> with TickerProviderStateM
     },
     {
       'usuario': 'Roberto Costa',
-      'avatar': 'assets/images/avatar4.jpg',
       'imagem': 'assets/images/conjunto_social.jpg',
       'descricao': 'Terno sob medida para formatura. Ficou impecável! Obrigado pela dedicação 🎓',
       'curtidas': 156,
@@ -65,25 +58,6 @@ class _FeedbacksPageState extends State<FeedbacksPage> with TickerProviderStateM
       'tempo': '2d',
     },
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _fadeController = AnimationController(
-      duration: Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
-    );
-    _fadeController.forward();
-  }
-
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    super.dispose();
-  }
 
   void _toggleCurtida(int index) {
     setState(() {
@@ -212,189 +186,176 @@ class _FeedbacksPageState extends State<FeedbacksPage> with TickerProviderStateM
           ),
         ],
       ),
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: ListView.builder(
-          itemCount: feedbacks.length,
-          itemBuilder: (context, index) {
-            final feedback = feedbacks[index];
-            return TweenAnimationBuilder<double>(
-              duration: Duration(milliseconds: 600 + (index * 100)),
-              tween: Tween(begin: 0.0, end: 1.0),
-              curve: Curves.easeOutBack,
-              builder: (context, value, child) {
-                return Transform.scale(
-                  scale: value,
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border(
-                        bottom: BorderSide(color: Colors.grey[200]!, width: 0.5),
+      body: ListView.builder(
+        itemCount: feedbacks.length,
+        itemBuilder: (context, index) {
+          final feedback = feedbacks[index];
+          return Container(
+            margin: EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                bottom: BorderSide(color: Colors.grey[200]!, width: 0.5),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header do post
+                Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.grey[300],
+                        child: Text(
+                          feedback['usuario'][0],
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[600],
+                          ),
+                        ),
                       ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              feedback['usuario'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            Text(
+                              feedback['tempo'],
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.more_vert, color: Colors.grey[600]),
+                    ],
+                  ),
+                ),
+                
+                // Imagem do post
+                Container(
+                  width: double.infinity,
+                  height: 300,
+                  child: Image.asset(
+                    feedback['imagem'],
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[200],
+                        child: Center(
+                          child: Icon(
+                            Icons.image_not_supported,
+                            size: 50,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                
+                // Ações (curtir, comentar, compartilhar)
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => _toggleCurtida(index),
+                        child: Icon(
+                          feedback['curtido'] ? Icons.favorite : Icons.favorite_border,
+                          color: feedback['curtido'] ? Colors.red : Colors.black87,
+                          size: 28,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      GestureDetector(
+                        onTap: () => _mostrarComentarios(context, feedback),
+                        child: Icon(
+                          Icons.chat_bubble_outline,
+                          color: Colors.black87,
+                          size: 26,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Icon(
+                        Icons.send_outlined,
+                        color: Colors.black87,
+                        size: 26,
+                      ),
+                      Spacer(),
+                      Icon(
+                        Icons.bookmark_border,
+                        color: Colors.black87,
+                        size: 26,
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Número de curtidas
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    '${feedback['curtidas']} curtidas',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                ),
+                
+                // Descrição
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: RichText(
+                    text: TextSpan(
+                      style: TextStyle(color: Colors.black87, fontSize: 14),
                       children: [
-                        // Header do post
-                        Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 20,
-                                backgroundColor: Colors.grey[300],
-                                child: Text(
-                                  feedback['usuario'][0],
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      feedback['usuario'],
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    Text(
-                                      feedback['tempo'],
-                                      style: TextStyle(
-                                        color: Colors.grey[600],
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Icon(Icons.more_vert, color: Colors.grey[600]),
-                            ],
-                          ),
+                        TextSpan(
+                          text: feedback['usuario'],
+                          style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        
-                        // Imagem do post
-                        Container(
-                          width: double.infinity,
-                          height: 300,
-                          child: Image.asset(
-                            feedback['imagem'],
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: Colors.grey[200],
-                                child: Center(
-                                  child: Icon(
-                                    Icons.image_not_supported,
-                                    size: 50,
-                                    color: Colors.grey[400],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        
-                        // Ações (curtir, comentar, compartilhar)
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () => _toggleCurtida(index),
-                                child: Icon(
-                                  feedback['curtido'] ? Icons.favorite : Icons.favorite_border,
-                                  color: feedback['curtido'] ? Colors.red : Colors.black87,
-                                  size: 28,
-                                ),
-                              ),
-                              SizedBox(width: 16),
-                              GestureDetector(
-                                onTap: () => _mostrarComentarios(context, feedback),
-                                child: Icon(
-                                  Icons.chat_bubble_outline,
-                                  color: Colors.black87,
-                                  size: 26,
-                                ),
-                              ),
-                              SizedBox(width: 16),
-                              Icon(
-                                Icons.send_outlined,
-                                color: Colors.black87,
-                                size: 26,
-                              ),
-                              Spacer(),
-                              Icon(
-                                Icons.bookmark_border,
-                                color: Colors.black87,
-                                size: 26,
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        // Número de curtidas
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            '${feedback['curtidas']} curtidas',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        
-                        // Descrição
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: RichText(
-                            text: TextSpan(
-                              style: TextStyle(color: Colors.black87, fontSize: 14),
-                              children: [
-                                TextSpan(
-                                  text: feedback['usuario'],
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(text: ' '),
-                                TextSpan(text: feedback['descricao']),
-                              ],
-                            ),
-                          ),
-                        ),
-                        
-                        // Ver comentários
-                        if (feedback['comentarios'].length > 0)
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: GestureDetector(
-                              onTap: () => _mostrarComentarios(context, feedback),
-                              child: Text(
-                                'Ver todos os ${feedback['comentarios'].length} comentários',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                        
-                        SizedBox(height: 16),
+                        TextSpan(text: ' '),
+                        TextSpan(text: feedback['descricao']),
                       ],
                     ),
                   ),
-                );
-              },
-            );
-          },
-        ),
+                ),
+                
+                // Ver comentários
+                if (feedback['comentarios'].length > 0)
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: GestureDetector(
+                      onTap: () => _mostrarComentarios(context, feedback),
+                      child: Text(
+                        'Ver todos os ${feedback['comentarios'].length} comentários',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                
+                SizedBox(height: 16),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
