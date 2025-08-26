@@ -308,7 +308,7 @@ class HomePage extends StatelessWidget {
                               child: Stack(
                                 children: [
                                   Image.asset(
-                                    'assets/images/vestido_floral.jpg',
+                                    'assets/images/secaofem.jpg',
                                     width: double.infinity,
                                     height: double.infinity,
                                     fit: BoxFit.cover,
@@ -372,7 +372,7 @@ class HomePage extends StatelessWidget {
                               child: Stack(
                                 children: [
                                   Image.asset(
-                                    'assets/images/masculinos.png',
+                                    '../assets/images/secaomasc.jpg',
                                     width: double.infinity,
                                     height: double.infinity,
                                     fit: BoxFit.cover,

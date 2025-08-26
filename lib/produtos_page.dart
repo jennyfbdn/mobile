@@ -54,7 +54,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'preco': 'R\$ 12,00',
       'descricao': 'Kit com 20 agulhas de diversos tamanhos',
       'cor': Colors.grey[300],
-      'imagem': 'assets/images/linha.jpg',
+      'imagem': 'assets/images/agulha.jpg',
       'icone': Icons.push_pin,
     },
     {
@@ -70,7 +70,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'preco': 'R\$ 8,50',
       'descricao': 'Fita métrica flexível 150cm',
       'cor': Colors.grey[500],
-      'imagem': 'assets/images/fitametrica.jpg',
+      'imagem': null,
       'icone': Icons.straighten,
     },
     {
@@ -78,7 +78,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'preco': 'R\$ 15,00',
       'descricao': 'Conjunto com 50 botões diversos',
       'cor': Colors.grey[600],
-      'imagem': 'assets/images/botoes_decorativos.jpg',
+      'imagem': 'assets/images/botao.jpg',
       'icone': Icons.radio_button_unchecked,
     },
   ];

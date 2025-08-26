@@ -199,7 +199,7 @@ class HomePage extends StatelessWidget {
                       ),
                       SizedBox(width: 16),
                       Expanded(
-                        child: _categoryCard(context, 'Masculino', 'assets/images/conjunto_social.jpg', () {
+                        child: _categoryCard(context, 'Masculino', 'assets/images/localizacao.jpg', () {
                           Navigator.push(context, MaterialPageRoute(builder: (_) => MalePage()));
                         }),
                       ),

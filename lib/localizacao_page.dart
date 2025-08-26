@@ -90,6 +90,61 @@ class _LocalizacaoPageState extends State<LocalizacaoPage> with TickerProviderSt
         opacity: _fadeAnimation,
         child: Column(
           children: [
+            // Seção Sobre Nós
+            Container(
+              margin: EdgeInsets.all(16),
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.black87, Colors.black54],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.content_cut, color: Colors.white, size: 24),
+                      SizedBox(width: 12),
+                      Text(
+                        'Sobre o Ateliê Pano Fino',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'Há mais de 10 anos criando peças únicas e oferecendo serviços de costura de alta qualidade. Nosso compromisso é com a excelência, atendimento personalizado e a satisfação dos nossos clientes.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white70,
+                      height: 1.4,
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushNamed(context, '/sobre-atelie'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black87,
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    child: Text('Saiba Mais', style: TextStyle(fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+            
             // Seletor de unidades
             Container(
               height: 120,

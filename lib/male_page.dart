@@ -40,6 +40,26 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
       'imagem': 'assets/images/masculino.png',
       'preco': 'R\$ 110,00',
     },
+    {
+      'nome': 'Conjunto Social',
+      'imagem': 'assets/images/conjunto_social.jpg',
+      'preco': 'R\$ 180,00',
+    },
+    {
+      'nome': 'Conjunto Bege',
+      'imagem': 'assets/images/conjunto_bege.jpg',
+      'preco': 'R\$ 150,00',
+    },
+    {
+      'nome': 'Conjunto Jeans',
+      'imagem': 'assets/images/conjunto_jeans.jpg',
+      'preco': 'R\$ 135,00',
+    },
+    {
+      'nome': 'Camisa Casual',
+      'imagem': 'assets/images/masculinos1.png',
+      'preco': 'R\$ 85,00',
+    },
   ];
 
   @override

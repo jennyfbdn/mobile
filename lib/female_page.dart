@@ -31,20 +31,31 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
 
   final List<Map<String, dynamic>> produtosFemininos = [
     {
-      'nome': 'Vestido Preto',
-      'imagem': 'assets/images/vestido_floral.jpg',
+      'nome': 'Blusa Roxa Croche ',
+      'imagem': 'assets/images/blusaroxa_croche.jpg',
       'preco': 'R\$ 120,00',
     },
     {
-      'nome': 'Blusa verde',
+      'nome': 'Blusa Verde',
       'imagem': 'assets/images/blusa_verde.jpg',
       'preco': 'R\$ 85,00',
     },
     {
-      'nome': 'Saia',
+      'nome': 'Saia Bege',
       'imagem': 'assets/images/blusa_bege.jpg',
       'preco': 'R\$ 135,00',
     },
+    {
+      'nome': 'Vestido Roxo',
+      'imagem': 'assets/images/vestido_roxoestampado.jpg',
+      'preco': 'R\$ 145,00',
+    },
+    {
+      'nome': 'Blusa Branca',
+      'imagem': 'assets/images/blusa_branca.jpg',
+      'preco': 'R\$ 75,00',
+    },
+   
   ];
 
   @override
