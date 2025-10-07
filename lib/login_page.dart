@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'user_service.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -12,7 +14,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String? _errorMessage;
 
-  void _login() {
+  void _login() async {
     String email = emailController.text.trim();
     String senha = senhaController.text;
 
@@ -23,21 +25,30 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // Login fixo para exemplo
-    if (email == 'panofino@atelie.com' && senha == '123456') {
+    final userService = UserService();
+    final result = await userService.login(email, senha);
+
+    if (result['success']) {
+      final userData = result['user'];
+      
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userEmail', userData['email']);
+      await prefs.setInt('userId', userData['id']);
+      await prefs.setString('userName', userData['nome']);
+
       setState(() {
         _errorMessage = null;
       });
+
       Navigator.pushNamed(context, '/home');
     } else {
       setState(() {
-        _errorMessage = 'E-mail ou senha incorretos.';
+        _errorMessage = result['message'];
       });
     }
   }
 
   void _loginGoogle() {
-    // Simulando login com Google
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -61,7 +72,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _loginFacebook() {
-    // Simulando login com Facebook
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -106,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // fundo branco
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -114,14 +124,11 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo
               Image.asset(
                 'assets/images/logo.png',
                 height: 150,
               ),
               SizedBox(height: 24),
-
-              // E-mail
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
@@ -138,8 +145,6 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(color: Colors.black87),
               ),
               SizedBox(height: 16),
-
-              // Senha
               TextField(
                 controller: senhaController,
                 decoration: InputDecoration(
@@ -155,7 +160,6 @@ class _LoginPageState extends State<LoginPage> {
                 obscureText: true,
                 style: TextStyle(color: Colors.black87),
               ),
-
               if (_errorMessage != null) ...[
                 SizedBox(height: 12),
                 Text(
@@ -163,7 +167,6 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(color: Colors.red),
                 ),
               ],
-
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _login,
@@ -171,18 +174,17 @@ class _LoginPageState extends State<LoginPage> {
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
                 child: Text('Entrar'),
               ),
-
               SizedBox(height: 16),
               Text(
                 'Ou entre com',
                 style: TextStyle(color: Colors.black54),
               ),
               SizedBox(height: 16),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -207,7 +209,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-
               SizedBox(height: 16),
               TextButton(
                 onPressed: () {

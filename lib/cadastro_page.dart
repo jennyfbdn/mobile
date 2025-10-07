@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'user_service.dart';
 
 class CadastroPage extends StatefulWidget {
   @override
@@ -69,9 +70,7 @@ class _CadastroPageState extends State<CadastroPage> {
 
               SizedBox(height: 32),
               ElevatedButton(
-                onPressed: _isFormValid() ? () {
-                  Navigator.pushNamed(context, '/home');
-                } : null,
+                onPressed: _isFormValid() ? _cadastrarUsuario : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
@@ -120,6 +119,33 @@ class _CadastroPageState extends State<CadastroPage> {
            senhaController.text.isNotEmpty &&
            confirmarSenhaController.text.isNotEmpty &&
            senhaError == null;
+  }
+
+  Future<void> _cadastrarUsuario() async {
+    final userService = UserService();
+    
+    final result = await userService.cadastrarUsuario(
+      nome: nomeController.text,
+      email: emailController.text,
+      senha: senhaController.text,
+    );
+
+    if (result['success']) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message']),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pushNamed(context, '/home');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message']),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   InputDecoration _inputDecoration(String label) {

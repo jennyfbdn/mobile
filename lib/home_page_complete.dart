@@ -50,7 +50,7 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
-          'Ateliê Pano Fino',
+          'Ateliê Pano Finos',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 20,
