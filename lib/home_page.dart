@@ -8,41 +8,39 @@ import 'medidas_page.dart';
 import 'services/produto_service.dart';
 import 'models/produto_model.dart';
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final ProdutoService _produtoService = ProdutoService();
-  List<Produto> _produtos = [];
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _carregarProdutos();
-  }
-
-  Future<void> _carregarProdutos() async {
-    try {
-      final produtos = await _produtoService.fetchProdutos();
-      setState(() {
-        _produtos = produtos.take(6).toList();
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao carregar produtos: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
+class HomePage extends StatelessWidget {
+  final List<Map<String, dynamic>> roupasDestaque = [
+    {
+      'nome': 'Conjunto Jeans',
+      'imagem': 'assets/images/conjunto_jeans.jpg',
+      'preco': 'R\$ 120,00',
+    },
+    {
+      'nome': 'Blusa de Croche',
+      'imagem': 'assets/images/blusadecroche.jpg',
+      'preco': 'R\$ 90,00',
+    },
+    {
+      'nome': 'Calça Bordada',
+      'imagem': 'assets/images/calça_bordada.jpg',
+      'preco': 'R\$ 110,00',
+    },
+    {
+      'nome': 'Conjunto Bege',
+      'imagem': 'assets/images/conjunto_bege.jpg',
+      'preco': 'R\$ 75,00',
+    },
+    {
+      'nome': 'Blusa Listrada',
+      'imagem': 'assets/images/blusalistrada_masculino.png',
+      'preco': 'R\$ 75,00',
+    },
+    {
+      'nome': 'Blusa Branca',
+      'imagem': 'assets/images/blusa_branca.jpg',
+      'preco': 'R\$ 75,00',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -376,7 +374,7 @@ class _HomePageState extends State<HomePage> {
                               child: Stack(
                                 children: [
                                   Image.asset(
-                                    'assets/images/secaomasc.jpg',
+                                    '../assets/images/secaomasc.jpg',
                                     width: double.infinity,
                                     height: double.infinity,
                                     fit: BoxFit.cover,
@@ -407,7 +405,7 @@ class _HomePageState extends State<HomePage> {
                                     child: Text(
                                       'Masculino',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: const Color.fromRGBO(255, 255, 255, 1),
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -435,97 +433,89 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   
-                  _isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : _produtos.isEmpty
-                          ? Center(
-                              child: Text(
-                                'Nenhum produto encontrado',
-                                style: TextStyle(color: Colors.grey[600]),
-                              ),
-                            )
-                          : GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: _produtos.length,
-                              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 16,
-                                childAspectRatio: 0.75,
-                              ),
-                              itemBuilder: (context, index) {
-                                final produto = _produtos[index];
-                                return Card(
-                                  elevation: 4,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      Expanded(
-                                        child: ClipRRect(
-                                          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                                          child: Container(
-                                            color: Colors.grey[300],
-                                            child: Center(
-                                              child: Icon(Icons.inventory_2, size: 40, color: Colors.grey[600]),
-                                            ),
-                                          ),
-                                        ),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: roupasDestaque.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 0.75,
+                    ),
+                    itemBuilder: (context, index) {
+                      final roupa = roupasDestaque[index];
+                      return Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                                child: Image.asset(
+                                  roupa['imagem'],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: const Color.fromRGBO(224, 224, 224, 1),
+                                      child: Center(
+                                        child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey[600]),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(12),
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              produto.nome,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                                color: Colors.black87,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            SizedBox(height: 4),
-                                            Text(
-                                              'R\$ ${produto.preco.toStringAsFixed(2).replaceAll('.', ',')}',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.green[700],
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            SizedBox(height: 8),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (_) => OrderPage(produtos: [{
-                                                      'nome': produto.nome,
-                                                      'preco': 'R\$ ${produto.preco.toStringAsFixed(2).replaceAll('.', ',')}',
-                                                    }])
-                                                  ),
-                                                );
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.black87,
-                                                foregroundColor: Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                              ),
-                                              child: Text('Encomendar', style: TextStyle(fontSize: 12)),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
+                            Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    roupa['nome'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: Colors.black87,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    roupa['preco'],
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.green[700],
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  SizedBox(height: 8),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (_) => OrderPage(produtos: [roupa])),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.black87,
+                                      foregroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Text('Encomendar', style: TextStyle(fontSize: 12)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

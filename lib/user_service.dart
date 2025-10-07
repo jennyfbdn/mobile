@@ -26,6 +26,7 @@ class UserService {
   Future<Map<String, dynamic>> cadastrarUsuario({
     required String nome,
     required String email,
+    required String telefone,
     required String senha,
   }) async {
     try {
@@ -35,6 +36,7 @@ class UserService {
         body: jsonEncode({
           'nome': nome,
           'email': email,
+          'telefone': telefone,
           'senha': senha,
           'nivelAcesso': 'USER',
           'statusUsuario': 'ATIVO',

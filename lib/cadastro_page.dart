@@ -9,6 +9,7 @@ class CadastroPage extends StatefulWidget {
 class _CadastroPageState extends State<CadastroPage> {
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController telefoneController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController confirmarSenhaController = TextEditingController();
   String? senhaError;
@@ -43,6 +44,15 @@ class _CadastroPageState extends State<CadastroPage> {
                 controller: emailController,
                 decoration: _inputDecoration('E-mail'),
                 keyboardType: TextInputType.emailAddress,
+                style: TextStyle(color: Colors.black87),
+              ),
+              SizedBox(height: 16),
+
+              // Campo Telefone
+              TextField(
+                controller: telefoneController,
+                decoration: _inputDecoration('Telefone'),
+                keyboardType: TextInputType.phone,
                 style: TextStyle(color: Colors.black87),
               ),
               SizedBox(height: 16),
@@ -116,19 +126,34 @@ class _CadastroPageState extends State<CadastroPage> {
   bool _isFormValid() {
     return nomeController.text.isNotEmpty &&
            emailController.text.isNotEmpty &&
+           telefoneController.text.isNotEmpty &&
            senhaController.text.isNotEmpty &&
            confirmarSenhaController.text.isNotEmpty &&
            senhaError == null;
   }
 
+
+  
+
   Future<void> _cadastrarUsuario() async {
+    // Mostrar loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(child: CircularProgressIndicator()),
+    );
+
     final userService = UserService();
     
     final result = await userService.cadastrarUsuario(
       nome: nomeController.text,
       email: emailController.text,
+      telefone: telefoneController.text,
       senha: senhaController.text,
     );
+
+    // Fechar loading
+    Navigator.of(context).pop();
 
     if (result['success']) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -143,6 +168,7 @@ class _CadastroPageState extends State<CadastroPage> {
         SnackBar(
           content: Text(result['message']),
           backgroundColor: Colors.red,
+          duration: Duration(seconds: 5),
         ),
       );
     }

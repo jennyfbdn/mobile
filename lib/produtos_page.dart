@@ -15,9 +15,6 @@ class ProdutosPage extends StatefulWidget {
 class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-  final ProdutoService _produtoService = ProdutoService();
-  List<Produto> _produtos = [];
-  bool _isLoading = true;
 
   @override
   void initState() {
@@ -30,27 +27,6 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
     _fadeController.forward();
-    _carregarProdutos();
-  }
-
-  Future<void> _carregarProdutos() async {
-    try {
-      final produtos = await _produtoService.fetchProdutos();
-      setState(() {
-        _produtos = produtos;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao carregar produtos: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 
   @override
@@ -58,8 +34,58 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
     _fadeController.dispose();
     super.dispose();
   }
+  final List<Map<String, dynamic>> materiais = [
+    {
+      'nome': 'Linhas de Algodão',
+      'preco': 'R\$ 3,50',
+      'descricao': 'Linha 100% algodão, ideal para costuras delicadas',
+      'cor': Colors.blue[100],
+      'imagem': 'assets/images/linha.jpg',
+      'icone': Icons.colorize,
+    },
+    {
+      'nome': 'Botões',
+      'preco': 'R\$ 2,80',
+      'descricao': 'Linha resistente para costuras pesadas',
+      'cor': Colors.grey[200],
+      'imagem': 'assets/images/botao.jpg',
+      'icone': Icons.colorize,
+    },
+    {
+      'nome': 'Agulhas Sortidas',
+      'preco': 'R\$ 12,00',
+      'descricao': 'Kit com 20 agulhas de diversos tamanhos',
+      'cor': Colors.grey[300],
+      'imagem': 'assets/images/agulha.jpg',
+      'icone': Icons.push_pin,
+    },
+    {
+      'nome': 'Tesoura de Costura',
+      'preco': 'R\$ 25,00',
+      'descricao': 'Tesoura profissional afiada',
+      'cor': Colors.grey[400],
+      'imagem': 'assets/images/tesoura.jpg',
+      'icone': Icons.content_cut,
+    },
+    {
+      'nome': 'Fita Métrica',
+      'preco': 'R\$ 8,50',
+      'descricao': 'Fita métrica flexível 150cm',
+      'cor': Colors.grey[500],
+      'imagem': null,
+      'icone': Icons.straighten,
+    },
+    {
+      'nome': 'Botões Variados',
+      'preco': 'R\$ 15,00',
+      'descricao': 'Conjunto com 50 botões diversos',
+      'cor': Colors.grey[600],
+      'imagem': 'assets/images/botao.jpg',
+      'icone': Icons.radio_button_unchecked,
+    },
+  ];
 
-  void _adicionarEncomenda(BuildContext context, Produto produto) {
+  void _adicionarEncomenda(BuildContext context, Map<String, dynamic> material) {
     final nomeController = TextEditingController();
     final telefoneController = TextEditingController();
     DateTime? dataSelecionada;
@@ -146,12 +172,12 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                 
                 if (nome.isNotEmpty && dataSelecionada != null && horaSelecionada != null) {
                   Map<String, dynamic> encomenda = {
-                    'material': produto.nome,
+                    'material': material['nome'],
                     'nome': nome,
                     'telefone': telefone,
                     'quantidade': 1,
-                    'preco': 'R\$ ${produto.preco.toStringAsFixed(2).replaceAll('.', ',')}',
-                    'personalizacao': produto.descricao,
+                    'preco': material['preco'],
+                    'personalizacao': 'Material de costura',
                     'dataRetirada': '${dataSelecionada!.day}/${dataSelecionada!.month}/${dataSelecionada!.year}',
                     'horaRetirada': '${horaSelecionada!.hour.toString().padLeft(2, '0')}:${horaSelecionada!.minute.toString().padLeft(2, '0')}',
                   };
@@ -267,187 +293,164 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
               ),
             ),
             Expanded(
-              child: _isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black87),
-                      ),
-                    )
-                  : _produtos.isEmpty
-                      ? Center(
+              child: GridView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 0.8,
+                ),
+                itemCount: materiais.length,
+                itemBuilder: (context, index) {
+                  final material = materiais[index];
+                  return TweenAnimationBuilder<double>(
+                    duration: Duration(milliseconds: 600 + (index * 100)),
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    curve: Curves.easeOutBack,
+                    builder: (context, value, child) {
+                      return Transform.scale(
+                        scale: value,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 20,
+                                offset: Offset(0, 8),
+                              ),
+                            ],
+                          ),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.inventory_2_outlined, size: 64, color: Colors.grey[400]),
-                              SizedBox(height: 16),
-                              Text(
-                                'Nenhum produto encontrado',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey[600],
+                              Container(
+                                height: 120,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: material['cor'],
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                ),
+                                child: material['imagem'] != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                        child: Stack(
+                                          children: [
+                                            Image.asset(
+                                              material['imagem'],
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                              height: 120,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return Center(
+                                                  child: Icon(
+                                                    material['icone'],
+                                                    size: 48,
+                                                    color: Colors.white,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                            Positioned(
+                                              top: 8,
+                                              right: 8,
+                                              child: Container(
+                                                padding: EdgeInsets.all(4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white.withOpacity(0.9),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Icon(
+                                                  Icons.shopping_cart,
+                                                  size: 16,
+                                                  color: Colors.green[600],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : Center(
+                                        child: Icon(
+                                          material['icone'],
+                                          size: 48,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        material['nome'],
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        material['descricao'],
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey[600],
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Spacer(),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            material['preco'],
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.green[700],
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () => _adicionarEncomenda(context, material),
+                                                child: Container(
+                                                  padding: EdgeInsets.all(6),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black87,
+                                                    borderRadius: BorderRadius.circular(8),
+                                                  ),
+                                                  child: Icon(
+                                                    Icons.add_shopping_cart,
+                                                    color: Colors.white,
+                                                    size: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                        )
-                      : GridView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: 0.8,
-                          ),
-                          itemCount: _produtos.length,
-                          itemBuilder: (context, index) {
-                            final produto = _produtos[index];
-                            return TweenAnimationBuilder<double>(
-                              duration: Duration(milliseconds: 600 + (index * 100)),
-                              tween: Tween(begin: 0.0, end: 1.0),
-                              curve: Curves.easeOutBack,
-                              builder: (context, value, child) {
-                                return Transform.scale(
-                                  scale: value,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
-                                          blurRadius: 20,
-                                          offset: Offset(0, 8),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          height: 120,
-                                          width: double.infinity,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey[200],
-                                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                                          ),
-                                          child: produto.fotoUrl.isNotEmpty
-                                              ? ClipRRect(
-                                                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                                                  child: Stack(
-                                                    children: [
-                                                      Image.network(
-                                                        produto.fotoUrl,
-                                                        fit: BoxFit.cover,
-                                                        width: double.infinity,
-                                                        height: 120,
-                                                        errorBuilder: (context, error, stackTrace) {
-                                                          return Center(
-                                                            child: Icon(
-                                                              Icons.inventory_2,
-                                                              size: 48,
-                                                              color: Colors.grey[600],
-                                                            ),
-                                                          );
-                                                        },
-                                                      ),
-                                                      Positioned(
-                                                        top: 8,
-                                                        right: 8,
-                                                        child: Container(
-                                                          padding: EdgeInsets.all(4),
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.white.withOpacity(0.9),
-                                                            borderRadius: BorderRadius.circular(12),
-                                                          ),
-                                                          child: Icon(
-                                                            Icons.shopping_cart,
-                                                            size: 16,
-                                                            color: Colors.green[600],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                )
-                                              : Center(
-                                                  child: Icon(
-                                                    Icons.inventory_2,
-                                                    size: 48,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                ),
-                                        ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding: EdgeInsets.all(12),
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  produto.nome,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14,
-                                                    color: Colors.black87,
-                                                  ),
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                SizedBox(height: 4),
-                                                Text(
-                                                  produto.descricao,
-                                                  style: TextStyle(
-                                                    fontSize: 11,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                Spacer(),
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      'R\$ ${produto.preco.toStringAsFixed(2).replaceAll('.', ',')}',
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.green[700],
-                                                      ),
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        GestureDetector(
-                                                          onTap: () => _adicionarEncomenda(context, produto),
-                                                          child: Container(
-                                                            padding: EdgeInsets.all(6),
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.black87,
-                                                              borderRadius: BorderRadius.circular(8),
-                                                            ),
-                                                            child: Icon(
-                                                              Icons.add_shopping_cart,
-                                                              color: Colors.white,
-                                                              size: 16,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
                         ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
