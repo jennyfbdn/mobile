@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'agendamento_service.dart';
+import 'theme/app_theme.dart';
 
 class PersonalizacaoPage extends StatefulWidget {
   @override
@@ -10,10 +11,11 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
   final _formKey = GlobalKey<FormState>();
   final _nomeController = TextEditingController();
   final _telefoneController = TextEditingController();
+  final _descricaoController = TextEditingController();
   String _tipoPeca = 'Vestido';
   String _tipoPersonalizacao = 'Ajuste de tamanho';
   DateTime? _dataAgendamento;
-  Color _corSelecionada = Colors.blue;
+  TimeOfDay? _horaAgendamento;
   String _tamanhoSelecionado = 'M';
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -26,12 +28,38 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
     'Outro': Icons.category,
   };
   
-  final List<Color> _coresDisponiveis = [
-    Colors.blue, Colors.red, Colors.green, Colors.purple,
-    Colors.orange, Colors.pink, Colors.teal, Colors.brown,
-  ];
-  
   final List<String> _tamanhosDisponiveis = ['PP', 'P', 'M', 'G', 'GG'];
+  
+  final Map<String, double> _precosPeca = {
+    'Vestido': 80.0,
+    'Blusa': 60.0,
+    'Saia': 50.0,
+    'Calça': 70.0,
+    'Outro': 65.0,
+  };
+  
+  final Map<String, double> _multiplicadorTamanho = {
+    'PP': 0.9,
+    'P': 0.95,
+    'M': 1.0,
+    'G': 1.1,
+    'GG': 1.2,
+  };
+  
+  final Map<String, double> _precosServico = {
+    'Ajuste de tamanho': 25.0,
+    'Bordado': 50.0,
+    'Aplicação': 40.0,
+    'Reforma': 60.0,
+    'Outro': 35.0,
+  };
+  
+  double get _valorTotal {
+    double precoPeca = _precosPeca[_tipoPeca] ?? 65.0;
+    double multiplicador = _multiplicadorTamanho[_tamanhoSelecionado] ?? 1.0;
+    double precoServico = _precosServico[_tipoPersonalizacao] ?? 35.0;
+    return (precoPeca * multiplicador) + precoServico;
+  }
 
   @override
   void initState() {
@@ -55,11 +83,11 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text('Personalização no Ateliê'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        backgroundColor: AppTheme.surfaceColor,
+        foregroundColor: AppTheme.textPrimary,
         elevation: 4,
       ),
       body: Form(
@@ -92,15 +120,21 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                   SizedBox(height: 16),
                   _buildTextField(_telefoneController, 'Telefone', Icons.phone_outlined, TextInputType.phone),
                   SizedBox(height: 16),
-                  _buildTipoPecaSelector(),
+                  _buildTextField(_descricaoController, 'Descrição do produto desejado', Icons.description_outlined),
                   SizedBox(height: 16),
-                  _buildCorSelector(),
+                  _buildTipoPecaSelector(),
                   SizedBox(height: 16),
                   _buildTamanhoSelector(),
                   SizedBox(height: 16),
                   _buildDropdown('Tipo de personalização', _tipoPersonalizacao, ['Ajuste de tamanho', 'Bordado', 'Aplicação', 'Reforma', 'Outro'], (v) => setState(() => _tipoPersonalizacao = v!)),
                   SizedBox(height: 16),
-                  _buildDateSelector(),
+                  Row(
+                    children: [
+                      Expanded(child: _buildDateSelector()),
+                      SizedBox(width: 16),
+                      Expanded(child: _buildTimeSelector()),
+                    ],
+                  ),
                   SizedBox(height: 32),
             
                   Row(
@@ -108,13 +142,7 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _agendar,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                            foregroundColor: Colors.white,
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            elevation: 2,
-                          ),
+                          style: AppTheme.primaryButtonStyle,
                           child: Text('Agendar Visita', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                         ),
                       ),
@@ -123,7 +151,7 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                         child: ElevatedButton(
                           onPressed: () => Navigator.pushNamed(context, '/agendamentos'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[800],
+                            backgroundColor: AppTheme.secondaryColor,
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -153,12 +181,12 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
             height: 200,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [_corSelecionada.withOpacity(0.3), _corSelecionada.withOpacity(0.1)],
+                colors: [AppTheme.accentColor.withOpacity(0.3), AppTheme.accentColor.withOpacity(0.1)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: _corSelecionada.withOpacity(0.5), width: 2),
+              border: Border.all(color: AppTheme.accentColor.withOpacity(0.5), width: 2),
             ),
             child: Center(
               child: Column(
@@ -166,23 +194,39 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                 children: [
                   Icon(
                     _iconsPecas[_tipoPeca],
-                    size: 80,
-                    color: _corSelecionada,
+                    size: 60,
+                    color: AppTheme.accentColor,
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: 8),
                   Text(
                     '$_tipoPeca - Tamanho $_tamanhoSelecionado',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: _corSelecionada,
+                      color: Colors.blue,
                     ),
                   ),
                   Text(
                     _tipoPersonalizacao,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Valor: R\$ ${_valorTotal.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green[700],
+                      ),
                     ),
                   ),
                 ],
@@ -209,17 +253,15 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                 setState(() {
                   _tipoPeca = tipo;
                 });
-                _animationController.reset();
-                _animationController.forward();
               },
               child: AnimatedContainer(
                 duration: Duration(milliseconds: 200),
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.black87 : Colors.grey[100],
+                  color: isSelected ? AppTheme.primaryColor : Colors.grey[100],
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(
-                    color: isSelected ? Colors.black87 : Colors.grey[300]!,
+                    color: isSelected ? AppTheme.primaryColor : Colors.grey[300]!,
                   ),
                 ),
                 child: Row(
@@ -248,44 +290,37 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
     );
   }
 
-  Widget _buildCorSelector() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Cor Preferida', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-        SizedBox(height: 8),
-        Wrap(
-          spacing: 12,
-          children: _coresDisponiveis.map((cor) {
-            bool isSelected = _corSelecionada == cor;
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _corSelecionada = cor;
-                });
-                _animationController.reset();
-                _animationController.forward();
-              },
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 200),
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: cor,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isSelected ? Colors.black87 : Colors.grey[300]!,
-                    width: isSelected ? 3 : 1,
-                  ),
-                ),
-                child: isSelected
-                    ? Icon(Icons.check, color: Colors.white, size: 20)
-                    : null,
-              ),
-            );
-          }).toList(),
+  Widget _buildTimeSelector() {
+    return InkWell(
+      onTap: () async {
+        final hora = await showTimePicker(
+          context: context,
+          initialTime: TimeOfDay(hour: 9, minute: 0),
+        );
+        if (hora != null) setState(() => _horaAgendamento = hora);
+      },
+      child: Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[400]!),
+          borderRadius: BorderRadius.circular(12),
         ),
-      ],
+        child: Row(
+          children: [
+            Icon(Icons.access_time, color: Colors.grey[600]),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Horário', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  Text(_horaAgendamento != null ? '${_horaAgendamento!.hour.toString().padLeft(2, '0')}:${_horaAgendamento!.minute.toString().padLeft(2, '0')}' : 'Selecionar hora', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -304,18 +339,16 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                   setState(() {
                     _tamanhoSelecionado = tamanho;
                   });
-                  _animationController.reset();
-                  _animationController.forward();
                 },
                 child: AnimatedContainer(
                   duration: Duration(milliseconds: 200),
                   margin: EdgeInsets.only(right: 8),
                   padding: EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? Colors.black87 : Colors.grey[100],
+                    color: isSelected ? AppTheme.primaryColor : Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: isSelected ? Colors.black87 : Colors.grey[300]!,
+                      color: isSelected ? AppTheme.primaryColor : Colors.grey[300]!,
                     ),
                   ),
                   child: Text(
@@ -399,25 +432,28 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
     );
   }
 
-  void _agendar() {
-    if (_formKey.currentState!.validate() && _dataAgendamento != null) {
+  void _agendar() async {
+    if (_formKey.currentState!.validate() && _dataAgendamento != null && _horaAgendamento != null) {
       final agendamento = {
         'nome': _nomeController.text,
         'telefone': _telefoneController.text,
         'tipoPeca': _tipoPeca,
+        'tamanho': _tamanhoSelecionado,
         'tipoPersonalizacao': _tipoPersonalizacao,
+        'descricao': _descricaoController.text.isNotEmpty ? _descricaoController.text : '$_tipoPeca com $_tipoPersonalizacao',
         'data': '${_dataAgendamento!.day}/${_dataAgendamento!.month}/${_dataAgendamento!.year}',
+        'hora': '${_horaAgendamento!.hour.toString().padLeft(2, '0')}:${_horaAgendamento!.minute.toString().padLeft(2, '0')}',
         'status': 'Pendente',
       };
       
-      AgendamentoService().adicionarAgendamento(agendamento);
+      final result = await AgendamentoService().adicionarAgendamento(agendamento);
       
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text('Agendamento Confirmado', style: TextStyle(fontWeight: FontWeight.bold)),
-          content: Text('Sua visita foi agendada para ${_dataAgendamento!.day}/${_dataAgendamento!.month}/${_dataAgendamento!.year}.\n\nEntraremos em contato em breve para confirmar os detalhes.'),
+          content: Text('Sua visita foi agendada para ${_dataAgendamento!.day}/${_dataAgendamento!.month}/${_dataAgendamento!.year} às ${_horaAgendamento!.hour.toString().padLeft(2, '0')}:${_horaAgendamento!.minute.toString().padLeft(2, '0')}.\n\nValor estimado: R\$ ${_valorTotal.toStringAsFixed(2)}\n\n${result['message']}'),
           actions: [
             TextButton(
               onPressed: () {
@@ -429,9 +465,13 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
           ],
         ),
       );
-    } else if (_dataAgendamento == null) {
+    } else {
+      String mensagem = '';
+      if (_dataAgendamento == null) mensagem = 'Selecione uma data';
+      else if (_horaAgendamento == null) mensagem = 'Selecione um horário';
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Selecione uma data')),
+        SnackBar(content: Text(mensagem)),
       );
     }
   }

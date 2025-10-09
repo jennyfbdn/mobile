@@ -15,15 +15,10 @@ class _LoginPageState extends State<LoginPage> {
   String? _errorMessage;
 
   void _login() async {
+    if (!_formKey.currentState!.validate()) return;
+    
     String email = emailController.text.trim();
     String senha = senhaController.text;
-
-    if (email.isEmpty || senha.isEmpty) {
-      setState(() {
-        _errorMessage = 'Preencha todos os campos.';
-      });
-      return;
-    }
 
     final userService = UserService();
     final result = await userService.login(email, senha);
@@ -129,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 150,
               ),
               SizedBox(height: 24),
-              TextField(
+              TextFormField(
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'E-mail',
@@ -143,9 +138,14 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 keyboardType: TextInputType.emailAddress,
                 style: TextStyle(color: Colors.black87),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'E-mail obrigatório';
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) return 'E-mail inválido';
+                  return null;
+                },
               ),
               SizedBox(height: 16),
-              TextField(
+              TextFormField(
                 controller: senhaController,
                 decoration: InputDecoration(
                   labelText: 'Senha',
@@ -159,6 +159,11 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 obscureText: true,
                 style: TextStyle(color: Colors.black87),
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return 'Senha obrigatória';
+                  if (value!.length < 6) return 'Mínimo 6 caracteres';
+                  return null;
+                },
               ),
               if (_errorMessage != null) ...[
                 SizedBox(height: 12),

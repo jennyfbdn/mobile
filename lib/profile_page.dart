@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'medidas_page.dart';
+import 'user_service.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -9,11 +10,27 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
   bool _isEditing = false;
+  final UserService _userService = UserService();
   
-  final TextEditingController _nomeController = TextEditingController(text: 'Maria Silva');
-  final TextEditingController _emailController = TextEditingController(text: 'maria.silva@email.com');
-  final TextEditingController _telefoneController = TextEditingController(text: '(11) 99999-9999');
-  final TextEditingController _enderecoController = TextEditingController(text: 'Rua das Flores, 123');
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _telefoneController = TextEditingController();
+  final TextEditingController _enderecoController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarDadosUsuario();
+  }
+
+  void _carregarDadosUsuario() {
+    if (_userService.temUsuario) {
+      _nomeController.text = _userService.nomeUsuario ?? '';
+      _emailController.text = _userService.emailUsuario ?? '';
+      _telefoneController.text = _userService.telefoneUsuario ?? '';
+      _enderecoController.text = _userService.enderecoUsuario ?? '';
+    }
+  }
 
   void _toggleEdit() {
     setState(() {
@@ -23,6 +40,14 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _salvarPerfil() {
     if (_formKey.currentState?.validate() ?? false) {
+      // Salvar no UserService
+      _userService.atualizarPerfil(
+        nome: _nomeController.text,
+        email: _emailController.text,
+        telefone: _telefoneController.text,
+        endereco: _enderecoController.text,
+      );
+      
       setState(() {
         _isEditing = false;
       });
@@ -99,7 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value?.isEmpty == true) return 'E-mail é obrigatório';
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}\$').hasMatch(value!)) {
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
                     return 'E-mail inválido';
                   }
                   return null;

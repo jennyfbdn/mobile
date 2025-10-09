@@ -113,14 +113,16 @@ class _CadastroPageState extends State<CadastroPage> {
   }
 
   void _validatePasswords() {
-    setState(() {
-      if (confirmarSenhaController.text.isNotEmpty && 
-          senhaController.text != confirmarSenhaController.text) {
-        senhaError = 'As senhas não coincidem';
-      } else {
-        senhaError = null;
-      }
-    });
+    if (mounted) {
+      setState(() {
+        if (confirmarSenhaController.text.isNotEmpty && 
+            senhaController.text != confirmarSenhaController.text) {
+          senhaError = 'As senhas não coincidem';
+        } else {
+          senhaError = null;
+        }
+      });
+    }
   }
 
   bool _isFormValid() {
@@ -130,6 +132,16 @@ class _CadastroPageState extends State<CadastroPage> {
            senhaController.text.isNotEmpty &&
            confirmarSenhaController.text.isNotEmpty &&
            senhaError == null;
+  }
+
+  @override
+  void dispose() {
+    nomeController.dispose();
+    emailController.dispose();
+    telefoneController.dispose();
+    senhaController.dispose();
+    confirmarSenhaController.dispose();
+    super.dispose();
   }
 
 
@@ -153,9 +165,11 @@ class _CadastroPageState extends State<CadastroPage> {
     );
 
     // Fechar loading
-    Navigator.of(context).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
 
-    if (result['success']) {
+    if (mounted && result['success']) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['message']),
@@ -163,7 +177,7 @@ class _CadastroPageState extends State<CadastroPage> {
         ),
       );
       Navigator.pushNamed(context, '/home');
-    } else {
+    } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(result['message']),

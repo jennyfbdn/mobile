@@ -4,8 +4,7 @@ import 'profile_page.dart';
 import 'produto_detalhes_page.dart';
 import 'user_service.dart';
 import 'agendamentos_page.dart';
-import 'services/produto_service.dart';
-import 'models/produto_model.dart';
+import 'produto_service.dart';
 
 class ProdutosPage extends StatefulWidget {
   @override
@@ -15,6 +14,9 @@ class ProdutosPage extends StatefulWidget {
 class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+  final ProdutoService _produtoService = ProdutoService();
+  List<dynamic> produtos = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -27,6 +29,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
     _fadeController.forward();
+    _carregarProdutos();
   }
 
   @override
@@ -34,23 +37,20 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
     _fadeController.dispose();
     super.dispose();
   }
+
+  Future<void> _carregarProdutos() async {
+    final result = await _produtoService.listarProdutos();
+    setState(() {
+      if (result['success']) {
+        produtos = result['produtos'];
+      } else {
+        // Se falhar, usar dados mock
+        produtos = materiais;
+      }
+      isLoading = false;
+    });
+  }
   final List<Map<String, dynamic>> materiais = [
-    {
-      'nome': 'Linhas de Algodão',
-      'preco': 'R\$ 3,50',
-      'descricao': 'Linha 100% algodão, ideal para costuras delicadas',
-      'cor': Colors.blue[100],
-      'imagem': 'assets/images/linha.jpg',
-      'icone': Icons.colorize,
-    },
-    {
-      'nome': 'Botões',
-      'preco': 'R\$ 2,80',
-      'descricao': 'Linha resistente para costuras pesadas',
-      'cor': Colors.grey[200],
-      'imagem': 'assets/images/botao.jpg',
-      'icone': Icons.colorize,
-    },
     {
       'nome': 'Agulhas Sortidas',
       'preco': 'R\$ 12,00',
@@ -60,28 +60,12 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       'icone': Icons.push_pin,
     },
     {
-      'nome': 'Tesoura de Costura',
-      'preco': 'R\$ 25,00',
-      'descricao': 'Tesoura profissional afiada',
-      'cor': Colors.grey[400],
-      'imagem': 'assets/images/tesoura.jpg',
-      'icone': Icons.content_cut,
-    },
-    {
-      'nome': 'Fita Métrica',
-      'preco': 'R\$ 8,50',
-      'descricao': 'Fita métrica flexível 150cm',
-      'cor': Colors.grey[500],
-      'imagem': null,
-      'icone': Icons.straighten,
-    },
-    {
-      'nome': 'Botões Variados',
-      'preco': 'R\$ 15,00',
-      'descricao': 'Conjunto com 50 botões diversos',
-      'cor': Colors.grey[600],
-      'imagem': 'assets/images/botao.jpg',
-      'icone': Icons.radio_button_unchecked,
+      'nome': 'Linhas de Algodão',
+      'preco': 'R\$ 3,50',
+      'descricao': 'Linha 100% algodão, ideal para costuras delicadas',
+      'cor': Colors.blue[100],
+      'imagem': 'assets/images/linha.jpg',
+      'icone': Icons.colorize,
     },
   ];
 
@@ -166,13 +150,13 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
               child: Text('Cancelar'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 String nome = nomeController.text.trim();
                 String telefone = telefoneController.text.trim();
                 
                 if (nome.isNotEmpty && dataSelecionada != null && horaSelecionada != null) {
                   Map<String, dynamic> encomenda = {
-                    'material': material['nome'],
+                    'produto': material['nome'],
                     'nome': nome,
                     'telefone': telefone,
                     'quantidade': 1,
@@ -182,13 +166,13 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                     'horaRetirada': '${horaSelecionada!.hour.toString().padLeft(2, '0')}:${horaSelecionada!.minute.toString().padLeft(2, '0')}',
                   };
                   
-                  EncomendaService().adicionarEncomenda(encomenda);
+                  final result = await EncomendaService().adicionarEncomenda(encomenda);
                   Navigator.pop(context);
                   
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Encomenda criada com sucesso!'),
-                      backgroundColor: Colors.green,
+                      content: Text(result['success'] ? 'Encomenda criada com sucesso!' : result['message']),
+                      backgroundColor: result['success'] ? Colors.green : Colors.orange,
                     ),
                   );
                 } else {
@@ -204,6 +188,69 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Map<String, dynamic> _formatarProduto(dynamic produto) {
+    return {
+      'nome': produto['nome'] ?? 'Produto',
+      'preco': 'R\$ ${produto['preco']?.toStringAsFixed(2) ?? '0,00'}',
+      'descricao': produto['descricao'] ?? 'Descrição não disponível',
+      'cor': Colors.grey[200],
+      'imagem': produto['imagem'],
+      'icone': Icons.shopping_bag,
+    };
+  }
+
+  Widget _buildLoadingCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            height: 120,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 16,
+                    width: double.infinity,
+                    color: Colors.grey[300],
+                  ),
+                  SizedBox(height: 8),
+                  Container(
+                    height: 12,
+                    width: 100,
+                    color: Colors.grey[300],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -301,9 +348,13 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                   mainAxisSpacing: 16,
                   childAspectRatio: 0.8,
                 ),
-                itemCount: materiais.length,
+                itemCount: isLoading ? 6 : produtos.length,
                 itemBuilder: (context, index) {
-                  final material = materiais[index];
+                  if (isLoading) {
+                    return _buildLoadingCard();
+                  }
+                  final produto = produtos[index];
+                  final material = _formatarProduto(produto);
                   return TweenAnimationBuilder<double>(
                     duration: Duration(milliseconds: 600 + (index * 100)),
                     tween: Tween(begin: 0.0, end: 1.0),

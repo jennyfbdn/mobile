@@ -4,6 +4,7 @@ import 'encomenda_service.dart';
 import 'medidas_page.dart';
 import 'medidas_service.dart';
 import 'user_service.dart';
+import 'guia_medidas_page.dart';
 
 class OrderPage extends StatefulWidget {
   final List<Map<String, dynamic>> produtos;
@@ -20,6 +21,8 @@ class _OrderPageState extends State<OrderPage> {
   String? nome;
   String? telefone;
   String? personalizacao;
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _telefoneController = TextEditingController();
   final TextEditingController _alturaController = TextEditingController();
   final TextEditingController _larguraController = TextEditingController();
   final TextEditingController _bustoController = TextEditingController();
@@ -31,6 +34,7 @@ class _OrderPageState extends State<OrderPage> {
   String? tipoPersonalizacao;
   DateTime? dataRetirada;
   TimeOfDay? horaRetirada;
+  String? localizacaoSelecionada;
   
   double get precoBase {
     if (produtoSelecionado != null && produtoSelecionado!['preco'] != null) {
@@ -57,64 +61,116 @@ class _OrderPageState extends State<OrderPage> {
     super.initState();
     produtoSelecionado = widget.produtos.isNotEmpty ? widget.produtos[0] : null;
     tipoPersonalizacao = 'Nenhuma';
-    _carregarMedidasSalvas();
+    _carregarDadosUsuario();
   }
   
-  void _carregarMedidasSalvas() {
-    if (MedidasService().temMedidas()) {
-      final medidas = MedidasService().obterMedidas();
+  void _carregarDadosUsuario() {
+    final userService = UserService();
+    
+    // Carregar dados pessoais
+    if (userService.temUsuario) {
+      _nomeController.text = userService.nomeUsuario ?? '';
+      _telefoneController.text = userService.telefoneUsuario ?? '';
+      nome = userService.nomeUsuario;
+      telefone = userService.telefoneUsuario;
+    }
+    
+    // Carregar medidas do UserService primeiro, depois MedidasService
+    final medidasUser = userService.medidasUsuario;
+    final medidasService = MedidasService().obterMedidas();
+    
+    final medidas = medidasUser.isNotEmpty ? medidasUser : medidasService;
+    
+    if (medidas.isNotEmpty) {
       _alturaController.text = medidas['altura'] ?? '';
       _larguraController.text = medidas['cintura'] ?? '';
       _bustoController.text = medidas['busto'] ?? '';
     }
   }
 
-  void _enviarEncomenda() {
-    if (_formKey.currentState?.validate() ?? false) {
-      if (dataRetirada == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Selecione a data de retirada')),
-        );
-        return;
-      }
-      if (horaRetirada == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Selecione a hora de retirada')),
-        );
-        return;
-      }
-      _formKey.currentState?.save();
-      
-      // Salvar dados do usuário
-      UserService().setUsuario(nome ?? '', telefone ?? '');
-      
-      // Adicionar encomenda ao serviço
-      String personalizacaoFinal = '';
-      if (personalizacao != null && personalizacao!.isNotEmpty) {
-        personalizacaoFinal = personalizacao!;
-      } else if (tipoPersonalizacao != null && tipoPersonalizacao != 'Nenhuma') {
-        personalizacaoFinal = tipoPersonalizacao!;
-      } else {
-        personalizacaoFinal = 'Nenhuma';
-      }
-      
-      final encomenda = {
-        'produto': produtoSelecionado?['nome'] ?? 'Produto não selecionado',
-        'nome': nome ?? 'Cliente',
-        'telefone': telefone ?? '',
-        'quantidade': quantidade,
-        'altura': _alturaController.text,
-        'largura': _larguraController.text,
-        'busto': _bustoController.text,
-        'personalizacao': personalizacaoFinal,
-        'dataRetirada': dataRetirada != null ? '${dataRetirada!.day}/${dataRetirada!.month}/${dataRetirada!.year}' : '',
-        'horaRetirada': horaRetirada != null ? '${horaRetirada!.hour.toString().padLeft(2, '0')}:${horaRetirada!.minute.toString().padLeft(2, '0')}' : '',
-        'preco': 'R\$ ${precoTotal.toStringAsFixed(2)}',
-      };
-      
-      print('DEBUG - Encomenda criada: $encomenda');
-      
-      EncomendaService().adicionarEncomenda(encomenda);
+  @override
+  void dispose() {
+    _nomeController.dispose();
+    _telefoneController.dispose();
+    _alturaController.dispose();
+    _larguraController.dispose();
+    _bustoController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _enviarEncomenda() async {
+    if (!_formKey.currentState!.validate()) return;
+    
+    if (dataRetirada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selecione a data de retirada'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    if (horaRetirada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selecione a hora de retirada'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    if (produtoSelecionado == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selecione um produto'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    if (localizacaoSelecionada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Selecione o local de retirada'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    
+    _formKey.currentState?.save();
+    
+    // Salvar dados do usuário
+    UserService().atualizarPerfil(
+      nome: nome ?? _nomeController.text,
+      telefone: telefone ?? _telefoneController.text,
+    );
+    
+    // Adicionar encomenda ao serviço
+    String personalizacaoFinal = '';
+    if (personalizacao != null && personalizacao!.isNotEmpty) {
+      personalizacaoFinal = personalizacao!;
+    } else if (tipoPersonalizacao != null && tipoPersonalizacao != 'Nenhuma') {
+      personalizacaoFinal = tipoPersonalizacao!;
+    } else {
+      personalizacaoFinal = 'Nenhuma';
+    }
+    
+    final encomenda = {
+      'produto': produtoSelecionado?['nome'] ?? 'Produto não selecionado',
+      'nome': nome ?? _nomeController.text,
+      'telefone': telefone ?? _telefoneController.text,
+      'quantidade': quantidade,
+      'altura': _alturaController.text,
+      'largura': _larguraController.text,
+      'busto': _bustoController.text,
+      'personalizacao': personalizacaoFinal,
+      'dataRetirada': dataRetirada != null ? '${dataRetirada!.day}/${dataRetirada!.month}/${dataRetirada!.year}' : '',
+      'horaRetirada': horaRetirada != null ? '${horaRetirada!.hour.toString().padLeft(2, '0')}:${horaRetirada!.minute.toString().padLeft(2, '0')}' : '',
+      'localizacao': localizacaoSelecionada ?? 'Não informado',
+      'preco': 'R\$ ${precoTotal.toStringAsFixed(2)}',
+    };
+    
+    // Enviar encomenda para o backend
+    final result = await EncomendaService().adicionarEncomenda(encomenda);
+    
+    if (result['success']) {
+      Navigator.pushNamed(context, '/agradecimento');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message']),
+          backgroundColor: Colors.orange,
+        ),
+      );
       Navigator.pushNamed(context, '/agradecimento');
     }
   }
@@ -224,6 +280,7 @@ class _OrderPageState extends State<OrderPage> {
             SizedBox(height: 16),
 
             TextFormField(
+              controller: _nomeController,
               decoration: _inputDecoration('Nome'),
               validator: (value) => (value == null || value.isEmpty) ? 'Informe o nome' : null,
               onSaved: (value) => nome = value,
@@ -231,6 +288,7 @@ class _OrderPageState extends State<OrderPage> {
             ),
             SizedBox(height: 16),
             TextFormField(
+              controller: _telefoneController,
               decoration: _inputDecoration('Telefone'),
               keyboardType: TextInputType.phone,
               validator: (value) => (value == null || value.isEmpty) ? 'Informe o telefone' : null,
@@ -255,21 +313,38 @@ class _OrderPageState extends State<OrderPage> {
               ),
               child: Column(
                 children: [
-                  Icon(Icons.store, size: 40, color: Colors.black87),
+                  Icon(Icons.location_on, size: 40, color: Colors.black87),
                   SizedBox(height: 12),
                   Text(
-                    'Retirada no Ateliê',
+                    'Local de Retirada',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                       color: Colors.black87,
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Sua encomenda ficará pronta para retirada no ateliê.',
-                    style: TextStyle(color: Colors.grey[600]),
-                    textAlign: TextAlign.center,
+                  SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[300]!),
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Selecione o local',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      value: localizacaoSelecionada,
+                      items: [
+                        DropdownMenuItem(value: 'Ateliê Pano Fino - Centro', child: Text('Ateliê Pano Fino - Centro')),
+                        DropdownMenuItem(value: 'Ateliê Pano Fino - Vila Madalena', child: Text('Ateliê Pano Fino - Vila Madalena')),
+                        DropdownMenuItem(value: 'Ateliê Pano Fino - Moema', child: Text('Ateliê Pano Fino - Moema')),
+                      ],
+                      onChanged: (value) => setState(() => localizacaoSelecionada = value),
+                      validator: (value) => value == null ? 'Selecione um local' : null,
+                    ),
                   ),
                   SizedBox(height: 16),
                   OutlinedButton(
@@ -286,7 +361,7 @@ class _OrderPageState extends State<OrderPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Text('Ver Localização', style: TextStyle(color: Colors.black87)),
+                    child: Text('Ver no Mapa', style: TextStyle(color: Colors.black87)),
                   ),
                 ],
               ),
@@ -297,15 +372,30 @@ class _OrderPageState extends State<OrderPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _sectionTitle('Medidas (cm)'),
-                OutlinedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => MedidasPage()));
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.black),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  ),
-                  child: Text('Manequim Ajustável', style: TextStyle(color: Colors.black, fontSize: 12)),
+                Row(
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => GuiaMedidasPage()));
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.blue),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      ),
+                      child: Text('Como medir?', style: TextStyle(color: Colors.blue, fontSize: 11)),
+                    ),
+                    SizedBox(width: 8),
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => MedidasPage()));
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.black),
+                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      ),
+                      child: Text('Manequim', style: TextStyle(color: Colors.black, fontSize: 11)),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -613,7 +703,7 @@ class _OrderPageState extends State<OrderPage> {
                 ],
               ),
               child: ElevatedButton(
-                onPressed: _enviarEncomenda,
+                onPressed: () async => await _enviarEncomenda(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,

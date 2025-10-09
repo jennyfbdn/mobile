@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'user_service.dart';
+import 'validar_codigo_page.dart';
 
 class EsqueciSenhaPage extends StatefulWidget {
   @override
@@ -11,41 +15,95 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
   bool _isLoading = false;
 
   void _enviarEmail() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      await Future.delayed(Duration(seconds: 2));
-
-      setState(() {
-        _isLoading = false;
-      });
-
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 28),
-              SizedBox(width: 12),
-              Text('Email Enviado'),
-            ],
-          ),
-          content: Text('Enviamos um link para redefinir sua senha para ${_emailController.text}'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
+    if (!_formKey.currentState!.validate()) return;
+    
+    setState(() => _isLoading = true);
+    
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/usuario/enviarCodigo'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': _emailController.text}),
+      );
+      
+      setState(() => _isLoading = false);
+      
+      if (response.statusCode == 200) {
+        _mostrarSucesso();
+      } else {
+        _mostrarErro('Email não encontrado ou erro ao enviar');
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      _mostrarErro('Erro de conexão. Tente novamente.');
+    }
+  }
+  
+  Future<void> _gerarNovaSenha() async {
+    try {
+      final novaSenha = '123456'; // Senha temporária
+      
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/usuario/resetSenha'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': _emailController.text,
+          'novaSenha': novaSenha,
+        }),
+      );
+      
+      if (response.statusCode == 200) {
+        _mostrarSucesso(novaSenha);
+      } else {
+        _mostrarErro('Erro ao redefinir senha');
+      }
+    } catch (e) {
+      _mostrarErro('Erro ao processar solicitação');
+    }
+  }
+  
+  void _mostrarSucesso() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 28),
+            SizedBox(width: 12),
+            Text('Código Enviado'),
           ],
         ),
-      );
-    }
+        content: Text('Enviamos um código de 6 dígitos para ${_emailController.text}. Verifique sua caixa de entrada.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _mostrarTelaValidacao();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _mostrarTelaValidacao() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ValidarCodigoPage(email: _emailController.text),
+      ),
+    );
+  }
+  
+  void _mostrarErro(String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override

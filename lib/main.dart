@@ -12,9 +12,11 @@ import 'produtos_page.dart';
 import 'feedbacks_page.dart';
 import 'agendamentos_page.dart';
 import 'chat_page.dart';
+import 'user_service.dart';
 
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await UserService().carregarDados();
   runApp(AteliePanoFinoApp());
 }
 

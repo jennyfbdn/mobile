@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'medidas_service.dart';
+import 'user_service.dart';
+import 'guia_medidas_page.dart';
 
 class MedidasPage extends StatefulWidget {
   @override
@@ -13,8 +15,6 @@ class _MedidasPageState extends State<MedidasPage> {
     'cintura': TextEditingController(),
     'quadril': TextEditingController(),
     'altura': TextEditingController(),
-    'ombro': TextEditingController(),
-    'braco': TextEditingController(),
   };
   
   @override
@@ -24,7 +24,12 @@ class _MedidasPageState extends State<MedidasPage> {
   }
   
   void _carregarMedidas() {
-    final medidas = MedidasService().obterMedidas();
+    // Carregar do UserService primeiro, depois do MedidasService como fallback
+    final medidasUser = UserService().medidasUsuario;
+    final medidasService = MedidasService().obterMedidas();
+    
+    final medidas = medidasUser.isNotEmpty ? medidasUser : medidasService;
+    
     medidas.forEach((key, value) {
       if (_controllers.containsKey(key)) {
         _controllers[key]!.text = value;
@@ -55,9 +60,33 @@ class _MedidasPageState extends State<MedidasPage> {
               ),
               child: Column(
                 children: [
-                  Text('Manequim Ajustável', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 8),
-                  Text('Informe suas medidas para o ajuste perfeito', style: TextStyle(color: Colors.grey[600])),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Manequim Ajustável', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                            SizedBox(height: 8),
+                            Text('Informe suas medidas para o ajuste perfeito', style: TextStyle(color: Colors.grey[600])),
+                          ],
+                        ),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => GuiaMedidasPage()));
+                        },
+                        icon: Icon(Icons.help_outline, size: 18),
+                        label: Text('Como medir?'),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.blue),
+                          foregroundColor: Colors.blue,
+                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 24),
                   
                   Row(
@@ -96,10 +125,6 @@ class _MedidasPageState extends State<MedidasPage> {
                             _buildMedidaField('Quadril', 'quadril', 'cm'),
                             SizedBox(height: 12),
                             _buildMedidaField('Altura', 'altura', 'cm'),
-                            SizedBox(height: 12),
-                            _buildMedidaField('Ombro', 'ombro', 'cm'),
-                            SizedBox(height: 12),
-                            _buildMedidaField('Braço', 'braco', 'cm'),
                           ],
                         ),
                       ),
@@ -172,15 +197,43 @@ class _MedidasPageState extends State<MedidasPage> {
   }
 
   void _salvarMedidas() {
+    // Validar se pelo menos uma medida foi preenchida
+    bool temMedida = _controllers.values.any((controller) => controller.text.isNotEmpty);
+    if (!temMedida) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Preencha pelo menos uma medida'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+    
+    // Validar se as medidas são números válidos
+    for (var entry in _controllers.entries) {
+      if (entry.value.text.isNotEmpty) {
+        if (double.tryParse(entry.value.text) == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${entry.key}: valor inválido'), backgroundColor: Colors.red),
+          );
+          return;
+        }
+        double valor = double.parse(entry.value.text);
+        if (valor <= 0 || valor > 300) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${entry.key}: valor deve estar entre 1 e 300 cm'), backgroundColor: Colors.red),
+          );
+          return;
+        }
+      }
+    }
+    
     Map<String, String> medidas = {
       'busto': _controllers['busto']!.text,
       'cintura': _controllers['cintura']!.text,
       'quadril': _controllers['quadril']!.text,
       'altura': _controllers['altura']!.text,
-      'ombro': _controllers['ombro']!.text,
-      'braco': _controllers['braco']!.text,
     };
     
+    // Salvar no UserService e MedidasService
+    UserService().salvarMedidas(medidas);
     MedidasService().salvarMedidas(medidas);
     
     showDialog(

@@ -374,7 +374,7 @@ class HomePage extends StatelessWidget {
                               child: Stack(
                                 children: [
                                   Image.asset(
-                                    '../assets/images/secaomasc.jpg',
+                                    'assets/images/secaomasc.jpg',
                                     width: double.infinity,
                                     height: double.infinity,
                                     fit: BoxFit.cover,
