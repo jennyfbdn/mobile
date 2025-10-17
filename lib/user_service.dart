@@ -8,12 +8,7 @@ import 'config/api_config.dart';
 class UserService {
   static final UserService _instance = UserService._internal();
   factory UserService() => _instance;
-  UserService._internal() {
-    // Configurar para ignorar certificados SSL em desenvolvimento
-    if (ApiConfig.allowSelfSignedCertificates) {
-      HttpOverrides.global = MyHttpOverrides();
-    }
-  }
+  UserService._internal();
 
   String? _nomeUsuario;
   String? _emailUsuario;
@@ -104,12 +99,8 @@ class UserService {
     required String senha,
   }) async {
     try {
-      print('=== CADASTRANDO USUÁRIO ===');
-      print('URL: ${ApiConfig.usuarioEndpoint}/create');
-      print('Nome: $nome, Email: $email, Telefone: $telefone');
-      
       final response = await http.post(
-        Uri.parse('${ApiConfig.usuarioEndpoint}/testCreate'),
+        Uri.parse('${ApiConfig.usuarioEndpoint}/create'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'nome': nome,
@@ -117,35 +108,28 @@ class UserService {
           'telefone': telefone,
           'senha': senha
         }),
-      ).timeout(Duration(seconds: 30));
-      
-      print('Status Code: ${response.statusCode}');
-      print('Response: ${response.body}');
-      print('Response Headers: ${response.headers}');
+      ).timeout(Duration(seconds: 10));
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         setUsuario(nome, email, telefone);
         return {'success': true, 'message': 'Usuário cadastrado com sucesso!'};
-      } else if (response.statusCode == 400) {
-        final errorData = jsonDecode(response.body);
-        return {'success': false, 'message': errorData['message'] ?? 'Dados inválidos'};
       } else if (response.statusCode == 409) {
-        return {'success': false, 'message': 'Email já cadastrado'};
+        return {'success': false, 'message': 'E-mail já cadastrado'};
       } else {
-        return {'success': false, 'message': 'Erro no servidor: ${response.statusCode}'};
+        return {'success': false, 'message': 'Erro no servidor. Tente novamente.'};
       }
     } on TimeoutException {
-      return {'success': false, 'message': 'Timeout: Verifique sua conexão'};
-    } on SocketException {
-      return {'success': false, 'message': 'Erro de rede: Verifique se o servidor está rodando'};
+      return {'success': false, 'message': 'Tempo limite excedido. Verifique sua conexão.'};
     } catch (e) {
-      print('Erro detalhado: $e');
-      return {'success': false, 'message': 'Erro de conexão: $e'};
+      return {'success': false, 'message': 'Erro de conexão. Verifique se está conectado à internet.'};
     }
   }
 
   Future<Map<String, dynamic>> login(String email, String senha) async {
     try {
+      print('Tentando login para: $email');
+      print('URL: ${ApiConfig.usuarioEndpoint}/login');
+      
       final response = await http.post(
         Uri.parse('${ApiConfig.usuarioEndpoint}/login'),
         headers: {'Content-Type': 'application/json'},
@@ -153,16 +137,27 @@ class UserService {
           'email': email,
           'senha': senha,
         }),
-      );
+      ).timeout(Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final userData = jsonDecode(response.body);
         setUsuario(userData['nome'], userData['email'], userData['telefone'] ?? '', userData['id']);
         return {'success': true, 'user': userData};
+      } else if (response.statusCode == 401) {
+        return {'success': false, 'message': 'E-mail ou senha incorretos'};
+      } else if (response.statusCode == 404) {
+        return {'success': false, 'message': 'Servidor não encontrado. Verifique se o backend está rodando.'};
+      } else if (response.statusCode >= 500) {
+        return {'success': false, 'message': 'Erro interno do servidor. Tente novamente em alguns minutos.'};
       } else {
-        return {'success': false, 'message': 'Email ou senha incorretos'};
+        return {'success': false, 'message': 'Erro no servidor (${response.statusCode}). Tente novamente.'};
       }
+    } on TimeoutException {
+      return {'success': false, 'message': 'Tempo limite excedido. Verifique sua conexão e se o servidor está rodando.'};
+    } on SocketException {
+      return {'success': false, 'message': 'Erro de conexão. Verifique se o servidor está rodando na porta 8080.'};
     } catch (e) {
+      print('Erro no login: $e');
       return {'success': false, 'message': 'Erro de conexão: $e'};
     }
   }

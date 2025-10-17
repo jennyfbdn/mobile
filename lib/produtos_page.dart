@@ -329,7 +329,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
-                      foregroundColor: Colors.teal[600],
+                      foregroundColor: Colors.black87,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -416,7 +416,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                                                 child: Icon(
                                                   Icons.shopping_cart,
                                                   size: 16,
-                                                  color: Colors.green[600],
+                                                  color: Colors.black87,
                                                 ),
                                               ),
                                             ),
@@ -466,7 +466,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                                             style: TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.green[700],
+                                              color: Colors.black87,
                                             ),
                                           ),
                                           Row(

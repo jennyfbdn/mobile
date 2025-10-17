@@ -29,7 +29,6 @@ class EncomendaService {
         'usuarioNome': userService.nomeUsuario ?? encomenda['nome'] ?? 'Cliente',
         'produto': encomenda['produto'] ?? 'Produto',
         'quantidade': encomenda['quantidade'] ?? 1,
-        // Usar medidas salvas do usuário ou valores da encomenda
         'altura': medidas['altura']?.isNotEmpty == true ? medidas['altura'] : (encomenda['altura'] ?? ''),
         'largura': medidas['cintura']?.isNotEmpty == true ? medidas['cintura'] : (encomenda['largura'] ?? ''),
         'busto': medidas['busto']?.isNotEmpty == true ? medidas['busto'] : (encomenda['busto'] ?? ''),
@@ -56,7 +55,7 @@ class EncomendaService {
       }
     } catch (e) {
       _adicionarEncomendaLocal(encomenda);
-      return {'success': false, 'message': 'Backend offline, salvo localmente'};
+      return {'success': false, 'message': 'Erro: Verifique se o servidor está rodando'};
     }
   }
 

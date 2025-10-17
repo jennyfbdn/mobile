@@ -31,54 +31,50 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
 
   final List<Map<String, dynamic>> produtosMasculinos = [
     {
-      'nome': 'Blusa Listrada',
+      'nome': 'Bermuda Executive',
+      'imagem': 'assets/images/mascbermuda.jpg',
+      'preco': 'R\$ 179,90',
+    },
+     {
+      'nome': 'Camisa Polo Verde',
+      'imagem': 'assets/images/masccamisaverde.png',
+      'preco': 'R\$ 199,90',
+    },
+     {
+      'nome': 'Calça Slim Fit Preta',
+      'imagem': 'assets/images/masccalcapreta.jpg',
+      'preco': 'R\$ 259,90',
+    },
+     {
+      'nome': 'Camisa Social Branca',
+      'imagem': 'assets/images/masccamisabranca.png',
+      'preco': 'R\$ 229,90',
+    },
+     {
+      'nome': 'Polo Listrada Premium',
       'imagem': 'assets/images/blusalistrada_masculino.png',
-      'preco': 'R\$ 90,00',
-    },
-    {
-      'nome': 'Camisa Amarela',
-      'imagem': 'assets/images/masculino.png',
-      'preco': 'R\$ 110,00',
-    },
-    {
-      'nome': 'Conjunto Social',
-      'imagem': 'assets/images/conjunto_social.jpg',
-      'preco': 'R\$ 180,00',
-    },
-    {
-      'nome': 'Conjunto Bege',
-      'imagem': 'assets/images/conjunto_bege.jpg',
-      'preco': 'R\$ 150,00',
-    },
-    {
-      'nome': 'Conjunto Jeans',
-      'imagem': 'assets/images/conjunto_jeans.jpg',
-      'preco': 'R\$ 135,00',
-    },
-    {
-      'nome': 'Camisa Casual',
-      'imagem': 'assets/images/masculinos1.png',
-      'preco': 'R\$ 85,00',
+      'preco': 'R\$ 189,90',
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Coleção Masculina',
           style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            color: Color(0xFF2C2C2C),
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
           ),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: Color(0xFF2C2C2C)),
         centerTitle: true,
-        elevation: 4,
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.person_outline, color: Colors.black87),
@@ -97,11 +93,7 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
               width: double.infinity,
               padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.black87, Colors.black54],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Color(0xFFD1D1D1),
               ),
               child: Column(
                 children: [
@@ -115,7 +107,7 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
                         child: Icon(
                           Icons.person,
                           size: 40,
-                          color: Colors.white,
+                          color: Color(0xFF2C2C2C),
                         ),
                       );
                     },
@@ -126,14 +118,14 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFF2C2C2C),
                     ),
                   ),
                   Text(
                     'Estilo e modernidade',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white70,
+                      color: Color(0xFF6B6B6B),
                     ),
                   ),
                 ],
@@ -264,7 +256,7 @@ class _MalePageState extends State<MalePage> with TickerProviderStateMixin {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black87,
+                            backgroundColor: Color(0xFF2C2C2C),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+// Firebase removido temporariamente devido a problemas de permissão
+// import 'package:firebase_core/firebase_core.dart';
+// import 'firebase_options.dart';
 import 'login_page.dart';
 import 'cadastro_page.dart';
 import 'forgot_password_page.dart';
@@ -13,21 +16,24 @@ import 'feedbacks_page.dart';
 import 'agendamentos_page.dart';
 import 'chat_page.dart';
 import 'user_service.dart';
+import 'notificacoes_page.dart';
+import 'enviar_feedback_page.dart';
+import 'theme/app_theme.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await UserService().carregarDados();
+  // await Firebase.initializeApp(); // Removido temporariamente
   runApp(AteliePanoFinoApp());
 }
+
 
 class AteliePanoFinoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Ateliê Pano Fino',  // Título do app
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
-      ),
+      theme: AppTheme.theme,
       initialRoute: '/',
       routes: {
         '/': (context) => LoginPage(),
@@ -43,6 +49,8 @@ class AteliePanoFinoApp extends StatelessWidget {
         '/feedbacks': (context) => FeedbacksPage(),
         '/agendamentos': (context) => MainNavigation(initialIndex: 2),
         '/chat': (context) => MainNavigation(initialIndex: 3),
+        '/notificacoes': (context) => NotificacoesPage(),
+        '/enviar-feedback': (context) => EnviarFeedbackPage(),
       },
       debugShowCheckedModeBanner: false,  // Remove a faixa de debug
     );

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'profile_page.dart';
 import 'config/api_config.dart';
+import 'enviar_feedback_page.dart';
 
 class FeedbacksPage extends StatefulWidget {
   @override
@@ -19,20 +20,41 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
     _carregarFeedbacks();
   }
   
+  Future<void> _navegarParaEnviarFeedback() async {
+    final resultado = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EnviarFeedbackPage()),
+    );
+    
+    if (resultado == true) {
+      _carregarFeedbacks(); // Recarrega os feedbacks após enviar
+    }
+  }
+
   Future<void> _carregarFeedbacks() async {
+    setState(() {
+      isLoading = true;
+    });
+    
     try {
+      print('Carregando feedbacks de: ${ApiConfig.baseUrl}/mensagem/findAll');
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}/mensagem/findAll'),
         headers: {'Content-Type': 'application/json'},
       );
       
+      print('Status da resposta: ${response.statusCode}');
+      print('Corpo da resposta: ${response.body}');
+      
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
+        print('Dados recebidos: $data');
+        
         setState(() {
           feedbacks = data.map((item) => {
             'usuario': item['emissor'] ?? 'Usuário',
             'descricao': item['texto'] ?? '',
-            'avaliacao': 5, // Valor padrão já que não tem avaliação na estrutura atual
+            'avaliacao': 5,
             'tempo': _formatarTempo(item['dataMensagem']),
           }).toList().cast<Map<String, dynamic>>();
           isLoading = false;
@@ -43,22 +65,7 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
       print('Erro ao carregar feedbacks: $e');
     }
     
-    // Fallback para dados de exemplo
     setState(() {
-      feedbacks = [
-        {
-          'usuario': 'Maria Silva',
-          'descricao': 'Serviço excelente! Muito satisfeita com o resultado.',
-          'avaliacao': 5,
-          'tempo': '2h',
-        },
-        {
-          'usuario': 'João Pedro',
-          'descricao': 'Qualidade excepcional! Recomendo muito.',
-          'avaliacao': 5,
-          'tempo': '5h',
-        },
-      ];
       isLoading = false;
     });
   }
@@ -66,11 +73,21 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
   String _formatarTempo(String? dataEnvio) {
     if (dataEnvio == null) return 'agora';
     try {
-      final data = DateTime.parse(dataEnvio);
+      // Tentar diferentes formatos de data
+      DateTime data;
+      if (dataEnvio.contains('T')) {
+        data = DateTime.parse(dataEnvio);
+      } else {
+        // Formato alternativo se necessário
+        data = DateTime.parse(dataEnvio);
+      }
+      
       final agora = DateTime.now();
       final diferenca = agora.difference(data);
       
-      if (diferenca.inMinutes < 60) {
+      if (diferenca.inMinutes < 1) {
+        return 'agora';
+      } else if (diferenca.inMinutes < 60) {
         return '${diferenca.inMinutes}m';
       } else if (diferenca.inHours < 24) {
         return '${diferenca.inHours}h';
@@ -78,6 +95,7 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
         return '${diferenca.inDays}d';
       }
     } catch (e) {
+      print('Erro ao formatar tempo: $e para data: $dataEnvio');
       return 'agora';
     }
   }
@@ -86,10 +104,13 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
-        return Icon(
-          index < rating ? Icons.star : Icons.star_border,
-          color: Colors.amber,
-          size: 16,
+        return Padding(
+          padding: EdgeInsets.only(right: 2),
+          child: Icon(
+            index < rating ? Icons.star_rounded : Icons.star_outline_rounded,
+            color: Color(0xFFFFB800),
+            size: 18,
+          ),
         );
       }),
     );
@@ -98,102 +119,205 @@ class _FeedbacksPageState extends State<FeedbacksPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Feedbacks'),
+        title: Text(
+          'Avaliações',
+          style: TextStyle(
+            color: Color(0xFF2C2C2C),
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        foregroundColor: Color(0xFF2C2C2C),
         centerTitle: true,
-        elevation: 4,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.person_outline),
+            icon: Icon(Icons.refresh, color: Color(0xFF2C2C2C)),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+              _carregarFeedbacks();
             },
           ),
         ],
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : feedbacks.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.feedback_outlined, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('Nenhum feedback encontrado'),
-                ],
-              ),
-            )
-          : ListView.builder(
-              padding: EdgeInsets.all(16),
-              itemCount: feedbacks.length,
-              itemBuilder: (context, index) {
-                final feedback = feedbacks[index];
-                return Card(
-                  margin: EdgeInsets.only(bottom: 16),
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
+      body: Column(
+        children: [
+          Expanded(
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : feedbacks.isEmpty
+                ? Center(
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Colors.grey[300],
-                              child: Text(
-                                feedback['usuario'][0],
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    feedback['usuario'],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      _buildStars(feedback['avaliacao']),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        feedback['tempo'],
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        Container(
+                          padding: EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFCE8E1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.star_outline,
+                            size: 48,
+                            color: Color(0xFF2C2C2C),
+                          ),
                         ),
-                        SizedBox(height: 12),
+                        SizedBox(height: 24),
                         Text(
-                          feedback['descricao'],
-                          style: TextStyle(fontSize: 14),
+                          'Nenhuma avaliação ainda',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2C2C2C),
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Seja o primeiro a compartilhar sua experiência',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF6B6B6B),
+                          ),
+                        ),
+                        SizedBox(height: 32),
+                        ElevatedButton(
+                          onPressed: () => _navegarParaEnviarFeedback(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF2C2C2C),
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: Text(
+                            'Enviar Avaliação',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ],
                     ),
+                  )
+                : RefreshIndicator(
+                    onRefresh: _carregarFeedbacks,
+                    child: ListView.builder(
+                      padding: EdgeInsets.all(20),
+                      itemCount: feedbacks.length,
+                      itemBuilder: (context, index) {
+                        final feedback = feedbacks[index];
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 20,
+                                offset: Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(24),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFFFCE8E1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          feedback['usuario'][0].toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF2C2C2C),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            feedback['usuario'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                              color: Color(0xFF2C2C2C),
+                                            ),
+                                          ),
+                                          SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              _buildStars(feedback['avaliacao']),
+                                              SizedBox(width: 12),
+                                              Text(
+                                                feedback['tempo'],
+                                                style: TextStyle(
+                                                  color: Color(0xFF9E9E9E),
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  feedback['descricao'],
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Color(0xFF2C2C2C),
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                );
-              },
+          ),
+        ],
+      ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          color: Colors.black,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 12,
+              offset: Offset(0, 4),
             ),
+          ],
+        ),
+        child: FloatingActionButton(
+          onPressed: () => _navegarParaEnviarFeedback(),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Icon(Icons.add, color: Colors.white, size: 28),
+        ),
+      ),
     );
   }
 }

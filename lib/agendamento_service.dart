@@ -15,42 +15,68 @@ class AgendamentoService {
   Future<Map<String, dynamic>> adicionarAgendamento(Map<String, dynamic> agendamento) async {
     try {
       final userService = UserService();
+      await userService.carregarDados();
       final userId = userService.idUsuario;
       
-      // Calcular orçamento baseado no tipo de personalização, peça e tamanho
       double orcamento = _calcularOrcamento(
         agendamento['tipoPersonalizacao'] ?? 'Ajuste de tamanho',
         agendamento['tipoPeca'],
         agendamento['tamanho']
       );
       
+      // Formatar data no padrão ISO (yyyy-MM-dd)
+      String dataFormatada = '';
+      if (agendamento['data'] != null && agendamento['data'].toString().isNotEmpty) {
+        try {
+          // Se a data está no formato dd/MM/yyyy, converter para yyyy-MM-dd
+          final dataParts = agendamento['data'].toString().split('/');
+          if (dataParts.length == 3) {
+            dataFormatada = '${dataParts[2]}-${dataParts[1].padLeft(2, '0')}-${dataParts[0].padLeft(2, '0')}';
+          } else {
+            dataFormatada = agendamento['data'].toString();
+          }
+        } catch (e) {
+          dataFormatada = DateTime.now().toIso8601String().split('T')[0];
+        }
+      } else {
+        dataFormatada = DateTime.now().toIso8601String().split('T')[0];
+      }
+      
       final agendamentoData = {
         'usuarioId': userId ?? 1,
         'usuarioNome': userService.nomeUsuario ?? agendamento['nome'] ?? 'Cliente',
         'servico': agendamento['tipoPeca'] ?? 'Personalização',
         'descricao': agendamento['descricao'] ?? agendamento['tipoPersonalizacao'] ?? 'Sem descrição',
-        'dataAgendamento': agendamento['data'] ?? '',
+        'dataAgendamento': dataFormatada,
         'horaAgendamento': agendamento['hora'] ?? '09:00',
         'orcamento': orcamento,
         'status': 'PENDENTE'
       };
 
+      print('=== ENVIANDO AGENDAMENTO ===');
+      print('URL: ${ApiConfig.baseUrl}/agendamentos');
+      print('Dados: ${jsonEncode(agendamentoData)}');
+
       final response = await http.post(
-        Uri.parse('${ApiConfig.baseUrl}/agendamento/create'),
+        Uri.parse('${ApiConfig.baseUrl}/agendamentos'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(agendamentoData),
       ).timeout(Duration(seconds: 10));
+
+      print('Status: ${response.statusCode}');
+      print('Response: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         _adicionarAgendamentoLocal(agendamento);
         return {'success': true, 'message': 'Agendamento salvo no banco!'};
       } else {
         _adicionarAgendamentoLocal(agendamento);
-        return {'success': false, 'message': 'Erro ${response.statusCode}'};
+        return {'success': false, 'message': 'Erro ${response.statusCode}: ${response.body}'};
       }
     } catch (e) {
+      print('Erro ao enviar agendamento: $e');
       _adicionarAgendamentoLocal(agendamento);
-      return {'success': false, 'message': 'Backend offline, salvo localmente'};
+      return {'success': false, 'message': 'Erro: $e'};
     }
   }
 

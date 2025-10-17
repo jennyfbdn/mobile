@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'user_service.dart';
+import 'config/api_config.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,9 +14,15 @@ class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
   String? _errorMessage;
+  bool _isLoading = false;
 
   void _login() async {
     if (!_formKey.currentState!.validate()) return;
+    
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     
     String email = emailController.text.trim();
     String senha = senhaController.text;
@@ -26,6 +33,15 @@ class _LoginPageState extends State<LoginPage> {
     if (result['success']) {
       final userData = result['user'];
       
+      // Salvar dados no UserService
+      userService.setUsuario(
+        userData['nome'] ?? '',
+        userData['email'] ?? '',
+        userData['telefone'] ?? '',
+        userData['id'],
+        userData['endereco'],
+      );
+      
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userEmail', userData['email']);
       await prefs.setInt('userId', userData['id']);
@@ -33,12 +49,14 @@ class _LoginPageState extends State<LoginPage> {
 
       setState(() {
         _errorMessage = null;
+        _isLoading = false;
       });
 
       Navigator.pushNamed(context, '/home');
     } else {
       setState(() {
         _errorMessage = result['message'];
+        _isLoading = false;
       });
     }
   }
@@ -88,6 +106,8 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+
 
   Widget _socialButton({
     required String text,
@@ -140,7 +160,8 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(color: Colors.black87),
                 validator: (value) {
                   if (value?.isEmpty ?? true) return 'E-mail obrigatório';
-                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) return 'E-mail inválido';
+                  if (!value!.contains('@')) return 'E-mail deve conter @';
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'E-mail inválido';
                   return null;
                 },
               ),
@@ -174,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
               ],
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _login,
+                onPressed: _isLoading ? null : _login,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
@@ -182,7 +203,16 @@ class _LoginPageState extends State<LoginPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text('Entrar'),
+                child: _isLoading 
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : Text('Entrar'),
               ),
               SizedBox(height: 16),
               Text(
@@ -199,7 +229,11 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: Colors.white,
                       textColor: Colors.black87,
                       icon: Icons.g_mobiledata,
-                      onPressed: _loginGoogle,
+                      onPressed: () {
+        final userService = UserService();
+        userService.setUsuario('Usuário Google', 'google@email.com', '(11) 99999-9999');
+        Navigator.pushNamed(context, '/home');
+      },
                     ),
                   ),
                   SizedBox(width: 12),
@@ -209,7 +243,11 @@ class _LoginPageState extends State<LoginPage> {
                       backgroundColor: Colors.black,
                       textColor: Colors.white,
                       icon: Icons.facebook,
-                      onPressed: _loginFacebook,
+                      onPressed: () {
+        final userService = UserService();
+        userService.setUsuario('Usuário Facebook', 'facebook@email.com', '(11) 88888-8888');
+        Navigator.pushNamed(context, '/home');
+      },
                     ),
                   ),
                 ],

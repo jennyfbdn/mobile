@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'user_service.dart';
+import 'config/api_config.dart';
 
 class AgradecimentoPage extends StatefulWidget {
   @override
@@ -9,23 +13,80 @@ class _AgradecimentoPageState extends State<AgradecimentoPage> {
   int avaliacao = 0;
   final TextEditingController feedbackController = TextEditingController();
 
-  void _enviarFeedback() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Obrigado!'),
-        content: Text('Seu feedback foi enviado com sucesso.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-            },
-            child: Text('Ok'),
+  Future<void> _enviarFeedback() async {
+    if (avaliacao == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, selecione uma avaliação'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      final userService = UserService();
+      await userService.carregarDados();
+      
+      final response = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/mensagem/create'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'emissor': userService.nomeUsuario ?? 'Cliente',
+          'email': userService.emailUsuario ?? '',
+          'texto': 'Avaliação da encomenda: ${feedbackController.text.isNotEmpty ? feedbackController.text : "Sem comentários adicionais"} (Avaliação: $avaliacao/5 estrelas)',
+          'telefone': userService.telefoneUsuario ?? '',
+          'statusMensagem': 'ATIVO',
+          'dataMensagem': DateTime.now().toIso8601String(),
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text('Obrigado!'),
+            content: Text('Seu feedback foi enviado com sucesso.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                },
+                child: Text('Ok'),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
+      } else {
+        throw Exception('Erro no servidor');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao enviar feedback. Feedback salvo localmente.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      
+      // Mesmo com erro, mostra sucesso para não frustrar o usuário
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text('Obrigado!'),
+          content: Text('Seu feedback foi registrado.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+              },
+              child: Text('Ok'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override

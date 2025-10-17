@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'user_service.dart';
-import 'validar_codigo_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class EsqueciSenhaPage extends StatefulWidget {
   @override
@@ -16,52 +13,34 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
 
   void _enviarEmail() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
-      final response = await http.post(
-        Uri.parse('http://localhost:8080/usuario/enviarCodigo'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': _emailController.text}),
-      );
-      
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: _emailController.text.trim());
+
       setState(() => _isLoading = false);
-      
-      if (response.statusCode == 200) {
-        _mostrarSucesso();
+
+      _mostrarSucesso();
+    } on FirebaseAuthException catch (e) {
+      setState(() => _isLoading = false);
+
+      String mensagem = '';
+      if (e.code == 'user-not-found') {
+        mensagem = 'Usuário não encontrado para este e-mail.';
+      } else if (e.code == 'invalid-email') {
+        mensagem = 'E-mail inválido.';
       } else {
-        _mostrarErro('Email não encontrado ou erro ao enviar');
+        mensagem = 'Erro: ${e.message}';
       }
+      _mostrarErro(mensagem);
     } catch (e) {
       setState(() => _isLoading = false);
-      _mostrarErro('Erro de conexão. Tente novamente.');
+      _mostrarErro('Erro ao enviar e-mail. Tente novamente.');
     }
   }
-  
-  Future<void> _gerarNovaSenha() async {
-    try {
-      final novaSenha = '123456'; // Senha temporária
-      
-      final response = await http.post(
-        Uri.parse('http://localhost:8080/usuario/resetSenha'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'email': _emailController.text,
-          'novaSenha': novaSenha,
-        }),
-      );
-      
-      if (response.statusCode == 200) {
-        _mostrarSucesso(novaSenha);
-      } else {
-        _mostrarErro('Erro ao redefinir senha');
-      }
-    } catch (e) {
-      _mostrarErro('Erro ao processar solicitação');
-    }
-  }
-  
+
   void _mostrarSucesso() {
     showDialog(
       context: context,
@@ -71,15 +50,17 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
           children: [
             Icon(Icons.check_circle, color: Colors.green, size: 28),
             SizedBox(width: 12),
-            Text('Código Enviado'),
+            Text('E-mail Enviado'),
           ],
         ),
-        content: Text('Enviamos um código de 6 dígitos para ${_emailController.text}. Verifique sua caixa de entrada.'),
+        content: Text(
+          'Enviamos um link de redefinição de senha para ${_emailController.text.trim()}. Verifique sua caixa de entrada.',
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              _mostrarTelaValidacao();
+              Navigator.of(context).pop(); // Voltar para tela de login (ou anterior)
             },
             child: Text('OK'),
           ),
@@ -87,16 +68,7 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
       ),
     );
   }
-  
-  void _mostrarTelaValidacao() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ValidarCodigoPage(email: _emailController.text),
-      ),
-    );
-  }
-  
+
   void _mostrarErro(String mensagem) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -185,7 +157,8 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           labelText: 'Email',
-                          prefixIcon: Icon(Icons.email_outlined, color: Colors.grey[600]),
+                          prefixIcon:
+                              Icon(Icons.email_outlined, color: Colors.grey[600]),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -198,7 +171,8 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                           if (value?.isEmpty == true) {
                             return 'Digite seu email';
                           }
-                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                              .hasMatch(value!)) {
                             return 'Digite um email válido';
                           }
                           return null;
@@ -224,7 +198,8 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor:
+                                        AlwaysStoppedAnimation<Color>(Colors.white),
                                   ),
                                 )
                               : Text(

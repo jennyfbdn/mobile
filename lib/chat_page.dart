@@ -68,84 +68,102 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     String msg = message.toLowerCase();
     List<ChatMessage> responses = [];
     
-    if (msg.contains('oi') || msg.contains('olá') || msg.contains('ola')) {
+    if (msg.contains('oi') || msg.contains('olá') || msg.contains('ola') || msg.contains('bom dia') || msg.contains('boa tarde')) {
       responses.add(ChatMessage(
-        text: "Oi! 😊 Que bom te ver aqui! Em que posso ajudar?",
+        text: "Olá! 😊 Bem-vindo ao Ateliê Pano Fino! Sou a Ana, sua assistente virtual. Como posso te ajudar hoje?",
         isUser: false,
         time: DateTime.now(),
         hasActions: true,
-        actions: ['Ver Materiais', 'Fazer Pedido', 'Agendamentos'],
+        actions: ['Ver Catálogo', 'Agendar Consulta', 'Sobre Nós'],
       ));
-    } else if (msg.contains('produto') || msg.contains('comprar') || msg.contains('loja')) {
+    } else if (msg.contains('produto') || msg.contains('comprar') || msg.contains('loja') || msg.contains('catálogo')) {
       responses.add(ChatMessage(
-        text: "🛍️ Temos uma variedade incrível de materiais! Linhas, agulhas, tesouras e muito mais.",
+        text: "🛍️ Temos uma coleção incrível! Materiais de costura, roupas prontas e peças sob medida.",
         isUser: false,
         time: DateTime.now(),
       ));
       responses.add(ChatMessage(
-        text: "Quer dar uma olhada na nossa loja?",
-        isUser: false,
-        time: DateTime.now(),
-        hasActions: true,
-        actions: ['Ver Materiais'],
-      ));
-    } else if (msg.contains('preço') || msg.contains('valor') || msg.contains('quanto custa')) {
-      responses.add(ChatMessage(
-        text: "💰 Nossos preços são super acessíveis:\n\n• Linhas: R\$ 2,80 - R\$ 3,50\n• Agulhas: R\$ 12,00\n• Tesouras: R\$ 25,00\n• Fita Métrica: R\$ 8,50",
+        text: "Nossos destaques:\n• Linhas premium\n• Agulhas profissionais\n• Roupas femininas e masculinas\n• Peças personalizadas",
         isUser: false,
         time: DateTime.now(),
         hasActions: true,
-        actions: ['Ver Todos os Preços'],
+        actions: ['Ver Materiais', 'Ver Roupas'],
       ));
-    } else if (msg.contains('agendamento') || msg.contains('agendar') || msg.contains('horário')) {
+    } else if (msg.contains('preço') || msg.contains('valor') || msg.contains('quanto') || msg.contains('custa')) {
       responses.add(ChatMessage(
-        text: "📅 Posso te ajudar com agendamentos! Você pode agendar consultas para medidas ou retirada de peças.",
+        text: "💰 Nossos preços são justos e competitivos:\n\n🧵 Materiais:\n• Linhas: R\$ 2,80 - R\$ 3,50\n• Agulhas: R\$ 12,00\n• Tesouras: R\$ 25,00\n\n👗 Roupas:\n• Blusas: R\$ 45 - R\$ 120\n• Vestidos: R\$ 80 - R\$ 200\n• Conjuntos: R\$ 90 - R\$ 180",
         isUser: false,
         time: DateTime.now(),
         hasActions: true,
-        actions: ['Ver Agendamentos'],
+        actions: ['Ver Catálogo Completo'],
       ));
-    } else if (msg.contains('personalizar') || msg.contains('customizar') || msg.contains('sob medida')) {
+    } else if (msg.contains('agend') || msg.contains('consulta') || msg.contains('horário') || msg.contains('marca')) {
       responses.add(ChatMessage(
-        text: "✨ Adoramos criar peças únicas! Fazemos roupas totalmente personalizadas do seu jeito.",
+        text: "📅 Perfeito! Oferecemos consultas para:\n\n• Tirar medidas\n• Escolher tecidos\n• Provas de roupas\n• Consultoria de estilo",
+        isUser: false,
+        time: DateTime.now(),
+      ));
+      responses.add(ChatMessage(
+        text: "Horários disponíveis:\nSeg-Sex: 9h às 18h\nSábado: 9h às 14h",
         isUser: false,
         time: DateTime.now(),
         hasActions: true,
-        actions: ['Personalizar Peça'],
+        actions: ['Agendar Agora'],
       ));
-    } else if (msg.contains('prazo') || msg.contains('entrega') || msg.contains('demora')) {
+    } else if (msg.contains('personaliz') || msg.contains('sob medida') || msg.contains('exclusiv')) {
       responses.add(ChatMessage(
-        text: "⏰ Nossos prazos são:\n\n• Materiais: Entrega imediata\n• Roupas sob medida: 7-15 dias\n• Ajustes: 3-5 dias",
+        text: "✨ Especialidade da casa! Criamos peças únicas e exclusivas para você.",
         isUser: false,
         time: DateTime.now(),
       ));
-    } else if (msg.contains('tamanho') || msg.contains('medida') || msg.contains('tam')) {
       responses.add(ChatMessage(
-        text: "📏 Trabalhamos com todos os tamanhos! Do PP ao GG, e também fazemos sob medida.",
+        text: "Processo:\n1️⃣ Consulta e medidas\n2️⃣ Escolha do tecido\n3️⃣ Modelagem\n4️⃣ Confecção\n5️⃣ Prova final",
         isUser: false,
         time: DateTime.now(),
         hasActions: true,
-        actions: ['Tirar Medidas'],
+        actions: ['Iniciar Personalização'],
+      ));
+    } else if (msg.contains('prazo') || msg.contains('entrega') || msg.contains('demora') || msg.contains('tempo')) {
+      responses.add(ChatMessage(
+        text: "⏰ Nossos prazos de entrega:\n\n🏃‍♀️ Rápido:\n• Materiais: Imediato\n• Ajustes simples: 2-3 dias\n\n🕰️ Personalizado:\n• Roupas sob medida: 7-15 dias\n• Peças complexas: 15-20 dias",
+        isUser: false,
+        time: DateTime.now(),
+      ));
+    } else if (msg.contains('localiza') || msg.contains('endereço') || msg.contains('onde') || msg.contains('fica')) {
+      responses.add(ChatMessage(
+        text: "📍 Estamos localizados no coração da cidade! Você pode nos encontrar facilmente.",
+        isUser: false,
+        time: DateTime.now(),
+        hasActions: true,
+        actions: ['Ver Localização'],
       ));
     } else if (msg.contains('obrigad') || msg.contains('valeu') || msg.contains('brigad')) {
       responses.add(ChatMessage(
-        text: "😊 Por nada! Fico feliz em ajudar! Se precisar de mais alguma coisa, é só chamar!",
+        text: "😊 Fico muito feliz em ajudar! O Ateliê Pano Fino está sempre à disposição. Volte sempre! 💖",
         isUser: false,
         time: DateTime.now(),
       ));
-    } else if (msg.contains('tchau') || msg.contains('até') || msg.contains('bye')) {
+    } else if (msg.contains('tchau') || msg.contains('até') || msg.contains('bye') || msg.contains('fui')) {
       responses.add(ChatMessage(
-        text: "👋 Até logo! Volte sempre que precisar! O Ateliê Pano Fino está sempre aqui para você!",
+        text: "👋 Até logo! Foi um prazer conversar com você. Esperamos te ver em breve no ateliê! ✨",
         isUser: false,
         time: DateTime.now(),
       ));
-    } else {
+    } else if (msg.contains('ajuda') || msg.contains('help') || msg.contains('como')) {
       responses.add(ChatMessage(
-        text: "🤔 Interessante! Deixe-me te ajudar com isso. O que você gostaria de saber sobre:",
+        text: "🎆 Claro! Estou aqui para te ajudar com tudo sobre o Ateliê Pano Fino. Escolha o que te interessa:",
         isUser: false,
         time: DateTime.now(),
         hasActions: true,
-        actions: ['Materiais', 'Preços', 'Agendamentos', 'Personalização'],
+        actions: ['Produtos', 'Serviços', 'Agendamentos', 'Localização'],
+      ));
+    } else {
+      responses.add(ChatMessage(
+        text: "🤔 Hmm, não tenho certeza se entendi. Mas posso te ajudar com essas opções:",
+        isUser: false,
+        time: DateTime.now(),
+        hasActions: true,
+        actions: ['Catálogo', 'Agendamentos', 'Preços', 'Localização'],
       ));
     }
     
@@ -309,15 +327,29 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   void _handleAction(String action) {
     switch (action) {
       case 'Ver Materiais':
-      case 'Ver Todos os Preços':
+      case 'Ver Roupas':
+      case 'Ver Catálogo':
+      case 'Catálogo':
+      case 'Ver Catálogo Completo':
         Navigator.push(context, MaterialPageRoute(builder: (_) => ProdutosPage()));
         break;
       case 'Ver Agendamentos':
+      case 'Agendamentos':
         Navigator.push(context, MaterialPageRoute(builder: (_) => AgendamentosPage()));
         break;
+      case 'Agendar Consulta':
+      case 'Agendar Agora':
       case 'Personalizar Peça':
+      case 'Iniciar Personalização':
       case 'Tirar Medidas':
         Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage()));
+        break;
+      case 'Ver Localização':
+      case 'Localização':
+        Navigator.pushNamed(context, '/localizacao');
+        break;
+      case 'Sobre Nós':
+        Navigator.pushNamed(context, '/sobre-atelie');
         break;
       default:
         _sendQuickMessage(action);

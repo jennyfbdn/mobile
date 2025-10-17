@@ -63,20 +63,21 @@ class _LocalizacaoPageState extends State<LocalizacaoPage> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Localização',
           style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            color: Color(0xFF2C2C2C),
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
           ),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: Color(0xFF2C2C2C)),
         centerTitle: true,
-        elevation: 4,
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.person_outline, color: Colors.black87),

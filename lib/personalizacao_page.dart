@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'agendamento_service.dart';
+import 'user_service.dart';
 import 'theme/app_theme.dart';
 
 class PersonalizacaoPage extends StatefulWidget {
@@ -72,6 +73,18 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
       CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
     _animationController.forward();
+    _carregarDadosUsuario();
+  }
+
+  Future<void> _carregarDadosUsuario() async {
+    final userService = UserService();
+    await userService.carregarDados();
+    if (userService.nomeUsuario != null) {
+      _nomeController.text = userService.nomeUsuario!;
+    }
+    if (userService.telefoneUsuario != null) {
+      _telefoneController.text = userService.telefoneUsuario!;
+    }
   }
 
   @override
@@ -142,8 +155,14 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _agendar,
-                          style: AppTheme.primaryButtonStyle,
-                          child: Text('Agendar Visita', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            elevation: 2,
+                          ),
+                          child: Text('Agendar Personalização', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                         ),
                       ),
                       SizedBox(width: 12),

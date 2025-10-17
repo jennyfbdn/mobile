@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "271229664461",
+    "project_id": "atelie-36f4a",
+    "storage_bucket": "atelie-36f4a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271229664461:android:bd06466062137c26437d84",
+        "android_client_info": {
+          "package_name": "com.example.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCALMoiuAYw5NVUO0qn0j6QwlHhlZRIlJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

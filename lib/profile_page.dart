@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'medidas_page.dart';
 import 'user_service.dart';
+import 'admin_page.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -15,7 +16,6 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _telefoneController = TextEditingController();
-  final TextEditingController _enderecoController = TextEditingController();
 
   @override
   void initState() {
@@ -23,12 +23,14 @@ class _ProfilePageState extends State<ProfilePage> {
     _carregarDadosUsuario();
   }
 
-  void _carregarDadosUsuario() {
+  void _carregarDadosUsuario() async {
+    await _userService.carregarDados();
     if (_userService.temUsuario) {
-      _nomeController.text = _userService.nomeUsuario ?? '';
-      _emailController.text = _userService.emailUsuario ?? '';
-      _telefoneController.text = _userService.telefoneUsuario ?? '';
-      _enderecoController.text = _userService.enderecoUsuario ?? '';
+      setState(() {
+        _nomeController.text = _userService.nomeUsuario ?? '';
+        _emailController.text = _userService.emailUsuario ?? '';
+        _telefoneController.text = _userService.telefoneUsuario ?? '';
+      });
     }
   }
 
@@ -45,7 +47,6 @@ class _ProfilePageState extends State<ProfilePage> {
         nome: _nomeController.text,
         email: _emailController.text,
         telefone: _telefoneController.text,
-        endereco: _enderecoController.text,
       );
       
       setState(() {
@@ -54,7 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Perfil atualizado com sucesso!'),
-          backgroundColor: Colors.green,
+          backgroundColor: Colors.black,
         ),
       );
     }
@@ -84,25 +85,52 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: EdgeInsets.all(20),
           child: Column(
             children: [
-              // Avatar
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 15,
-                      offset: Offset(0, 5),
+              // Avatar (toque longo para acessar painel admin)
+              GestureDetector(
+                onLongPress: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Acesso Administrativo'),
+                      content: Text('Deseja acessar o painel administrativo?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('Cancelar'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => AdminPage()),
+                            );
+                          },
+                          child: Text('Acessar'),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundColor: Colors.white,
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 15,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
                   child: CircleAvatar(
-                    radius: 55,
-                    backgroundColor: Colors.grey[200],
-                    child: Icon(Icons.person, size: 70, color: Colors.grey[600]),
+                    radius: 60,
+                    backgroundColor: Colors.white,
+                    child: CircleAvatar(
+                      radius: 55,
+                      backgroundColor: Colors.grey[200],
+                      child: Icon(Icons.person, size: 70, color: Colors.grey[600]),
+                    ),
                   ),
                 ),
               ),
@@ -139,15 +167,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 keyboardType: TextInputType.phone,
                 validator: (value) => value?.isEmpty == true ? 'Telefone é obrigatório' : null,
               ),
-              SizedBox(height: 16),
-              
-              _buildProfileField(
-                'Endereço',
-                _enderecoController,
-                Icons.location_on_outlined,
-                maxLines: 2,
-              ),
-              SizedBox(height: 16),
+              SizedBox(height: 24),
               
               // Botão Minhas Medidas
               Container(
@@ -270,7 +290,7 @@ class _ProfilePageState extends State<ProfilePage> {
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black87, width: 2),
+            borderSide: BorderSide(color: Colors.black, width: 2),
             borderRadius: BorderRadius.circular(12),
           ),
           disabledBorder: OutlineInputBorder(

@@ -31,50 +31,55 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
 
   final List<Map<String, dynamic>> produtosFemininos = [
     {
-      'nome': 'Blusa Roxa Croche ',
-      'imagem': 'assets/images/blusaroxa_croche.jpg',
-      'preco': 'R\$ 120,00',
+      'nome': 'Cropped Elegance Black',
+      'imagem': 'assets/images/femcroppedpreto.png',
+      'preco': 'R\$ 189,90',
     },
     {
-      'nome': 'Blusa Verde',
-      'imagem': 'assets/images/blusa_verde.jpg',
-      'preco': 'R\$ 85,00',
+      'nome': 'Saia Midi Clássica',
+      'imagem': 'assets/images/femsaiabranca.png',
+      'preco': 'R\$ 249,90',
     },
     {
-      'nome': 'Saia Bege',
-      'imagem': 'assets/images/blusa_bege.jpg',
-      'preco': 'R\$ 135,00',
+      'nome': 'Blusa Sofisticada Azul',
+      'imagem': 'assets/images/femblusaazul.png',
+      'preco': 'R\$ 219,90',
     },
     {
-      'nome': 'Vestido Roxo',
-      'imagem': 'assets/images/vestido_roxoestampado.jpg',
-      'preco': 'R\$ 145,00',
+      'nome': 'Calça Premium com Laço',
+      'imagem': 'assets/images/femcalcalaco.png',
+      'preco': 'R\$ 329,90',
     },
     {
-      'nome': 'Blusa Branca',
-      'imagem': 'assets/images/blusa_branca.jpg',
-      'preco': 'R\$ 75,00',
+      'nome': 'Saia Couture Roxa',
+      'imagem': 'assets/images/femsaiaroxa.png',
+      'preco': 'R\$ 279,90',
     },
-   
+    {
+      'nome': 'Vestido Evening Black',
+      'imagem': 'assets/images/femvestidopreto.png',
+      'preco': 'R\$ 459,90',
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Coleção Feminina',
           style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            color: Color(0xFF2C2C2C),
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
           ),
         ),
         backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: Color(0xFF2C2C2C)),
         centerTitle: true,
-        elevation: 4,
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.person_outline, color: Colors.black87),
@@ -93,11 +98,7 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
               width: double.infinity,
               padding: EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.black87, Colors.black54],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: Color(0xFFFCE8E1),
               ),
               child: Column(
                 children: [
@@ -111,7 +112,7 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
                         child: Icon(
                           Icons.favorite,
                           size: 40,
-                          color: Colors.white,
+                          color: Color(0xFF2C2C2C),
                         ),
                       );
                     },
@@ -122,14 +123,14 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFF2C2C2C),
                     ),
                   ),
                   Text(
                     'Elegância e sofisticação',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white70,
+                      color: Color(0xFF6B6B6B),
                     ),
                   ),
                 ],
@@ -260,7 +261,7 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black87,
+                            backgroundColor: Color(0xFF2C2C2C),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),

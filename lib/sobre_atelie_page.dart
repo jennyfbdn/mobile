@@ -32,28 +32,21 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
           'Sobre o Ateliê',
           style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            color: Color(0xFF2C2C2C),
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
           ),
         ),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.black87),
+        backgroundColor: Color(0xFFF4DDD4),
+        iconTheme: IconThemeData(color: Color(0xFF2C2C2C)),
         centerTitle: true,
-        elevation: 4,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.person_outline, color: Colors.black87),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
-            },
-          ),
-        ],
+        elevation: 0,
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,
@@ -66,7 +59,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                 padding: EdgeInsets.all(32),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.black87, Colors.black54],
+                    colors: [Color(0xFFF8E8E0), Color(0xFFF4DDD4)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -76,7 +69,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                     Icon(
                       Icons.content_cut,
                       size: 60,
-                      color: Colors.white,
+                      color: Color(0xFF2C2C2C),
                     ),
                     SizedBox(height: 16),
                     Text(
@@ -84,14 +77,14 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Color(0xFF2C2C2C),
                       ),
                     ),
                     Text(
                       'Elegância e qualidade em cada peça',
                       style: TextStyle(
                         fontSize: 16,
-                        color: Colors.white70,
+                        color: Color(0xFF6B6B6B),
                       ),
                     ),
                   ],
@@ -153,21 +146,21 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                       'Costura Personalizada',
                       'Criamos peças únicas sob medida, do conceito à confecção final.',
                       Icons.design_services,
-                      Colors.blue[100]!,
+                      Color(0xFFF8E8E0),
                     ),
                     SizedBox(height: 12),
                     _buildServiceCard(
                       'Ajustes e Reformas',
                       'Ajustamos e reformamos suas peças favoritas com precisão.',
                       Icons.build,
-                      Colors.green[100]!,
+                      Color(0xFFF8E8E0),
                     ),
                     SizedBox(height: 12),
                     _buildServiceCard(
                       'Materiais de Qualidade',
                       'Fornecemos os melhores materiais para seus projetos de costura.',
                       Icons.shopping_bag,
-                      Colors.orange[100]!,
+                      Color(0xFFF8E8E0),
                     ),
 
                     SizedBox(height: 32),
@@ -190,7 +183,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                             'Coleção Feminina',
                             'Vestidos, blusas, saias e muito mais',
                             Icons.favorite,
-                            Colors.pink[100]!,
+                            Color(0xFFF8E8E0),
                           ),
                         ),
                         SizedBox(width: 16),
@@ -199,7 +192,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                             'Coleção Masculina',
                             'Camisas, calças e conjuntos sociais',
                             Icons.person,
-                            Colors.blue[100]!,
+                            Color(0xFFF8E8E0),
                           ),
                         ),
                       ],
@@ -214,7 +207,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                         width: double.infinity,
                         padding: EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.black87,
+                          color: Color(0xFF2C2C2C),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
@@ -254,7 +247,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                       width: double.infinity,
                       padding: EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.black87,
+                        color: Color(0xFF2C2C2C),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Column(
@@ -317,7 +310,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
               color: color,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.black87, size: 24),
+            child: Icon(icon, color: Color(0xFF2C2C2C), size: 24),
           ),
           SizedBox(width: 16),
           Expanded(
@@ -329,7 +322,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Color(0xFF2C2C2C),
                   ),
                 ),
                 SizedBox(height: 4),
@@ -337,7 +330,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
                   description,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.black54,
+                    color: Color(0xFF6B6B6B),
                   ),
                 ),
               ],
@@ -370,7 +363,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
               color: color,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.black87, size: 32),
+            child: Icon(icon, color: Color(0xFF2C2C2C), size: 32),
           ),
           SizedBox(height: 12),
           Text(
@@ -378,7 +371,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Color(0xFF2C2C2C),
             ),
             textAlign: TextAlign.center,
           ),
@@ -387,7 +380,7 @@ class _SobreAteliePageState extends State<SobreAteliePage> with TickerProviderSt
             description,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.black54,
+              color: Color(0xFF6B6B6B),
             ),
             textAlign: TextAlign.center,
           ),
