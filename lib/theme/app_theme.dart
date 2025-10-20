@@ -1,105 +1,190 @@
 import 'package:flutter/material.dart';
-import '../config/colors.dart';
 
 class AppTheme {
-  // Cores principais - usando configuração global
-  static const Color primaryColor = AppColors.primary;
-  static const Color secondaryColor = AppColors.secondary;
-  static const Color accentColor = AppColors.accent;
-  static const Color successColor = AppColors.success;
-  static const Color warningColor = AppColors.warning;
-  static const Color errorColor = AppColors.error;
-  
-  // Cores neutras
-  static const Color backgroundColor = AppColors.background;
-  static const Color surfaceColor = AppColors.surface;
-  static const Color textPrimary = AppColors.textPrimary;
-  static const Color textSecondary = AppColors.textSecondary;
-  static const Color dividerColor = AppColors.divider;
-  
+  // Cores principais
+  static const Color primaryBlack = Color(0xFF1A1A1A);
+  static const Color secondaryBlack = Color(0xFF2C2C2C);
+  static const Color accentGold = Color(0xFFD4AF37);
+  static const Color softCream = Color(0xFFFCE8E1);
+  static const Color elegantGray = Color(0xFFF5F5F5);
+  static const Color textGray = Color(0xFF6B6B6B);
+  static const Color pureWhite = Color(0xFFFFFFFF);
+
   // Gradientes
-  static const LinearGradient primaryGradient = AppColors.primaryGradient;
-  
-  // Sombras
-  static List<BoxShadow> get cardShadow => AppColors.cardShadow;
-  
-  // Estilos de botão
-  static ButtonStyle get primaryButtonStyle => ElevatedButton.styleFrom(
-    backgroundColor: Colors.black,
-    foregroundColor: Colors.white,
-    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-    elevation: 2,
-    shadowColor: Colors.black.withOpacity(0.2),
+  static const LinearGradient primaryGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [softCream, Color(0xFFF8E8E0)],
   );
-  
-  static ButtonStyle get accentButtonStyle => ElevatedButton.styleFrom(
-    backgroundColor: Colors.white,
-    foregroundColor: Colors.black,
-    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-      side: BorderSide(color: Colors.black),
+
+  static const LinearGradient goldGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [accentGold, Color(0xFFB8941F)],
+  );
+
+  static const LinearGradient darkGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [primaryBlack, secondaryBlack],
+  );
+
+  // Tema principal
+  static ThemeData get theme {
+    return ThemeData(
+      primarySwatch: Colors.grey,
+      primaryColor: primaryBlack,
+      scaffoldBackgroundColor: pureWhite,
+      fontFamily: 'Inter',
+      
+      // AppBar Theme
+      appBarTheme: const AppBarTheme(
+        backgroundColor: pureWhite,
+        foregroundColor: primaryBlack,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          color: primaryBlack,
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+        ),
+      ),
+
+      // Elevated Button Theme
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: primaryBlack,
+          foregroundColor: pureWhite,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ),
+
+      // Card Theme
+      cardTheme: CardTheme(
+        elevation: 4,
+        shadowColor: Colors.black.withOpacity(0.1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        color: pureWhite,
+      ),
+
+      // Input Decoration Theme
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: elegantGray,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: primaryBlack, width: 2),
+        ),
+        labelStyle: const TextStyle(color: textGray),
+        hintStyle: const TextStyle(color: textGray),
+      ),
+
+      // Text Theme
+      textTheme: const TextTheme(
+        displayLarge: TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+          color: primaryBlack,
+          letterSpacing: -0.5,
+        ),
+        displayMedium: TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+          color: primaryBlack,
+          letterSpacing: -0.3,
+        ),
+        displaySmall: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: primaryBlack,
+        ),
+        headlineLarge: TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: primaryBlack,
+        ),
+        headlineMedium: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: primaryBlack,
+        ),
+        headlineSmall: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: primaryBlack,
+        ),
+        titleLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: primaryBlack,
+        ),
+        titleMedium: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: primaryBlack,
+        ),
+        bodyLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: secondaryBlack,
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: textGray,
+        ),
+        bodySmall: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          color: textGray,
+        ),
+      ),
+    );
+  }
+
+  // Sombras elegantes
+  static List<BoxShadow> get elegantShadow => [
+    BoxShadow(
+      color: Colors.black.withOpacity(0.08),
+      blurRadius: 20,
+      offset: const Offset(0, 8),
     ),
-    elevation: 0,
-  );
-  
+  ];
+
+  static List<BoxShadow> get subtleShadow => [
+    BoxShadow(
+      color: Colors.black.withOpacity(0.05),
+      blurRadius: 10,
+      offset: const Offset(0, 4),
+    ),
+  ];
+
   // Decorações de container
-  static BoxDecoration get cardDecoration => BoxDecoration(
-    color: AppColors.surface,
+  static BoxDecoration get elegantContainer => BoxDecoration(
+    color: pureWhite,
     borderRadius: BorderRadius.circular(16),
-    boxShadow: AppColors.cardShadow,
+    boxShadow: elegantShadow,
   );
-  
-  // Tema completo do Material Design
-  static ThemeData get theme => ThemeData(
-    primarySwatch: Colors.brown,
-    primaryColor: AppColors.primary,
-    scaffoldBackgroundColor: AppColors.background,
-    appBarTheme: AppBarTheme(
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-      elevation: 1,
-      centerTitle: true,
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: primaryButtonStyle,
-    ),
-    textTheme: TextTheme(
-      bodyLarge: TextStyle(color: AppColors.textPrimary),
-      bodyMedium: TextStyle(color: AppColors.textPrimary),
-      titleLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
-      titleMedium: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
-      titleSmall: TextStyle(color: AppColors.textSecondary),
-    ),
-    colorScheme: ColorScheme.light(
-      primary: AppColors.primary,
-      secondary: AppColors.secondary,
-      surface: AppColors.surface,
-      background: AppColors.background,
-      onPrimary: AppColors.textPrimary,
-      onSecondary: Colors.white,
-      onSurface: AppColors.textPrimary,
-      onBackground: AppColors.textPrimary,
-    ),
-    cardTheme: CardThemeData(
-      color: AppColors.cardBackground,
-      elevation: 2,
-      shadowColor: Colors.black.withOpacity(0.06),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: AppColors.surface,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.border),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.secondary, width: 2),
-      ),
-      labelStyle: TextStyle(color: AppColors.textSecondary),
-    ),
+
+  static BoxDecoration get gradientContainer => BoxDecoration(
+    gradient: primaryGradient,
+    borderRadius: BorderRadius.circular(16),
+    boxShadow: subtleShadow,
   );
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'config/api_config.dart';
+import 'theme/app_theme.dart';
+import 'theme/elegant_components.dart';
 
 class AdminPage extends StatefulWidget {
   @override
@@ -130,114 +132,243 @@ class _AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text('Painel Administrativo'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        centerTitle: true,
-        elevation: 4,
+      backgroundColor: AppTheme.elegantGray,
+      appBar: ElegantComponents.elegantAppBar(
+        title: 'Painel Administrativo',
         actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: _carregarDados,
+          Container(
+            margin: EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: AppTheme.accentGold.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.refresh, color: AppTheme.accentGold),
+              onPressed: _carregarDados,
+            ),
           ),
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppTheme.pureWhite,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: AppTheme.subtleShadow,
+                    ),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentGold),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Carregando dados...',
+                    style: TextStyle(
+                      color: AppTheme.textGray,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            )
           : SingleChildScrollView(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Botão de teste
-                  Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Ações de Teste',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  // Header do painel
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.darkGradient,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: AppTheme.elegantShadow,
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(Icons.dashboard, size: 48, color: AppTheme.pureWhite),
+                        SizedBox(height: 16),
+                        Text(
+                          'Painel Administrativo',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.pureWhite,
                           ),
-                          SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _enviarNotificacaoTeste,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: Text('Enviar Notificação de Teste'),
+                        ),
+                        Text(
+                          'Gerencie encomendas e agendamentos',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppTheme.pureWhite.withOpacity(0.8),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 32),
+                  // Painel de controle elegante
+                  Container(
+                    decoration: AppTheme.elegantContainer,
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.goldGradient,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(Icons.admin_panel_settings, color: AppTheme.pureWhite, size: 24),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Painel de Controle',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppTheme.primaryBlack,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Gerencie notificações e testes do sistema',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: AppTheme.textGray,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 24),
+                        ElegantComponents.primaryButton(
+                          text: 'Enviar Notificação de Teste',
+                          onPressed: _enviarNotificacaoTeste,
+                          icon: Icons.notifications_active,
+                          width: double.infinity,
+                        ),
+                      ],
                     ),
                   ),
                   
                   SizedBox(height: 24),
                   
-                  // Encomendas
-                  Text(
-                    'Encomendas',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  // Seção de Encomendas
+                  ElegantComponents.sectionTitle(
+                    title: 'Encomendas',
+                    subtitle: '${_encomendas.length} encomendas encontradas',
                   ),
                   SizedBox(height: 16),
                   
                   if (_encomendas.isEmpty)
-                    Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('Nenhuma encomenda encontrada'),
+                    Container(
+                      decoration: AppTheme.elegantContainer,
+                      padding: EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          Icon(Icons.shopping_bag_outlined, size: 48, color: AppTheme.textGray),
+                          SizedBox(height: 16),
+                          Text(
+                            'Nenhuma encomenda encontrada',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppTheme.textGray,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   else
                     ..._encomendas.map((encomenda) {
-                      return Card(
-                        margin: EdgeInsets.only(bottom: 8),
+                      final isPronta = encomenda['statusEncomenda'] == 'PRONTA';
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 16),
+                        decoration: AppTheme.elegantContainer,
                         child: Padding(
-                          padding: EdgeInsets.all(16),
+                          padding: EdgeInsets.all(20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Cliente: ${encomenda['usuarioNome'] ?? 'N/A'}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              Text('Produto: ${encomenda['produto'] ?? 'N/A'}'),
-                              Text('Status: ${encomenda['statusEncomenda'] ?? 'N/A'}'),
-                              SizedBox(height: 8),
-                              if (encomenda['statusEncomenda'] != 'PRONTA')
-                                ElevatedButton(
-                                  onPressed: () => _marcarEncomendaPronta(encomenda['id']),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  child: Text('Marcar como Pronta'),
-                                )
-                              else
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    'PRONTA',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: isPronta ? Colors.green.withOpacity(0.1) : AppTheme.accentGold.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      isPronta ? Icons.check_circle : Icons.schedule,
+                                      color: isPronta ? Colors.green : AppTheme.accentGold,
+                                      size: 20,
                                     ),
                                   ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          encomenda['usuarioNome'] ?? 'Cliente não identificado',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: AppTheme.primaryBlack,
+                                          ),
+                                        ),
+                                        Text(
+                                          encomenda['produto'] ?? 'Produto não especificado',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: AppTheme.textGray,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: isPronta ? Colors.green : AppTheme.accentGold,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      encomenda['statusEncomenda'] ?? 'N/A',
+                                      style: TextStyle(
+                                        color: AppTheme.pureWhite,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (!isPronta) ..[
+                                SizedBox(height: 16),
+                                ElegantComponents.primaryButton(
+                                  text: 'Marcar como Pronta',
+                                  onPressed: () => _marcarEncomendaPronta(encomenda['id']),
+                                  icon: Icons.check_circle,
+                                  width: double.infinity,
                                 ),
+                              ],
                             ],
                           ),
                         ),
@@ -246,45 +377,101 @@ class _AdminPageState extends State<AdminPage> {
                   
                   SizedBox(height: 24),
                   
-                  // Agendamentos
-                  Text(
-                    'Agendamentos',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  // Seção de Agendamentos
+                  ElegantComponents.sectionTitle(
+                    title: 'Agendamentos',
+                    subtitle: '${_agendamentos.length} agendamentos encontrados',
                   ),
                   SizedBox(height: 16),
                   
                   if (_agendamentos.isEmpty)
-                    Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('Nenhum agendamento encontrado'),
+                    Container(
+                      decoration: AppTheme.elegantContainer,
+                      padding: EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          Icon(Icons.calendar_today_outlined, size: 48, color: AppTheme.textGray),
+                          SizedBox(height: 16),
+                          Text(
+                            'Nenhum agendamento encontrado',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: AppTheme.textGray,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     )
                   else
                     ..._agendamentos.map((agendamento) {
-                      return Card(
-                        margin: EdgeInsets.only(bottom: 8),
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 16),
+                        decoration: AppTheme.elegantContainer,
                         child: Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          padding: EdgeInsets.all(20),
+                          child: Row(
                             children: [
-                              Text(
-                                'Cliente: ${agendamento['usuarioNome'] ?? 'N/A'}',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  gradient: AppTheme.primaryGradient,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(Icons.event, color: AppTheme.primaryBlack, size: 20),
                               ),
-                              Text('Serviço: ${agendamento['tipoServico'] ?? 'N/A'}'),
-                              Text('Status: ${agendamento['statusAgendamento'] ?? 'N/A'}'),
-                              if (agendamento['dataAgendamento'] != null)
-                                Text('Data: ${agendamento['dataAgendamento']}'),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      agendamento['usuarioNome'] ?? 'Cliente não identificado',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        color: AppTheme.primaryBlack,
+                                      ),
+                                    ),
+                                    Text(
+                                      agendamento['tipoServico'] ?? 'Serviço não especificado',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: AppTheme.textGray,
+                                      ),
+                                    ),
+                                    if (agendamento['dataAgendamento'] != null)
+                                      Text(
+                                        'Data: ${agendamento['dataAgendamento']}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppTheme.textGray,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.primaryBlack,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  agendamento['statusAgendamento'] ?? 'N/A',
+                                  style: TextStyle(
+                                    color: AppTheme.pureWhite,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       );
                     }).toList(),
+                  SizedBox(height: 32),
                 ],
               ),
             ),

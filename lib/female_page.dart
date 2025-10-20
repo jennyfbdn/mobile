@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'order_page.dart';
 import 'profile_page.dart';
+import 'theme/app_theme.dart';
+import 'theme/elegant_components.dart';
 
 class FemalePage extends StatefulWidget {
   @override
@@ -65,24 +67,12 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: Text(
-          'Coleção Feminina',
-          style: TextStyle(
-            color: Color(0xFF2C2C2C),
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Color(0xFF2C2C2C)),
-        centerTitle: true,
-        elevation: 0,
+      backgroundColor: AppTheme.pureWhite,
+      appBar: ElegantComponents.elegantAppBar(
+        title: 'Coleção Feminina',
         actions: [
           IconButton(
-            icon: Icon(Icons.person_outline, color: Colors.black87),
+            icon: Icon(Icons.person_outline, color: AppTheme.primaryBlack),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
             },
@@ -93,12 +83,13 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
         opacity: _fadeAnimation,
         child: Column(
           children: [
-            // Header animado
+            // Header elegante
             Container(
               width: double.infinity,
-              padding: EdgeInsets.all(24),
+              padding: EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Color(0xFFFCE8E1),
+                gradient: AppTheme.primaryGradient,
+                boxShadow: AppTheme.subtleShadow,
               ),
               child: Column(
                 children: [
@@ -109,28 +100,39 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
                     builder: (context, value, child) {
                       return Transform.scale(
                         scale: value,
-                        child: Icon(
-                          Icons.favorite,
-                          size: 40,
-                          color: Color(0xFF2C2C2C),
+                        child: Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppTheme.pureWhite,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: AppTheme.elegantShadow,
+                          ),
+                          child: Icon(
+                            Icons.favorite,
+                            size: 32,
+                            color: AppTheme.accentGold,
+                          ),
                         ),
                       );
                     },
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: 20),
                   Text(
                     'Coleção Feminina',
                     style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2C2C2C),
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.primaryBlack,
+                      letterSpacing: -0.5,
                     ),
                   ),
+                  SizedBox(height: 8),
                   Text(
-                    'Elegância e sofisticação',
+                    'Elegância e sofisticação em cada peça',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B6B6B),
+                      fontSize: 16,
+                      color: AppTheme.textGray,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ],
@@ -138,19 +140,19 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
             ),
             
             Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(20),
+              child: Container(
+                padding: EdgeInsets.all(24),
                 child: GridView.builder(
                   itemCount: produtosFemininos.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 0.75,
                   ),
                   itemBuilder: (context, index) {
                     final produto = produtosFemininos[index];
-                    return _buildAnimatedProductCard(context, produto, index);
+                    return _buildElegantProductCard(context, produto, index);
                   },
                 ),
               ),

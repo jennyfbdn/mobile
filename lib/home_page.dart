@@ -12,6 +12,9 @@ import 'notificacoes_page.dart';
 import 'notification_service.dart';
 import 'config/colors.dart';
 import 'materiais_page.dart';
+import 'theme/app_theme.dart';
+import 'theme/elegant_components.dart';
+import 'services/web_service.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -195,170 +198,212 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.pureWhite,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.pureWhite,
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
-        title: Text(
-          'Ateliê Pano Fino',
-          style: TextStyle(
-            color: Color(0xFF2C2C2C),
-            fontSize: 22,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: AppTheme.goldGradient,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.diamond, color: AppTheme.pureWhite, size: 20),
+            ),
+            SizedBox(width: 12),
+            Text(
+              'Ateliê Pano Fino',
+              style: TextStyle(
+                color: AppTheme.primaryBlack,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
         ),
         actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: Icon(Icons.notifications_outlined, color: Color(0xFF2C2C2C), size: 24),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => NotificacoesPage()),
-                  );
-                  _carregarContadorNotificacoes();
-                },
-              ),
-              if (_notificacoesNaoLidas > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: BoxConstraints(
-                      minWidth: 16,
-                      minHeight: 16,
-                    ),
-                    child: Text(
-                      '$_notificacoesNaoLidas',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+          Container(
+            margin: EdgeInsets.only(right: 8),
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.elegantGray,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: IconButton(
+                    icon: Icon(Icons.notifications_outlined, color: AppTheme.primaryBlack, size: 24),
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => NotificacoesPage()),
+                      );
+                      _carregarContadorNotificacoes();
+                    },
                   ),
                 ),
-            ],
+                if (_notificacoesNaoLidas > 0)
+                  Positioned(
+                    right: 6,
+                    top: 6,
+                    child: Container(
+                      padding: EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.goldGradient,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: AppTheme.subtleShadow,
+                      ),
+                      constraints: BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        '$_notificacoesNaoLidas',
+                        style: TextStyle(
+                          color: AppTheme.pureWhite,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
-          IconButton(
-            icon: Icon(Icons.person_outline, color: Color(0xFF2C2C2C), size: 24),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
-            },
+          Container(
+            margin: EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              color: AppTheme.elegantGray,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.person_outline, color: AppTheme.primaryBlack, size: 24),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage()));
+              },
+            ),
           ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Stack(
-              children: [
-                Container(
-                  height: 250,
-                  child: PageView.builder(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentCarouselIndex = index;
-                      });
-                    },
-                    itemCount: _carouselItems.length,
-                    itemBuilder: (context, index) {
-                      final item = _carouselItems[index];
-                      return Container(
-                        width: double.infinity,
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: Image.asset(
-                                item['image']!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    color: Colors.grey[400],
-                                    child: Center(
-                                      child: Icon(Icons.image, size: 60, color: Colors.white),
-                                    ),
-                                  );
-                                },
+            Container(
+              height: 280,
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: AppTheme.elegantShadow,
+              ),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _currentCarouselIndex = index;
+                        });
+                      },
+                      itemCount: _carouselItems.length,
+                      itemBuilder: (context, index) {
+                        final item = _carouselItems[index];
+                        return Container(
+                          width: double.infinity,
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: Image.asset(
+                                  item['image']!,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      decoration: AppTheme.gradientContainer,
+                                      child: Center(
+                                        child: Icon(Icons.image, size: 80, color: AppTheme.textGray),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.transparent,
-                                    Colors.black.withOpacity(0.7),
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      AppTheme.primaryBlack.withOpacity(0.8),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 60,
+                                left: 24,
+                                right: 24,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item['title']!,
+                                      style: TextStyle(
+                                        color: AppTheme.pureWhite,
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      item['subtitle']!,
+                                      style: TextStyle(
+                                        color: AppTheme.pureWhite.withOpacity(0.9),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                            ),
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    item['title']!,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.2,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    item['subtitle']!,
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-                Positioned(
-                  bottom: 16,
-                  left: 0,
-                  right: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: _carouselItems.asMap().entries.map((entry) {
-                      return Container(
-                        width: 8,
-                        height: 8,
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _currentCarouselIndex == entry.key
-                              ? Colors.white
-                              : Colors.white.withOpacity(0.4),
-                        ),
-                      );
-                    }).toList(),
+                  Positioned(
+                    bottom: 20,
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: _carouselItems.asMap().entries.map((entry) {
+                        return Container(
+                          width: _currentCarouselIndex == entry.key ? 24 : 8,
+                          height: 8,
+                          margin: EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            color: _currentCarouselIndex == entry.key
+                                ? AppTheme.accentGold
+                                : AppTheme.pureWhite.withOpacity(0.5),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             
             Padding(
@@ -366,46 +411,51 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Nossos Serviços',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 26,
-                      color: Color(0xFF2C2C2C),
-                      letterSpacing: -0.5,
-                    ),
+                  ElegantComponents.sectionTitle(
+                    title: 'Nossos Serviços',
+                    subtitle: 'Experiência personalizada para você',
                   ),
                   SizedBox(height: 20),
                   
                   Row(
                     children: [
                       Expanded(
-                        child: _buildServiceCard(
+                        child: ElegantComponents.serviceCard(
                           icon: Icons.design_services,
                           title: 'Personalizar',
                           subtitle: 'Crie peças únicas',
-                          gradient: [Color(0xFFFCE8E1), Color(0xFFFCE8E1)],
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage())),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      SizedBox(width: 16),
                       Expanded(
-                        child: _buildServiceCard(
+                        child: ElegantComponents.serviceCard(
                           icon: Icons.construction,
                           title: 'Materiais',
                           subtitle: 'Agende retirada',
-                          gradient: [Color(0xFFFCE8E1), Color(0xFFFCE8E1)],
+                          gradientColors: [AppTheme.accentGold.withOpacity(0.1), AppTheme.accentGold.withOpacity(0.2)],
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MateriaisPage())),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      SizedBox(width: 16),
                       Expanded(
-                        child: _buildServiceCard(
-                          icon: Icons.star,
-                          title: 'Avaliações',
-                          subtitle: 'Feedback dos clientes',
-                          gradient: [Color(0xFFFCE8E1), Color(0xFFFCE8E1)],
-                          onTap: () => Navigator.pushNamed(context, '/feedbacks'),
+                        child: ElegantComponents.serviceCard(
+                          icon: Icons.language,
+                          title: 'Site Web',
+                          subtitle: 'Acesse nosso site',
+                          gradientColors: [AppTheme.primaryBlack.withOpacity(0.05), AppTheme.primaryBlack.withOpacity(0.1)],
+                          onTap: () async {
+                            try {
+                              await WebService.openWebsite();
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Erro ao abrir site: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
                     ],
@@ -413,14 +463,9 @@ class _HomePageState extends State<HomePage> {
                   
                   SizedBox(height: 32),
                   
-                  Text(
-                    'Coleções',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 26,
-                      color: Color(0xFF2C2C2C),
-                      letterSpacing: -0.5,
-                    ),
+                  ElegantComponents.sectionTitle(
+                    title: 'Coleções',
+                    subtitle: 'Descubra nossos estilos exclusivos',
                   ),
                   SizedBox(height: 20),
                   
@@ -558,14 +603,9 @@ class _HomePageState extends State<HomePage> {
                   
                   SizedBox(height: 32),
                   
-                  Text(
-                    'Peças em Destaque',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 26,
-                      color: Color(0xFF2C2C2C),
-                      letterSpacing: -0.5,
-                    ),
+                  ElegantComponents.sectionTitle(
+                    title: 'Peças em Destaque',
+                    subtitle: 'Seleção especial da nossa coleção',
                   ),
                   SizedBox(height: 20),
                   
