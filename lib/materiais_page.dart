@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'agendamento_retirada_page.dart';
+import 'produto_service.dart';
 
-class MateriaisPage extends StatelessWidget {
-  final List<Map<String, dynamic>> materiais = [
+class MateriaisPage extends StatefulWidget {
+  @override
+  _MateriaisPageState createState() => _MateriaisPageState();
+}
+
+class _MateriaisPageState extends State<MateriaisPage> {
+  List<dynamic> materiais = [];
+  bool isLoading = true;
+  
+  final List<Map<String, dynamic>> materiaisDefault = [
     {
       'nome': 'Linhas de Costura',
       'imagem': 'assets/images/linha.jpg',
@@ -40,6 +49,37 @@ class MateriaisPage extends StatelessWidget {
       'disponivel': false,
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarMateriais();
+  }
+
+  Future<void> _carregarMateriais() async {
+    try {
+      final result = await ProdutoService().listarProdutosPorTipo('Material');
+      setState(() {
+        if (result['success'] && result['produtos'].isNotEmpty) {
+          materiais = result['produtos'].map((produto) => {
+            'nome': produto['nome'],
+            'descricao': produto['descricao'],
+            'imagem': produto['foto'] != null ? 'data:image/jpeg;base64,${produto['foto']}' : 'assets/images/material_default.jpg',
+            'disponivel': produto['statusProduto'] == 'ATIVO',
+            'preco': produto['preco'],
+          }).toList();
+        } else {
+          materiais = materiaisDefault;
+        }
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        materiais = materiaisDefault;
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,19 +125,32 @@ class MateriaisPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.8,
-                ),
-                itemCount: materiais.length,
-                itemBuilder: (context, index) {
-                  final material = materiais[index];
-                  return _buildMaterialCard(context, material);
-                },
-              ),
+              child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : materiais.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.construction, size: 64, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text('Nenhum material encontrado', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                        ],
+                      ),
+                    )
+                  : GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        childAspectRatio: 0.8,
+                      ),
+                      itemCount: materiais.length,
+                      itemBuilder: (context, index) {
+                        final material = materiais[index];
+                        return _buildMaterialCard(context, material);
+                      },
+                    ),
             ),
           ],
         ),

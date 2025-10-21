@@ -43,6 +43,24 @@ class ProdutoService {
     }
   }
 
+  Future<Map<String, dynamic>> listarProdutosPorCategoria(int categoriaId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/produto/findByCategoria/$categoriaId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> produtos = jsonDecode(response.body);
+        return {'success': true, 'produtos': produtos};
+      } else {
+        return {'success': false, 'message': 'Erro ao carregar produtos da categoria'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Erro de conexão: $e'};
+    }
+  }
+
   Future<Map<String, dynamic>> buscarProdutoPorId(int id) async {
     try {
       final response = await http.get(

@@ -7,6 +7,11 @@ import 'agendamentos_page.dart';
 import 'produto_service.dart';
 
 class ProdutosPage extends StatefulWidget {
+  final int? categoriaId;
+  final String? categoriaNome;
+
+  const ProdutosPage({Key? key, this.categoriaId, this.categoriaNome}) : super(key: key);
+
   @override
   _ProdutosPageState createState() => _ProdutosPageState();
 }
@@ -39,7 +44,9 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
   }
 
   Future<void> _carregarProdutos() async {
-    final result = await _produtoService.listarProdutos();
+    final result = widget.categoriaId != null 
+        ? await _produtoService.listarProdutosPorCategoria(widget.categoriaId!)
+        : await _produtoService.listarProdutos();
     setState(() {
       if (result['success']) {
         produtos = result['produtos'];
@@ -261,7 +268,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          'Materiais de Costura',
+          widget.categoriaNome ?? 'Materiais de Costura',
           style: TextStyle(
             color: Colors.black87,
             fontSize: 20,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'agendamento_service.dart';
 import 'user_service.dart';
 import 'theme/app_theme.dart';
+import 'services/servico_service.dart';
 
 class PersonalizacaoPage extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
   final _descricaoController = TextEditingController();
   String _tipoPeca = 'Vestido';
   String _tipoPersonalizacao = 'Ajuste de tamanho';
+  List<dynamic> servicos = [];
+  bool isLoadingServicos = true;
   DateTime? _dataAgendamento;
   TimeOfDay? _horaAgendamento;
   String _tamanhoSelecionado = 'M';
@@ -74,6 +77,7 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
     );
     _animationController.forward();
     _carregarDadosUsuario();
+    _carregarServicos();
   }
 
   Future<void> _carregarDadosUsuario() async {
@@ -87,6 +91,25 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
     }
   }
 
+  Future<void> _carregarServicos() async {
+    try {
+      final result = await ServicoService.getServicos();
+      setState(() {
+        if (result['success']) {
+          servicos = result['servicos'];
+          if (servicos.isNotEmpty) {
+            _tipoPersonalizacao = servicos[0]['nome'];
+          }
+        }
+        isLoadingServicos = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingServicos = false;
+      });
+    }
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -96,11 +119,11 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text('Personalização no Ateliê'),
-        backgroundColor: AppTheme.surfaceColor,
-        foregroundColor: AppTheme.textPrimary,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
         elevation: 4,
       ),
       body: Form(
@@ -139,7 +162,13 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                   SizedBox(height: 16),
                   _buildTamanhoSelector(),
                   SizedBox(height: 16),
-                  _buildDropdown('Tipo de personalização', _tipoPersonalizacao, ['Ajuste de tamanho', 'Bordado', 'Aplicação', 'Reforma', 'Outro'], (v) => setState(() => _tipoPersonalizacao = v!)),
+                  isLoadingServicos 
+                    ? Center(child: CircularProgressIndicator())
+                    : _buildDropdown('Tipo de personalização', _tipoPersonalizacao, 
+                        servicos.isNotEmpty 
+                          ? servicos.map((s) => s['nome'].toString()).toList()
+                          : ['Ajuste de tamanho', 'Bordado', 'Aplicação', 'Reforma', 'Outro'], 
+                        (v) => setState(() => _tipoPersonalizacao = v!)),
                   SizedBox(height: 16),
                   Row(
                     children: [
@@ -170,7 +199,7 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                         child: ElevatedButton(
                           onPressed: () => Navigator.pushNamed(context, '/agendamentos'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.secondaryColor,
+                            backgroundColor: Colors.grey[700],
                             foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -200,12 +229,12 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
             height: 200,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppTheme.accentColor.withOpacity(0.3), AppTheme.accentColor.withOpacity(0.1)],
+                colors: [Colors.blue.withOpacity(0.3), Colors.blue.withOpacity(0.1)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppTheme.accentColor.withOpacity(0.5), width: 2),
+              border: Border.all(color: Colors.blue.withOpacity(0.5), width: 2),
             ),
             child: Center(
               child: Column(
@@ -214,7 +243,7 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                   Icon(
                     _iconsPecas[_tipoPeca],
                     size: 60,
-                    color: AppTheme.accentColor,
+                    color: Colors.blue,
                   ),
                   SizedBox(height: 8),
                   Text(
@@ -277,10 +306,10 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                 duration: Duration(milliseconds: 200),
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppTheme.primaryColor : Colors.grey[100],
+                  color: isSelected ? Colors.black87 : Colors.grey[100],
                   borderRadius: BorderRadius.circular(25),
                   border: Border.all(
-                    color: isSelected ? AppTheme.primaryColor : Colors.grey[300]!,
+                    color: isSelected ? Colors.black87 : Colors.grey[300]!,
                   ),
                 ),
                 child: Row(
@@ -364,10 +393,10 @@ class _PersonalizacaoPageState extends State<PersonalizacaoPage> with TickerProv
                   margin: EdgeInsets.only(right: 8),
                   padding: EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? AppTheme.primaryColor : Colors.grey[100],
+                    color: isSelected ? Colors.black87 : Colors.grey[100],
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: isSelected ? AppTheme.primaryColor : Colors.grey[300]!,
+                      color: isSelected ? Colors.black87 : Colors.grey[300]!,
                     ),
                   ),
                   child: Text(

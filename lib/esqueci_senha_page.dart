@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class EsqueciSenhaPage extends StatefulWidget {
   @override
@@ -16,29 +15,10 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
 
     setState(() => _isLoading = true);
 
-    try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: _emailController.text.trim());
-
-      setState(() => _isLoading = false);
-
-      _mostrarSucesso();
-    } on FirebaseAuthException catch (e) {
-      setState(() => _isLoading = false);
-
-      String mensagem = '';
-      if (e.code == 'user-not-found') {
-        mensagem = 'Usuário não encontrado para este e-mail.';
-      } else if (e.code == 'invalid-email') {
-        mensagem = 'E-mail inválido.';
-      } else {
-        mensagem = 'Erro: ${e.message}';
-      }
-      _mostrarErro(mensagem);
-    } catch (e) {
-      setState(() => _isLoading = false);
-      _mostrarErro('Erro ao enviar e-mail. Tente novamente.');
-    }
+    // TODO: Implementar recuperação de senha
+    await Future.delayed(Duration(seconds: 2));
+    setState(() => _isLoading = false);
+    _mostrarSucesso();
   }
 
   void _mostrarSucesso() {

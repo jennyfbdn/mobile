@@ -7,6 +7,8 @@ class Produto {
   final String fotoUrl; // Supondo que a foto seja uma URL
   final double preco;
   final String statusProduto;
+  final int? categoriaId;
+  final String? categoriaNome;
 
   Produto({
     required this.id,
@@ -17,6 +19,8 @@ class Produto {
     required this.fotoUrl,
     required this.preco,
     required this.statusProduto,
+    this.categoriaId,
+    this.categoriaNome,
   });
 
   // Construtor que trata valores nulos, como fotoUrl
@@ -30,6 +34,8 @@ class Produto {
       fotoUrl: json['fotoUrl'] ?? '',
       preco: (json['preco'] as num?)?.toDouble() ?? 0.0,
       statusProduto: json['statusProduto'] ?? '',
+      categoriaId: json['categoria']?['id'],
+      categoriaNome: json['categoria']?['nome'],
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'female_page.dart';
 import 'male_page.dart';
 import 'order_page.dart';
@@ -8,13 +10,16 @@ import 'personalizacao_page.dart';
 import 'medidas_page.dart';
 import 'services/produto_service.dart';
 import 'models/produto_model.dart';
-import 'notificacoes_page.dart';
-import 'notification_service.dart';
+import 'feedbacks_page.dart';
 import 'config/colors.dart';
 import 'materiais_page.dart';
 import 'theme/app_theme.dart';
 import 'theme/elegant_components.dart';
 import 'services/web_service.dart';
+import 'categorias_page.dart';
+import 'services/categoria_service.dart';
+import 'models/categoria_model.dart';
+import 'produtos_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -23,11 +28,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final NotificationService _notificationService = NotificationService();
-  int _notificacoesNaoLidas = 0;
   int _currentCarouselIndex = 0;
   PageController _pageController = PageController();
   Timer? _timer;
+  List<Categoria> categorias = [];
+  bool isLoadingCategorias = true;
+  List<Produto> produtos = [];
+  bool isLoadingProdutos = true;
 
   final List<Map<String, String>> _carouselItems = [
     {
@@ -50,8 +57,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _carregarContadorNotificacoes();
     _startAutoPlay();
+    _carregarCategorias();
+    _carregarProdutos();
   }
 
   void _startAutoPlay() {
@@ -74,14 +82,267 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  Future<void> _carregarContadorNotificacoes() async {
-    final count = await _notificationService.contarNaoLidas();
-    if (mounted) {
+  Future<void> _carregarCategorias() async {
+    try {
+      final categoriasCarregadas = await CategoriaService.getCategorias();
       setState(() {
-        _notificacoesNaoLidas = count;
+        categorias = categoriasCarregadas.take(4).toList();
+        isLoadingCategorias = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoadingCategorias = false;
       });
     }
   }
+
+  Future<void> _carregarProdutos() async {
+    try {
+      final produtosCarregados = await ProdutoService().fetchProdutos();
+      print('Produtos carregados: ${produtosCarregados.length}');
+      for (var produto in produtosCarregados.take(3)) {
+        print('Produto: ${produto.nome}, FotoUrl: ${produto.fotoUrl}');
+      }
+      setState(() {
+        produtos = produtosCarregados.take(9).toList();
+        isLoadingProdutos = false;
+      });
+    } catch (e) {
+      print('Erro ao carregar produtos: $e');
+      setState(() {
+        isLoadingProdutos = false;
+      });
+    }
+  }
+
+  Widget _buildCategoriasSection() {
+    if (isLoadingCategorias) {
+      return Container(
+        height: 120,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (categorias.isEmpty) {
+      return Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.category, color: Colors.grey[600], size: 32),
+              SizedBox(height: 8),
+              Text('Nenhuma categoria encontrada', style: TextStyle(color: Colors.grey[600])),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Categorias',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primaryBlack,
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CategoriasPage())),
+              child: Text('Ver todas'),
+            ),
+          ],
+        ),
+        SizedBox(height: 12),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1.5,
+          ),
+          itemCount: categorias.length > 4 ? 4 : categorias.length,
+          itemBuilder: (context, index) {
+            final categoria = categorias[index];
+            return GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProdutosPage(
+                    categoriaId: categoria.id,
+                    categoriaNome: categoria.nome,
+                  ),
+                ),
+              ),
+              child: Container(
+                height: 120,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [AppTheme.accentGold.withOpacity(0.8), AppTheme.accentGold],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withOpacity(0.7),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 16,
+                        left: 16,
+                        child: Text(
+                          categoria.nome,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageFromBytes(String imageData) {
+    print('=== DEBUG IMAGEM ===');
+    print('ImageData length: ${imageData.length}');
+    print('ImageData starts with: ${imageData.length > 50 ? imageData.substring(0, 50) : imageData}');
+    print('Is data URL: ${imageData.startsWith('data:image')}');
+    print('Is base64: ${_isBase64(imageData)}');
+    
+    if (imageData.isEmpty) {
+      print('ERROR: ImageData is empty');
+      return Container(
+        color: const Color.fromRGBO(224, 224, 224, 1),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.image_not_supported, size: 40, color: Colors.grey[600]),
+              Text('Vazio', style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+            ],
+          ),
+        ),
+      );
+    }
+    
+    try {
+      Uint8List bytes;
+      
+      if (imageData.startsWith('data:image')) {
+        print('Processing as data URL');
+        List<String> parts = imageData.split(',');
+        if (parts.length < 2) {
+          print('ERROR: Invalid data URL format');
+          throw Exception('Invalid data URL format');
+        }
+        String base64String = parts[1];
+        print('Base64 string length: ${base64String.length}');
+        bytes = base64Decode(base64String);
+      } else if (_isBase64(imageData)) {
+        print('Processing as base64');
+        bytes = base64Decode(imageData);
+      } else {
+        print('ERROR: Not a valid image format');
+        throw Exception('Not a valid image format');
+      }
+      
+      print('Decoded bytes length: ${bytes.length}');
+      
+      if (bytes.isEmpty) {
+        print('ERROR: Decoded bytes are empty');
+        throw Exception('Decoded bytes are empty');
+      }
+      
+      return Image.memory(
+        bytes,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          print('ERROR in Image.memory: $error');
+          return Container(
+            color: const Color.fromRGBO(224, 224, 224, 1),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.image_not_supported, size: 40, color: Colors.grey[600]),
+                  Text('Erro', style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } catch (e) {
+      print('EXCEPTION in _buildImageFromBytes: $e');
+      return Container(
+        color: const Color.fromRGBO(224, 224, 224, 1),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.image_not_supported, size: 40, color: Colors.grey[600]),
+              Text('Falha', style: TextStyle(fontSize: 10, color: Colors.grey[600])),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+  
+  bool _isBase64(String str) {
+    try {
+      base64Decode(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Widget _buildServiceCard({
     required IconData icon,
     required String title,
@@ -147,53 +408,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  final List<Map<String, dynamic>> roupasDestaque = [
-    {
-      'nome': 'Vestido Rosé Elegance',
-      'imagem': 'assets/images/vestidorosa.png',
-      'preco': 'R\$ 389,90',
-    },
-    {
-      'nome': 'Camisa Sunset Premium',
-      'imagem': 'assets/images/camisa_degrade.jpg',
-      'preco': 'R\$ 279,90',
-    },
-    {
-      'nome': 'Blusa Midnight Couture',
-      'imagem': 'assets/images/blusa_preta.png',
-      'preco': 'R\$ 219,90',
-    },
-    {
-      'nome': 'Saia Executive Black',
-      'imagem': 'assets/images/saiapreta.jpg',
-      'preco': 'R\$ 189,90',
-    },
-    {
-      'nome': 'Calça Artisan Bordada',
-      'imagem': 'assets/images/calça_bordada.jpg',
-      'preco': 'R\$ 349,90',
-    },
-    {
-      'nome': 'Top Jeans Boho Premium',
-      'imagem': 'assets/images/Conjuntotopjeans.png',
-      'preco': 'R\$ 259,90',
-    },
-    {
-      'nome': 'Blusa Rose Delicate',
-      'imagem': 'assets/images/blusarosa.png',
-      'preco': 'R\$ 199,90',
-    },
-    {
-      'nome': 'Calça Designer Print',
-      'imagem': 'assets/images/calçadesenho.png',
-      'preco': 'R\$ 329,90',
-    },
-    {
-      'nome': 'Conjunto Urban Denim',
-      'imagem': 'assets/images/conjunto_jeans.jpg',
-      'preco': 'R\$ 459,90',
-    },
-  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -230,51 +445,15 @@ class _HomePageState extends State<HomePage> {
         actions: [
           Container(
             margin: EdgeInsets.only(right: 8),
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.elegantGray,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.notifications_outlined, color: AppTheme.primaryBlack, size: 24),
-                    onPressed: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => NotificacoesPage()),
-                      );
-                      _carregarContadorNotificacoes();
-                    },
-                  ),
-                ),
-                if (_notificacoesNaoLidas > 0)
-                  Positioned(
-                    right: 6,
-                    top: 6,
-                    child: Container(
-                      padding: EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        gradient: AppTheme.goldGradient,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: AppTheme.subtleShadow,
-                      ),
-                      constraints: BoxConstraints(
-                        minWidth: 18,
-                        minHeight: 18,
-                      ),
-                      child: Text(
-                        '$_notificacoesNaoLidas',
-                        style: TextStyle(
-                          color: AppTheme.pureWhite,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-              ],
+            decoration: BoxDecoration(
+              color: AppTheme.elegantGray,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.feedback_outlined, color: AppTheme.primaryBlack, size: 24),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => FeedbacksPage()));
+              },
             ),
           ),
           Container(
@@ -417,46 +596,51 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   
-                  Row(
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 1.2,
                     children: [
-                      Expanded(
-                        child: ElegantComponents.serviceCard(
-                          icon: Icons.design_services,
-                          title: 'Personalizar',
-                          subtitle: 'Crie peças únicas',
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage())),
-                        ),
+                      ElegantComponents.serviceCard(
+                        icon: Icons.design_services,
+                        title: 'Personalizar',
+                        subtitle: 'Crie peças únicas',
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage())),
                       ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: ElegantComponents.serviceCard(
-                          icon: Icons.construction,
-                          title: 'Materiais',
-                          subtitle: 'Agende retirada',
-                          gradientColors: [AppTheme.accentGold.withOpacity(0.1), AppTheme.accentGold.withOpacity(0.2)],
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MateriaisPage())),
-                        ),
+                      ElegantComponents.serviceCard(
+                        icon: Icons.construction,
+                        title: 'Materiais',
+                        subtitle: 'Agende retirada',
+                        gradientColors: [AppTheme.accentGold.withOpacity(0.1), AppTheme.accentGold.withOpacity(0.2)],
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MateriaisPage())),
                       ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: ElegantComponents.serviceCard(
-                          icon: Icons.language,
-                          title: 'Site Web',
-                          subtitle: 'Acesse nosso site',
-                          gradientColors: [AppTheme.primaryBlack.withOpacity(0.05), AppTheme.primaryBlack.withOpacity(0.1)],
-                          onTap: () async {
-                            try {
-                              await WebService.openWebsite();
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Erro ao abrir site: $e'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                            }
-                          },
-                        ),
+                      ElegantComponents.serviceCard(
+                        icon: Icons.feedback,
+                        title: 'Feedback',
+                        subtitle: 'Avalie nosso serviço',
+                        gradientColors: [Colors.green.withOpacity(0.1), Colors.green.withOpacity(0.2)],
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FeedbacksPage())),
+                      ),
+                      ElegantComponents.serviceCard(
+                        icon: Icons.language,
+                        title: 'Site Web',
+                        subtitle: 'Acesse nosso site',
+                        gradientColors: [Colors.blue.withOpacity(0.1), Colors.blue.withOpacity(0.2)],
+                        onTap: () async {
+                          try {
+                            await WebService.openWebsite();
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Erro ao abrir site: $e'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -464,9 +648,13 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 32),
                   
                   ElegantComponents.sectionTitle(
-                    title: 'Coleções',
+                    title: 'Coleções e Categorias',
                     subtitle: 'Descubra nossos estilos exclusivos',
                   ),
+                  SizedBox(height: 20),
+                  
+                  _buildCategoriasSection(),
+                  
                   SizedBox(height: 20),
                   
                   Row(
@@ -609,91 +797,122 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: roupasDestaque.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.75,
-                    ),
-                    itemBuilder: (context, index) {
-                      final roupa = roupasDestaque[index];
-                      return Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                                child: Image.asset(
-                                  roupa['imagem'],
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      color: const Color.fromRGBO(224, 224, 224, 1),
-                                      child: Center(
-                                        child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey[600]),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
+                  isLoadingProdutos
+                    ? Container(
+                        height: 200,
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    : produtos.isEmpty
+                        ? Container(
+                            height: 200,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(12),
+                            child: Center(
                               child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    roupa['nome'],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    roupa['preco'],
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.green[700],
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                                  Icon(Icons.shopping_bag, color: Colors.grey[600], size: 32),
                                   SizedBox(height: 8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (_) => OrderPage(produtos: [roupa])),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color(0xFF2C2C2C),
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      elevation: 0,
-                                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                    ),
-                                    child: Text('Encomendar', style: TextStyle(fontSize: 12)),
-                                  ),
+                                  Text('Nenhum produto encontrado', style: TextStyle(color: Colors.grey[600])),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                          )
+                        : GridView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: produtos.length,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 16,
+                              mainAxisSpacing: 16,
+                              childAspectRatio: 0.75,
+                            ),
+                            itemBuilder: (context, index) {
+                              final produto = produtos[index];
+                              final nome = produto.nome ?? 'Produto sem nome';
+                              final preco = produto.preco ?? 0.0;
+                              final fotoUrl = produto.fotoUrl ?? '';
+                              
+                              print('Renderizando produto: $nome, URL: $fotoUrl, isEmpty: ${fotoUrl.isEmpty}');
+                              
+                              return Card(
+                                elevation: 4,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    Expanded(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                                        child: fotoUrl.isNotEmpty
+                                          ? _buildImageFromBytes(fotoUrl)
+                                          : Container(
+                                              color: const Color.fromRGBO(224, 224, 224, 1),
+                                              child: Center(
+                                                child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey[600]),
+                                              ),
+                                            ),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            nome,
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                              color: Colors.black,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            'R\$ ${preco.toStringAsFixed(2).replaceAll('.', ',')}',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.green[700],
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          SizedBox(height: 8),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (_) => OrderPage(produtos: [{
+                                                  'nome': nome,
+                                                  'preco': 'R\$ ${preco.toStringAsFixed(2).replaceAll('.', ',')}',
+                                                  'imagem': fotoUrl,
+                                                }])),
+                                              );
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color(0xFF2C2C2C),
+                                              foregroundColor: Colors.white,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(16),
+                                              ),
+                                              elevation: 0,
+                                              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                                            ),
+                                            child: Text('Encomendar', style: TextStyle(fontSize: 12)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
                 ],
               ),
             ),

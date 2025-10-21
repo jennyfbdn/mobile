@@ -152,7 +152,7 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
                   ),
                   itemBuilder: (context, index) {
                     final produto = produtosFemininos[index];
-                    return _buildElegantProductCard(context, produto, index);
+                    return _buildAnimatedProductCard(context, produto, index);
                   },
                 ),
               ),

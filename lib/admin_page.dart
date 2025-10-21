@@ -360,7 +360,7 @@ class _AdminPageState extends State<AdminPage> {
                                   ),
                                 ],
                               ),
-                              if (!isPronta) ..[
+                              if (!isPronta) ...[
                                 SizedBox(height: 16),
                                 ElegantComponents.primaryButton(
                                   text: 'Marcar como Pronta',
@@ -368,7 +368,7 @@ class _AdminPageState extends State<AdminPage> {
                                   icon: Icons.check_circle,
                                   width: double.infinity,
                                 ),
-                              ],
+                              ]
                             ],
                           ),
                         ),
