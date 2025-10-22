@@ -639,9 +639,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   
-                  _buildCategoriasSection(),
                   
-                  SizedBox(height: 20),
                   
                   Row(
                     children: [

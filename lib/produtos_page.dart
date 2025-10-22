@@ -200,23 +200,24 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
     );
   }
 
-  String _convertImageToBase64(dynamic imageData) {
-    if (imageData == null) return null;
-    
-    try {
-      if (imageData is String) {
-        return imageData;
-      } else if (imageData is List) {
-        final bytes = List<int>.from(imageData);
-        final base64String = base64Encode(bytes);
-        return base64String;
-      }
-    } catch (e) {
-      print('Erro ao converter imagem: $e');
+  String? _convertImageToBase64(dynamic imageData) {
+  if (imageData == null) return null;
+  
+  try {
+    if (imageData is String) {
+      return imageData;
+    } else if (imageData is List) {
+      final bytes = List<int>.from(imageData);
+      final base64String = base64Encode(bytes);
+      return base64String;
     }
-    
-    return null;
+  } catch (e) {
+    print('Erro ao converter imagem: $e');
   }
+  
+  return null;
+}
+
 
   Map<String, dynamic> _formatarProduto(dynamic produto) {
     return {
