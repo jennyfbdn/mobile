@@ -61,72 +61,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _loginGoogle() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Login Google'),
-        content: Text('Entrando com Google...'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/home');
-            },
-            child: Text('Entrar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar'),
-          ),
-        ],
-      ),
-    );
-  }
 
-  void _loginFacebook() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Login Facebook'),
-        content: Text('Entrando com Facebook...'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/home');
-            },
-            child: Text('Entrar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancelar'),
-          ),
-        ],
-      ),
-    );
-  }
-
-
-
-  Widget _socialButton({
-    required String text,
-    required Color backgroundColor,
-    required Color textColor,
-    required IconData icon,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton.icon(
-      icon: Icon(icon, color: textColor),
-      label: Text(text, style: TextStyle(color: textColor)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-        padding: EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      onPressed: onPressed,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,44 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                     )
                   : Text('Entrar'),
               ),
-              SizedBox(height: 16),
-              Text(
-                'Ou entre com',
-                style: TextStyle(color: Colors.black54),
-              ),
-              SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: _socialButton(
-                      text: 'Google',
-                      backgroundColor: Colors.white,
-                      textColor: Colors.black87,
-                      icon: Icons.g_mobiledata,
-                      onPressed: () {
-        final userService = UserService();
-        userService.setUsuario('Usuário Google', 'google@email.com', '(11) 99999-9999');
-        Navigator.pushNamed(context, '/home');
-      },
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: _socialButton(
-                      text: 'Facebook',
-                      backgroundColor: Colors.black,
-                      textColor: Colors.white,
-                      icon: Icons.facebook,
-                      onPressed: () {
-        final userService = UserService();
-        userService.setUsuario('Usuário Facebook', 'facebook@email.com', '(11) 88888-8888');
-        Navigator.pushNamed(context, '/home');
-      },
-                    ),
-                  ),
-                ],
-              ),
+
               SizedBox(height: 16),
               TextButton(
                 onPressed: () {

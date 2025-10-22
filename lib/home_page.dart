@@ -596,51 +596,37 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   
-                  GridView.count(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.2,
+                  Column(
                     children: [
-                      ElegantComponents.serviceCard(
-                        icon: Icons.design_services,
-                        title: 'Personalizar',
-                        subtitle: 'Crie peças únicas',
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage())),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElegantComponents.serviceCard(
+                              icon: Icons.design_services,
+                              title: 'Personalizar',
+                              subtitle: 'Crie peças únicas',
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => PersonalizacaoPage())),
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: ElegantComponents.serviceCard(
+                              icon: Icons.construction,
+                              title: 'Materiais',
+                              subtitle: 'Agende retirada',
+                              gradientColors: [AppTheme.accentGold.withOpacity(0.1), AppTheme.accentGold.withOpacity(0.2)],
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MateriaisPage())),
+                            ),
+                          ),
+                        ],
                       ),
-                      ElegantComponents.serviceCard(
-                        icon: Icons.construction,
-                        title: 'Materiais',
-                        subtitle: 'Agende retirada',
-                        gradientColors: [AppTheme.accentGold.withOpacity(0.1), AppTheme.accentGold.withOpacity(0.2)],
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MateriaisPage())),
-                      ),
+                      SizedBox(height: 16),
                       ElegantComponents.serviceCard(
                         icon: Icons.feedback,
                         title: 'Feedback',
                         subtitle: 'Avalie nosso serviço',
                         gradientColors: [Colors.green.withOpacity(0.1), Colors.green.withOpacity(0.2)],
                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FeedbacksPage())),
-                      ),
-                      ElegantComponents.serviceCard(
-                        icon: Icons.language,
-                        title: 'Site Web',
-                        subtitle: 'Acesse nosso site',
-                        gradientColors: [Colors.blue.withOpacity(0.1), Colors.blue.withOpacity(0.2)],
-                        onTap: () async {
-                          try {
-                            await WebService.openWebsite();
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Erro ao abrir site: $e'),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        },
                       ),
                     ],
                   ),

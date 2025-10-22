@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'localizacao_page.dart';
 import 'encomenda_service.dart';
 import 'medidas_page.dart';
@@ -175,6 +176,47 @@ class _OrderPageState extends State<OrderPage> {
     }
   }
 
+  Widget _buildProductImage(String imagePath) {
+    if (imagePath.startsWith('base64:')) {
+      try {
+        final base64String = imagePath.substring(7);
+        return Image.memory(
+          base64Decode(base64String),
+          height: 200,
+          width: double.infinity,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              height: 200,
+              color: Colors.grey[100],
+              child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+            );
+          },
+        );
+      } catch (e) {
+        return Container(
+          height: 200,
+          color: Colors.grey[100],
+          child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+        );
+      }
+    } else {
+      return Image.asset(
+        imagePath,
+        height: 200,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 200,
+            color: Colors.grey[100],
+            child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+          );
+        },
+      );
+    }
+  }
+
   Widget _sectionTitle(String title) {
     return Text(
       title,
@@ -267,12 +309,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    produtoSelecionado!['imagem'],
-                    height: 200,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
+                  child: _buildProductImage(produtoSelecionado!['imagem']),
                 ),
               ),
 

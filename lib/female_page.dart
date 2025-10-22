@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'order_page.dart';
 import 'profile_page.dart';
 import 'theme/app_theme.dart';
 import 'theme/elegant_components.dart';
+import 'config/api_config.dart';
 
 class FemalePage extends StatefulWidget {
   @override
@@ -12,6 +15,9 @@ class FemalePage extends StatefulWidget {
 class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+  List<Map<String, dynamic>> produtosFemininos = [];
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -23,6 +29,7 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
     _fadeController.forward();
+    _carregarProdutos();
   }
 
   @override
@@ -31,38 +38,73 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  final List<Map<String, dynamic>> produtosFemininos = [
-    {
-      'nome': 'Cropped Elegance Black',
-      'imagem': 'assets/images/femcroppedpreto.png',
-      'preco': 'R\$ 189,90',
-    },
-    {
-      'nome': 'Saia Midi Clássica',
-      'imagem': 'assets/images/femsaiabranca.png',
-      'preco': 'R\$ 249,90',
-    },
-    {
-      'nome': 'Blusa Sofisticada Azul',
-      'imagem': 'assets/images/femblusaazul.png',
-      'preco': 'R\$ 219,90',
-    },
-    {
-      'nome': 'Calça Premium com Laço',
-      'imagem': 'assets/images/femcalcalaco.png',
-      'preco': 'R\$ 329,90',
-    },
-    {
-      'nome': 'Saia Couture Roxa',
-      'imagem': 'assets/images/femsaiaroxa.png',
-      'preco': 'R\$ 279,90',
-    },
-    {
-      'nome': 'Vestido Evening Black',
-      'imagem': 'assets/images/femvestidopreto.png',
-      'preco': 'R\$ 459,90',
-    },
-  ];
+  String _convertImageToBase64(dynamic imageData) {
+    if (imageData == null) return 'assets/images/femcroppedpreto.png';
+    
+    try {
+      if (imageData is String) {
+        return 'base64:$imageData';
+      } else if (imageData is List) {
+        final bytes = List<int>.from(imageData);
+        final base64String = base64Encode(bytes);
+        return 'base64:$base64String';
+      }
+    } catch (e) {
+      print('Erro ao converter imagem: $e');
+    }
+    
+    return 'assets/images/femcroppedpreto.png';
+  }
+
+  Future<void> _carregarProdutos() async {
+    try {
+      final response = await http.get(
+        Uri.parse('${ApiConfig.baseUrl}/produto/findAll'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final produtosApi = data.where((produto) => 
+          produto['categoria']?['nome']?.toLowerCase().contains('feminino') == true ||
+          produto['tipo']?.toLowerCase().contains('feminino') == true
+        ).map((produto) => {
+          'nome': produto['nome'] ?? 'Produto',
+          'imagem': produto['foto'] != null ? _convertImageToBase64(produto['foto']) : 'assets/images/femcroppedpreto.png',
+          'preco': 'R\$ ${produto['preco']?.toStringAsFixed(2) ?? '0,00'}',
+          'id': produto['id'],
+        }).toList();
+
+        // Se não há produtos femininos da API, usar produtos padrão
+        if (produtosApi.isEmpty) {
+          produtosFemininos = [
+            {'nome': 'Cropped Elegance Black', 'imagem': 'assets/images/femcroppedpreto.png', 'preco': 'R\$ 189,90'},
+            {'nome': 'Saia Midi Clássica', 'imagem': 'assets/images/femsaiabranca.png', 'preco': 'R\$ 249,90'},
+            {'nome': 'Blusa Sofisticada Azul', 'imagem': 'assets/images/femblusaazul.png', 'preco': 'R\$ 219,90'},
+            {'nome': 'Calça Premium com Laço', 'imagem': 'assets/images/femcalcalaco.png', 'preco': 'R\$ 329,90'},
+            {'nome': 'Saia Couture Roxa', 'imagem': 'assets/images/femsaiaroxa.png', 'preco': 'R\$ 279,90'},
+            {'nome': 'Vestido Evening Black', 'imagem': 'assets/images/femvestidopreto.png', 'preco': 'R\$ 459,90'},
+          ];
+        } else {
+          produtosFemininos = List<Map<String, dynamic>>.from(produtosApi);
+        }
+      }
+    } catch (e) {
+      print('Erro ao carregar produtos: $e');
+      // Usar produtos padrão em caso de erro
+      produtosFemininos = [
+        {'nome': 'Cropped Elegance Black', 'imagem': 'assets/images/femcroppedpreto.png', 'preco': 'R\$ 189,90'},
+        {'nome': 'Saia Midi Clássica', 'imagem': 'assets/images/femsaiabranca.png', 'preco': 'R\$ 249,90'},
+        {'nome': 'Blusa Sofisticada Azul', 'imagem': 'assets/images/femblusaazul.png', 'preco': 'R\$ 219,90'},
+        {'nome': 'Calça Premium com Laço', 'imagem': 'assets/images/femcalcalaco.png', 'preco': 'R\$ 329,90'},
+        {'nome': 'Saia Couture Roxa', 'imagem': 'assets/images/femsaiaroxa.png', 'preco': 'R\$ 279,90'},
+        {'nome': 'Vestido Evening Black', 'imagem': 'assets/images/femvestidopreto.png', 'preco': 'R\$ 459,90'},
+      ];
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +121,9 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
           ),
         ],
       ),
-      body: FadeTransition(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppTheme.accentGold)))
+          : FadeTransition(
         opacity: _fadeAnimation,
         child: Column(
           children: [
@@ -163,6 +207,44 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
     );
   }
 
+  Widget _buildProductImage(String imagePath) {
+    if (imagePath.startsWith('base64:')) {
+      try {
+        final base64String = imagePath.substring(7);
+        return Image.memory(
+          base64Decode(base64String),
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: Colors.grey[100],
+              child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+            );
+          },
+        );
+      } catch (e) {
+        return Container(
+          color: Colors.grey[100],
+          child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+        );
+      }
+    } else {
+      return Image.asset(
+        imagePath,
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[100],
+            child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+          );
+        },
+      );
+    }
+  }
+
   Widget _buildAnimatedProductCard(BuildContext context, Map<String, dynamic> produto, int index) {
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 600 + (index * 150)),
@@ -192,18 +274,7 @@ class _FemalePageState extends State<FemalePage> with TickerProviderStateMixin {
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                     child: Stack(
                       children: [
-                        Image.asset(
-                          produto['imagem'],
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: double.infinity,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey[100],
-                              child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
-                            );
-                          },
-                        ),
+                        _buildProductImage(produto['imagem']),
                         Positioned(
                           top: 8,
                           right: 8,

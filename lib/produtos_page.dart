@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'encomenda_service.dart';
 import 'profile_page.dart';
 import 'produto_detalhes_page.dart';
@@ -199,15 +200,68 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
     );
   }
 
+  String _convertImageToBase64(dynamic imageData) {
+    if (imageData == null) return null;
+    
+    try {
+      if (imageData is String) {
+        return imageData;
+      } else if (imageData is List) {
+        final bytes = List<int>.from(imageData);
+        final base64String = base64Encode(bytes);
+        return base64String;
+      }
+    } catch (e) {
+      print('Erro ao converter imagem: $e');
+    }
+    
+    return null;
+  }
+
   Map<String, dynamic> _formatarProduto(dynamic produto) {
     return {
       'nome': produto['nome'] ?? 'Produto',
       'preco': 'R\$ ${produto['preco']?.toStringAsFixed(2) ?? '0,00'}',
       'descricao': produto['descricao'] ?? 'Descrição não disponível',
       'cor': Colors.grey[200],
-      'imagem': produto['imagem'],
+      'imagem': _convertImageToBase64(produto['foto']),
       'icone': Icons.shopping_bag,
     };
+  }
+
+  Widget _buildProductImage(String? imagePath) {
+    if (imagePath == null) {
+      return Container(
+        width: double.infinity,
+        height: 120,
+        color: Colors.grey[200],
+        child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+      );
+    }
+    
+    try {
+      return Image.memory(
+        base64Decode(imagePath),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: 120,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            width: double.infinity,
+            height: 120,
+            color: Colors.grey[200],
+            child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+          );
+        },
+      );
+    } catch (e) {
+      return Container(
+        width: double.infinity,
+        height: 120,
+        color: Colors.grey[200],
+        child: Icon(Icons.image_not_supported, size: 50, color: Colors.grey[400]),
+      );
+    }
   }
 
   Widget _buildLoadingCard() {
@@ -396,21 +450,7 @@ class _ProdutosPageState extends State<ProdutosPage> with TickerProviderStateMix
                                         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                                         child: Stack(
                                           children: [
-                                            Image.asset(
-                                              material['imagem'],
-                                              fit: BoxFit.cover,
-                                              width: double.infinity,
-                                              height: 120,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return Center(
-                                                  child: Icon(
-                                                    material['icone'],
-                                                    size: 48,
-                                                    color: Colors.white,
-                                                  ),
-                                                );
-                                              },
-                                            ),
+                                            _buildProductImage(material['imagem']),
                                             Positioned(
                                               top: 8,
                                               right: 8,

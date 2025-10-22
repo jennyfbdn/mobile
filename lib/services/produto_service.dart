@@ -59,4 +59,21 @@ class ProdutoService {
       return {'success': false, 'message': 'Erro de conexão: $e'};
     }
   }
+
+  Future<Map<String, dynamic>> handleExcluir(int produtoId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/delete/$produtoId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return {'success': true, 'message': 'Produto excluído com sucesso'};
+      } else {
+        return {'success': false, 'message': 'Erro ao excluir produto'};
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Erro de conexão: $e'};
+    }
+  }
 }
